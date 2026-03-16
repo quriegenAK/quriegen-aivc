@@ -1,0 +1,65 @@
+donor_id,cell_type,n_ctrl_cells,n_stim_cells,paired
+patient_101,B cells,106,141,True
+patient_101,CD14+ Monocytes,207,269,True
+patient_101,CD4 T cells,353,467,True
+patient_101,CD8 T cells,29,54,True
+patient_101,Dendritic cells,25,39,True
+patient_101,FCGR3A+ Monocytes,72,112,True
+patient_101,Megakaryocytes,1,0,False
+patient_101,NK cells,65,84,True
+patient_1015,B cells,459,366,True
+patient_1015,CD14+ Monocytes,859,718,True
+patient_1015,CD4 T cells,951,835,True
+patient_1015,CD8 T cells,85,60,True
+patient_1015,Dendritic cells,40,36,True
+patient_1015,FCGR3A+ Monocytes,164,159,True
+patient_1015,Megakaryocytes,1,3,True
+patient_1015,NK cells,179,175,True
+patient_1016,B cells,125,123,True
+patient_1016,CD14+ Monocytes,393,355,True
+patient_1016,CD4 T cells,502,461,True
+patient_1016,CD8 T cells,504,489,True
+patient_1016,Dendritic cells,27,20,True
+patient_1016,FCGR3A+ Monocytes,81,89,True
+patient_1016,Megakaryocytes,1,0,False
+patient_1016,NK cells,90,98,True
+patient_1039,B cells,26,41,True
+patient_1039,CD14+ Monocytes,126,164,True
+patient_1039,CD4 T cells,201,302,True
+patient_1039,CD8 T cells,9,11,True
+patient_1039,Dendritic cells,10,18,True
+patient_1039,FCGR3A+ Monocytes,15,25,True
+patient_1039,Megakaryocytes,53,58,True
+patient_1039,NK cells,21,22,True
+patient_107,B cells,44,60,True
+patient_107,CD14+ Monocytes,210,179,True
+patient_107,CD4 T cells,180,199,True
+patient_107,CD8 T cells,8,10,True
+patient_107,Dendritic cells,14,16,True
+patient_107,FCGR3A+ Monocytes,24,20,True
+patient_107,Megakaryocytes,0,1,False
+patient_107,NK cells,37,40,True
+patient_1244,B cells,118,96,True
+patient_1244,CD14+ Monocytes,418,300,True
+patient_1244,CD4 T cells,1108,892,True
+patient_1244,CD8 T cells,29,12,True
+patient_1244,Dendritic cells,62,37,True
+patient_1244,FCGR3A+ Monocytes,41,17,True
+patient_1244,Megakaryocytes,1,3,True
+patient_1244,NK cells,102,107,True
+patient_1256,B cells,218,219,True
+patient_1256,CD14+ Monocytes,402,387,True
+patient_1256,CD4 T cells,1049,993,True
+patient_1256,CD8 T cells,114,132,True
+patient_1256,Dendritic cells,34,48,True
+patient_1256,FCGR3A+ Monocytes,47,57,True
+patient_1256,Megakaryocytes,2,4,True
+patient_1256,NK cells,242,186,True
+patient_1488,B cells,220,289,True
+patient_1488,CD14+ Monocytes,317,393,True
+patient_1488,CD4 T cells,1216,1529,True
+patient_1488,CD8 T cells,33,42,True
+patient_1488,Dendritic cells,46,57,True
+patient_1488,FCGR3A+ Monocytes,76,90,True
+patient_1488,Megakaryocytes,4,0,False
+patient_1488,NK cells,119,149,True

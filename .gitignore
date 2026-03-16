@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+aivc_env/
+venv/
+.venv/
+env/
+
+# Large data files — never commit
+*.h5ad
+*.npy
+*.pt
+*.pth
+*.pkl
+*.pickle
+
+# STRING PPI raw data
+data/9606.protein.*.txt
+data/9606.protein.*.txt.gz
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs (optional — keep training logs in repo for reproducibility)
+# training_output_*.log
+
+# AWS credentials — never commit
+.aws/
+*.pem

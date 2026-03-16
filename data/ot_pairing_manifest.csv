@@ -1,0 +1,65 @@
+donor_id,cell_type,n_ctrl,n_stim,n_pairs,method,reason
+patient_101,B cells,106,141,106,ot_emd,paired
+patient_101,CD14+ Monocytes,207,269,207,ot_emd,paired
+patient_101,CD4 T cells,353,467,353,ot_emd,paired
+patient_101,CD8 T cells,29,54,29,ot_emd,paired
+patient_101,Dendritic cells,25,39,25,ot_emd,paired
+patient_101,FCGR3A+ Monocytes,72,112,72,ot_emd,paired
+patient_101,Megakaryocytes,1,0,0,skipped,insufficient cells
+patient_101,NK cells,65,84,65,ot_emd,paired
+patient_1015,B cells,459,366,459,ot_emd,paired
+patient_1015,CD14+ Monocytes,859,718,500,ot_emd,paired
+patient_1015,CD4 T cells,951,835,500,ot_emd,paired
+patient_1015,CD8 T cells,85,60,85,ot_emd,paired
+patient_1015,Dendritic cells,40,36,40,ot_emd,paired
+patient_1015,FCGR3A+ Monocytes,164,159,164,ot_emd,paired
+patient_1015,Megakaryocytes,1,3,0,skipped,insufficient cells
+patient_1015,NK cells,179,175,179,ot_emd,paired
+patient_1016,B cells,125,123,125,ot_emd,paired
+patient_1016,CD14+ Monocytes,393,355,393,ot_emd,paired
+patient_1016,CD4 T cells,502,461,500,ot_emd,paired
+patient_1016,CD8 T cells,504,489,500,ot_emd,paired
+patient_1016,Dendritic cells,27,20,27,ot_emd,paired
+patient_1016,FCGR3A+ Monocytes,81,89,81,ot_emd,paired
+patient_1016,Megakaryocytes,1,0,0,skipped,insufficient cells
+patient_1016,NK cells,90,98,90,ot_emd,paired
+patient_1039,B cells,26,41,26,ot_emd,paired
+patient_1039,CD14+ Monocytes,126,164,126,ot_emd,paired
+patient_1039,CD4 T cells,201,302,201,ot_emd,paired
+patient_1039,CD8 T cells,9,11,9,ot_emd,paired
+patient_1039,Dendritic cells,10,18,10,ot_emd,paired
+patient_1039,FCGR3A+ Monocytes,15,25,15,ot_emd,paired
+patient_1039,Megakaryocytes,53,58,53,ot_emd,paired
+patient_1039,NK cells,21,22,21,ot_emd,paired
+patient_107,B cells,44,60,44,ot_emd,paired
+patient_107,CD14+ Monocytes,210,179,210,ot_emd,paired
+patient_107,CD4 T cells,180,199,180,ot_emd,paired
+patient_107,CD8 T cells,8,10,8,ot_emd,paired
+patient_107,Dendritic cells,14,16,14,ot_emd,paired
+patient_107,FCGR3A+ Monocytes,24,20,24,ot_emd,paired
+patient_107,Megakaryocytes,0,1,0,skipped,insufficient cells
+patient_107,NK cells,37,40,37,ot_emd,paired
+patient_1244,B cells,118,96,118,ot_emd,paired
+patient_1244,CD14+ Monocytes,418,300,418,ot_emd,paired
+patient_1244,CD4 T cells,1108,892,500,ot_emd,paired
+patient_1244,CD8 T cells,29,12,29,ot_emd,paired
+patient_1244,Dendritic cells,62,37,62,ot_emd,paired
+patient_1244,FCGR3A+ Monocytes,41,17,41,ot_emd,paired
+patient_1244,Megakaryocytes,1,3,0,skipped,insufficient cells
+patient_1244,NK cells,102,107,102,ot_emd,paired
+patient_1256,B cells,218,219,218,ot_emd,paired
+patient_1256,CD14+ Monocytes,402,387,402,ot_emd,paired
+patient_1256,CD4 T cells,1049,993,500,ot_emd,paired
+patient_1256,CD8 T cells,114,132,114,ot_emd,paired
+patient_1256,Dendritic cells,34,48,34,ot_emd,paired
+patient_1256,FCGR3A+ Monocytes,47,57,47,ot_emd,paired
+patient_1256,Megakaryocytes,2,4,0,skipped,insufficient cells
+patient_1256,NK cells,242,186,242,ot_emd,paired
+patient_1488,B cells,220,289,220,ot_emd,paired
+patient_1488,CD14+ Monocytes,317,393,317,ot_emd,paired
+patient_1488,CD4 T cells,1216,1529,500,ot_emd,paired
+patient_1488,CD8 T cells,33,42,33,ot_emd,paired
+patient_1488,Dendritic cells,46,57,46,ot_emd,paired
+patient_1488,FCGR3A+ Monocytes,76,90,76,ot_emd,paired
+patient_1488,Megakaryocytes,4,0,0,skipped,insufficient cells
+patient_1488,NK cells,119,149,119,ot_emd,paired

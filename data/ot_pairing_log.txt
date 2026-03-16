@@ -1,0 +1,21 @@
+Optimal Transport Cell Pairing Log
+Method: OT (EMD)
+Data normalised: True
+PCA components: 50
+Max cells per group: 500
+Min cells threshold: 5
+
+Skipped patient_101 Megakaryocytes: insufficient cells (ctrl=1, stim=0)
+Subsampled patient_1015 CD14+ Monocytes: ctrl 859->500, stim 718->500
+Subsampled patient_1015 CD4 T cells: ctrl 951->500, stim 835->500
+Skipped patient_1015 Megakaryocytes: insufficient cells (ctrl=1, stim=3)
+Subsampled patient_1016 CD4 T cells: ctrl 502->500, stim 461->461
+Subsampled patient_1016 CD8 T cells: ctrl 504->500, stim 489->489
+Skipped patient_1016 Megakaryocytes: insufficient cells (ctrl=1, stim=0)
+Skipped patient_107 Megakaryocytes: insufficient cells (ctrl=0, stim=1)
+Subsampled patient_1244 CD4 T cells: ctrl 1108->500, stim 892->500
+Skipped patient_1244 Megakaryocytes: insufficient cells (ctrl=1, stim=3)
+Subsampled patient_1256 CD4 T cells: ctrl 1049->500, stim 993->500
+Skipped patient_1256 Megakaryocytes: insufficient cells (ctrl=2, stim=4)
+Subsampled patient_1488 CD4 T cells: ctrl 1216->500, stim 1529->500
+Skipped patient_1488 Megakaryocytes: insufficient cells (ctrl=4, stim=0)
