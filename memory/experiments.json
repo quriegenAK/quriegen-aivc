@@ -8,5 +8,25 @@
       "step_b"
     ],
     "success": true
+  },
+  {
+    "workflow_name": "test_wf",
+    "timestamp": 1773768745.597319,
+    "metrics": {},
+    "skills_executed": [
+      "step_a",
+      "step_b"
+    ],
+    "success": true
+  },
+  {
+    "workflow_name": "test_wf",
+    "timestamp": 1773772819.649463,
+    "metrics": {},
+    "skills_executed": [
+      "step_a",
+      "step_b"
+    ],
+    "success": true
   }
 ]

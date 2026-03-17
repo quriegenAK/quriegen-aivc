@@ -1,0 +1,47 @@
+{
+  "test_r_mean": 0.8728955305714976,
+  "test_r_std": 0.06323873359708561,
+  "test_mse": 0.021577777341008186,
+  "mean_lfc_error": 7.885673522949219,
+  "mean_lfc_error_jakstat": 4.402936935424805,
+  "spearman_rho": 0.30260413025010074,
+  "pct_within_1_log2": 22.561303591203924,
+  "pct_within_2_log2": 31.396930865369406,
+  "top50_recall": 0.0,
+  "jakstat_in_top50": 0,
+  "jakstat_correct_direction": 14,
+  "jakstat_within_2x": 6,
+  "jakstat_within_10x": 11,
+  "ifit1_pfc": 7.1407297377879395,
+  "ifit1_afc": 107.1358235713592,
+  "ifit1_ratio": 15.003483888265432,
+  "ct_specificity": 0.06171019245074298,
+  "ct_results": {
+    "B cells": 0.9090043301887585,
+    "CD14+ Monocytes": 0.7449702360511817,
+    "CD4 T cells": 0.9433064048228134,
+    "CD8 T cells": 0.9063478217721291,
+    "Dendritic cells": 0.8532526586361963,
+    "FCGR3A+ Monocytes": 0.8413604455661226,
+    "NK cells": 0.9120268169632809
+  },
+  "ct_lfc_results": {
+    "B cells": 3.9715232849121094,
+    "CD14+ Monocytes": 8.025870323181152,
+    "CD4 T cells": 6.927432060241699,
+    "CD8 T cells": 4.2716898918151855,
+    "Dendritic cells": 10.495803833007812,
+    "FCGR3A+ Monocytes": 12.04719352722168,
+    "NK cells": 9.460199356079102
+  },
+  "model_path": "models/week4/model_week4_best.pt",
+  "n_test_pairs": 21,
+  "baseline_r": 0.873,
+  "targets_met": {
+    "Pearson r > 0.88": false,
+    "JAK-STAT >= 8/15": false,
+    "IFIT1 within 10x": false,
+    "CD14 mono r > 0.80": false,
+    "No regression (r >= 0.863)": true
+  }
+}
