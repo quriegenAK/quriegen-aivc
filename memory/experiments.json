@@ -1,0 +1,12 @@
+[
+  {
+    "workflow_name": "test_wf",
+    "timestamp": 1773761249.1662579,
+    "metrics": {},
+    "skills_executed": [
+      "step_a",
+      "step_b"
+    ],
+    "success": true
+  }
+]
