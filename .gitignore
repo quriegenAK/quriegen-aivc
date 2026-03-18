@@ -25,8 +25,7 @@ models/
 *.pth
 *.ckpt
 
-# Keep output structure but not large files
-outputs/v1.0/figures/*.png
+# Keep output structure — figures and notebook are committed
 outputs/v1.0/notebook/*_executed.ipynb
 
 # Results sweep files (large)
