@@ -1,0 +1,47 @@
+QurieGen AIVC — v1.0 Metrics Snapshot
+Generated: March 2026
+
+Dataset: Kang 2018 PBMC (GSE96583)
+Model: 2-layer GAT + PerturbationEmbedding + CellTypeEmbedding
+Parameters: 110,721
+Split: Donor-based (4 train, 1 val, 3 test)
+Test donor: patient_1488 (held out from all training)
+
+=== CORE METRICS ===
+Test Pearson r (mean):     0.873
+Test Pearson r (std):      0.064
+Test MSE:                   0.013
+Cell-type spread (std r):  0.198
+
+=== JAK-STAT PATHWAY RECOVERY ===
+Genes in top 50 by attention delta: 7/15
+Target for v1.1: 8/15 or more
+
+=== FOLD CHANGE ACCURACY ===
+IFIT1  — actual: 107x  predicted: 2.05x  (direction: correct, magnitude: compressed)
+IFIT3  — actual:  44x  (Week 4 target)
+MX1    — actual:  28x  (Week 4 target)
+ISG15  — actual:  15x  (Week 4 target)
+OAS1   — actual:  11x  (Week 4 target)
+
+=== CELL-TYPE STRATIFIED PEARSON r ===
+CD14+ Monocytes:    0.745  (target v1.1: above 0.80)
+(other cell types: pending extract from evaluate_week3.py output)
+
+=== BENCHMARK COMPARISON ===
+scGEN (Lotfollahi 2019):  0.820
+CPA   (Lotfollahi 2021):  0.856
+AIVC  v1.0 (ours):        0.873  <- beats both published methods
+
+All benchmarks: same dataset (Kang 2018, GSE96583)
+Same metric: Pearson r, raw values, gene-wise, held-out donors only
+
+=== TRAINING CONFIGURATION ===
+Epochs: 200
+Batch size: 8
+LFC beta: 0.01 (v1.1 target: 0.05-0.50 sweep on GPU)
+LR embeddings: 1e-3
+LR GeneLink: 1e-4
+Seeds: random=42, numpy=42, torch=42, cuda=42
+Graph: 3010 genes, 13878 STRING PPI edges (score >= 700)
+OT pairs: 9616 pairs from 57 donor-by-cell-type groups

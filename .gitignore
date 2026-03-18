@@ -16,10 +16,25 @@ env/
 # Large data files — never commit
 *.h5ad
 *.npy
-*.pt
-*.pth
 *.pkl
 *.pickle
+
+# Model checkpoints — in S3, not git
+models/
+*.pt
+*.pth
+*.ckpt
+
+# Keep output structure but not large files
+outputs/v1.0/figures/*.png
+outputs/v1.0/notebook/*_executed.ipynb
+
+# Results sweep files (large)
+results/v1.0/*.npy
+
+# Runtime generated
+training_log*.txt
+test_split_info*.pt
 
 # STRING PPI raw data
 data/9606.protein.*.txt
