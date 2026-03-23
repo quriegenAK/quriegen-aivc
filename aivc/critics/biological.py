@@ -125,6 +125,56 @@ class BiologicalCritic:
                         "(max 0.3)"
                     )
 
+        # Check 7 (v3.0): ATAC JAK-STAT coverage
+        if "atac_jakstat_coverage" in result.outputs:
+            coverage = result.outputs["atac_jakstat_coverage"]
+            if isinstance(coverage, (int, float)):
+                if coverage >= 10:
+                    checks_passed.append(
+                        f"ATAC JAK-STAT coverage: {coverage}/15 (PASS)"
+                    )
+                else:
+                    checks_failed.append(
+                        f"ATAC JAK-STAT coverage: {coverage}/15 "
+                        "(need >= 10/15 with peak-gene links)"
+                    )
+
+        # Check 8 (v3.0): IRF/STAT motif direction
+        if "irf_stat_motif_direction" in result.outputs:
+            motif_dir = result.outputs["irf_stat_motif_direction"]
+            if isinstance(motif_dir, dict):
+                critical_tfs = ["STAT1", "IRF3"]
+                for tf in critical_tfs:
+                    tf_result = motif_dir.get(tf, {})
+                    enriched = tf_result.get("enriched", False)
+                    if enriched:
+                        checks_passed.append(
+                            f"{tf} motif enriched in stim (PASS)"
+                        )
+                    elif tf in motif_dir:
+                        checks_failed.append(
+                            f"{tf} motif NOT enriched in stim. "
+                            "ATACSeqEncoder may be learning noise."
+                        )
+
+        # Check 9 (v3.0): ATAC causal ordering
+        if "atac_causal_attention" in result.outputs:
+            attn = result.outputs["atac_causal_attention"]
+            if isinstance(attn, dict):
+                atac_to_rna = attn.get("atac_to_rna", 0)
+                rna_to_atac = attn.get("rna_to_atac", 0)
+                if atac_to_rna > rna_to_atac:
+                    checks_passed.append(
+                        f"ATAC->RNA attention ({atac_to_rna:.3f}) > "
+                        f"RNA->ATAC ({rna_to_atac:.3f}) — causal ordering OK"
+                    )
+                else:
+                    warnings.append(
+                        f"RNA->ATAC attention ({rna_to_atac:.3f}) >= "
+                        f"ATAC->RNA ({atac_to_rna:.3f}). "
+                        "Causal consistency loss may need higher weight."
+                    )
+
         # If no biological checks were applicable, pass by default
         if not checks_passed and not checks_failed:
             checks_passed.append(
