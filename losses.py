@@ -160,6 +160,59 @@ def combined_loss(
     return total, breakdown
 
 
+def combined_loss_v11(
+    predicted: torch.Tensor,
+    actual_stim: torch.Tensor,
+    actual_ctrl: torch.Tensor,
+    neumann_module=None,
+    alpha: float = 1.0,
+    beta: float = 0.5,
+    gamma: float = 0.1,
+) -> tuple:
+    """
+    Combined loss for v1.1 with Neumann L1 sparsity penalty.
+
+    L = alpha * MSE + beta * LFC + gamma * cosine + lambda * ||W||_1
+
+    The L1 penalty encourages sparsity in the learned GRN matrix W,
+    matching the Tahoe TX1-CD approach.
+
+    Args:
+        predicted:       (batch, n_genes) predicted stim expression.
+        actual_stim:     (batch, n_genes) actual stim expression.
+        actual_ctrl:     (batch, n_genes) ctrl expression (input).
+        neumann_module:  NeumannPropagation instance (for L1 penalty).
+                         If None, falls back to combined_loss behavior.
+        alpha: MSE weight.
+        beta:  LFC weight.
+        gamma: cosine weight.
+
+    Returns:
+        (total_loss, breakdown_dict)
+    """
+    mse = F.mse_loss(predicted, actual_stim)
+    lfc = log_fold_change_loss(predicted, actual_stim, actual_ctrl)
+    cos = cosine_loss(predicted, actual_stim)
+
+    total = alpha * mse + beta * lfc + gamma * cos
+
+    breakdown = {
+        "mse": mse.item(),
+        "lfc": lfc.item(),
+        "cosine": cos.item(),
+        "l1": 0.0,
+        "total": total.item(),
+    }
+
+    if neumann_module is not None:
+        l1 = neumann_module.l1_penalty()
+        total = total + l1
+        breakdown["l1"] = l1.item()
+        breakdown["total"] = total.item()
+
+    return total, breakdown
+
+
 # =========================================================================
 # Unit tests
 # =========================================================================

@@ -299,8 +299,12 @@ class PerturbationPredictor(nn.Module):
         # 4. GAT message passing
         z = self.genelink(x, edge_index)  # (n_genes, gnn_out_dim)
 
-        # 5. Decode to expression
+        # 5. Decode to expression (direct effects)
         pred = self.decoder(z)  # (n_genes,)
+
+        # 6. Neumann cascade propagation (v1.1 — if module attached)
+        if hasattr(self, "neumann") and self.neumann is not None:
+            pred = self.neumann(pred)
 
         return pred
 
@@ -368,11 +372,17 @@ class PerturbationPredictor(nn.Module):
         # --- Single GAT forward pass on batched graph ---
         z_batched = self.genelink(x_batched, edge_index_batched)  # (n_pairs * n_genes, gnn_out_dim)
 
-        # --- Decode all at once ---
+        # --- Decode all at once (direct effects) ---
         pred_batched = self.decoder(z_batched)  # (n_pairs * n_genes,)
 
         # Reshape back to (n_pairs, n_genes)
-        return pred_batched.reshape(n_pairs, n_genes)
+        pred = pred_batched.reshape(n_pairs, n_genes)
+
+        # --- Neumann cascade propagation (v1.1 — if module attached) ---
+        if hasattr(self, "neumann") and self.neumann is not None:
+            pred = self.neumann(pred)
+
+        return pred
 
 
 # =========================================================================
