@@ -271,6 +271,7 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
         torch.cuda.manual_seed(SEED)
 
     model = create_model_v11(neumann_K, lambda_l1)
+    sparsity_history = []  # track W density over epochs
     total_params = sum(p.numel() for p in model.parameters())
     print(f"  Parameters: {total_params:,}")
 
@@ -372,10 +373,44 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
             no_improve += 1
 
         if epoch == 1 or epoch % 10 == 0:
-            w_density = model.neumann.get_effective_W_density()
-            print(f"  E{epoch:3d} | MSE={avg['mse']:.4f} LFC={avg['lfc']:.4f} "
-                  f"L1={avg['l1']:.6f} | val_r={val_r:.4f} | "
-                  f"beta={beta_lfc:.3f} W_density={w_density:.3f}")
+            # ── Sparsity enforcement (proximal gradient operator) ──
+            # Only enforce when W is unfrozen (Stage 2: epoch >= 11)
+            # Threshold 1e-4: removes near-zero Adam artifacts
+            # Expected density trajectory:
+            #   Epoch  1:  ~1.000 (all STRING edges active, W frozen)
+            #   Epoch 10:  ~1.000 (W still frozen)
+            #   Epoch 20:  ~0.800-0.950 (first enforcement after unfreeze)
+            #   Epoch 50:  ~0.500-0.750 (L1 + enforcement converging)
+            #   Epoch 100: ~0.200-0.500 (stable sparse GRN)
+            #   Epoch 200: ~0.150-0.400 (final sparsity)
+            # If density stays near 1.0 after epoch 20: increase lambda_l1
+            # If density drops below 0.05: decrease threshold or lambda_l1
+            if epoch >= 11 and model.neumann.W.requires_grad:
+                sparsity_result = model.neumann.enforce_sparsity(threshold=1e-4)
+                n_pruned = sparsity_result["n_pruned"]
+            else:
+                n_pruned = 0
+            w_report = model.neumann.get_sparsity_report()
+            w_density = w_report["density"]
+            w_density_large = w_report["density_large"]
+            sparsity_history.append({
+                "epoch":         epoch,
+                "density":       w_density,
+                "density_large": w_density_large,
+                "n_pruned":      n_pruned,
+                "val_r":         val_r,
+            })
+            print(
+                f"  E{epoch:3d} | "
+                f"MSE={avg['mse']:.4f} "
+                f"LFC={avg['lfc']:.4f} "
+                f"L1={avg['l1']:.6f} | "
+                f"val_r={val_r:.4f} | "
+                f"beta={beta_lfc:.3f} | "
+                f"W_dens={w_density:.3f} "
+                f"(>{1e-4:.0e}: {w_density_large:.3f}) "
+                f"pruned={n_pruned}"
+            )
 
         if no_improve >= patience and epoch > 80:
             print(f"  Early stop at epoch {epoch}. Best: {best_val_r:.4f} at {best_epoch}")
@@ -449,6 +484,8 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
         "training_time_s": elapsed,
         "save_path": save_path,
         "w_density": model.neumann.get_effective_W_density(),
+        "sparsity_history": sparsity_history,
+        "top_w_edges": model.neumann.get_top_edges(n=20, gene_names=gene_names),
     }
 
 
@@ -512,6 +549,37 @@ if valid:
 else:
     print("\n  WARNING: No config achieved baseline r >= 0.863")
     best = max(sweep_results, key=lambda r: r["test_r"])
+
+# Print top W edges for biological validation
+# Expected: JAK1->STAT1, STAT1->IFIT1, JAK2->STAT1 should appear
+# in top-20 edges after training. If they do not:
+# the W matrix has not learned the expected JAK-STAT cascade.
+print(f"\n TOP-20 W EDGES (best config — biological validation):")
+print(f" {'Rank':<5} {'Source':<15} {'Dest':<15} {'Weight':>10}")
+print(f" {'-'*48}")
+JAKSTAT_PAIRS = {
+    ("JAK1",  "STAT1"), ("JAK1",  "STAT2"),
+    ("JAK2",  "STAT1"), ("STAT1", "IFIT1"),
+    ("STAT1", "MX1"),   ("STAT2", "IFIT1"),
+    ("IRF9",  "IFIT1"), ("STAT1", "ISG15"),
+}
+n_jakstat_in_top20 = 0
+for edge in best.get("top_w_edges", []):
+    src = edge["src_name"] or str(edge["src_idx"])
+    dst = edge["dst_name"] or str(edge["dst_idx"])
+    is_jakstat = (src, dst) in JAKSTAT_PAIRS
+    marker = " ★ JAK-STAT" if is_jakstat else ""
+    if is_jakstat:
+        n_jakstat_in_top20 += 1
+    print(f" {edge['rank']:<5} {src:<15} {dst:<15} {edge['weight']:>10.6f}{marker}")
+print(f"\n JAK-STAT edges in top-20: {n_jakstat_in_top20}/8 expected")
+if n_jakstat_in_top20 >= 3:
+    print(f" PASS: W has learned meaningful JAK-STAT cascade weights")
+else:
+    print(f" WARN: W has not learned expected JAK-STAT cascade.")
+    print(f"       Check: lambda_l1 too high (pruning real edges)?")
+    print(f"              STRING PPI edge for these pairs exists?")
+    print(f"              Epoch count sufficient (need >= 100 Stage 2)?")
 
 print(f"\n  BEST CONFIG:")
 print(f"    Beta={best['lfc_beta']}, K={best['neumann_K']}, L1={best['lambda_l1']}")

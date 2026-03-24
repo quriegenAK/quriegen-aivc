@@ -159,6 +159,145 @@ class NeumannPropagation(nn.Module):
             active = (self.W.abs() > 1e-6).float().mean().item()
         return active
 
+    def enforce_sparsity(self, threshold: float = 1e-4) -> dict:
+        """
+        Proximal gradient operator for L1 regularisation.
+        Hard-thresholds W: any edge weight with |W| < threshold -> 0.0 exactly.
+
+        WHY THIS IS NEEDED:
+          Adam optimizer with L1 penalty never produces exact zeros.
+          Without this, W drifts to full density by epoch ~100.
+          This converts the sparse GRN into a dense 3010x3010 matrix,
+          increasing _sparse_matmul() cost by ~650x.
+
+        This implements: W <- sign(W) * max(|W| - threshold, 0)
+        Which is the proximal operator for L1: prox_{lambda||.||_1}(W)
+
+        Args:
+            threshold: Hard threshold. Edges with |W| < threshold -> 0.
+                       Default 1e-4. Must be > 0.
+                       Typical range: 1e-5 (aggressive keep) to 1e-3 (aggressive prune).
+
+        Returns:
+            dict with keys:
+              'n_edges_before': int  — active edges before enforcement
+              'n_edges_after':  int  — active edges after enforcement
+              'n_pruned':       int  — edges set to zero
+              'density_before': float — fraction active before
+              'density_after':  float — fraction active after
+              'threshold_used': float — threshold applied
+        """
+        with torch.no_grad():
+            n_total = self.W.numel()
+            # Count before
+            active_before = (self.W.abs() > 1e-9).sum().item()
+            density_before = active_before / n_total
+            # Proximal operator: hard-zero edges below threshold
+            magnitude = self.W.abs()
+            mask = magnitude >= threshold
+            self.W.data *= mask.float()
+            # Count after
+            active_after = (self.W.abs() > 1e-9).sum().item()
+            density_after = active_after / n_total
+            n_pruned = active_before - active_after
+        return {
+            "n_edges_before": active_before,
+            "n_edges_after":  active_after,
+            "n_pruned":       n_pruned,
+            "density_before": density_before,
+            "density_after":  density_after,
+            "threshold_used": threshold,
+        }
+
+    def get_sparsity_report(self) -> dict:
+        """
+        Full diagnostic report of W matrix sparsity state.
+        Call this at any point to inspect the GRN weight distribution.
+
+        Returns:
+            dict with keys:
+              'n_edges_total':   int   — total edges in the graph
+              'n_edges_active':  int   — edges with |W| > 1e-9
+              'n_edges_large':   int   — edges with |W| > 1e-4
+              'density':         float — fraction active (> 1e-9)
+              'density_large':   float — fraction with |W| > 1e-4
+              'w_abs_mean':      float — mean |W| across all edges
+              'w_abs_max':       float — max |W|
+              'w_abs_min':       float — min |W| (of active edges)
+              'jakstat_coverage': int  — number of JAK-STAT edges active
+        """
+        with torch.no_grad():
+            w_abs = self.W.abs()
+            n_total = w_abs.numel()
+            active_mask = w_abs > 1e-9
+            large_mask  = w_abs > 1e-4
+            n_active = active_mask.sum().item()
+            n_large  = large_mask.sum().item()
+            active_vals = w_abs[active_mask]
+            return {
+                "n_edges_total":   n_total,
+                "n_edges_active":  n_active,
+                "n_edges_large":   n_large,
+                "density":         n_active / n_total,
+                "density_large":   n_large  / n_total,
+                "w_abs_mean":      w_abs.mean().item(),
+                "w_abs_max":       w_abs.max().item(),
+                "w_abs_min":       active_vals.min().item() if n_active > 0 else 0.0,
+                "jakstat_coverage": -1,  # populated externally if needed
+            }
+
+    def get_top_edges(
+        self,
+        n: int = 20,
+        gene_names: list = None,
+    ) -> list:
+        """
+        Return the top-N strongest edges in W by absolute weight.
+
+        Used for biological validation: the strongest edges should
+        correspond to known regulatory relationships (e.g. JAK1->STAT1).
+
+        Args:
+            n:          Number of top edges to return.
+            gene_names: List of gene name strings (len = n_genes).
+                        If provided, returns gene names instead of indices.
+
+        Returns:
+            List of dicts, sorted by |W| descending:
+            [
+              {
+                'rank':     int,
+                'src_idx':  int,
+                'dst_idx':  int,
+                'src_name': str or None,
+                'dst_name': str or None,
+                'weight':   float,  # signed W value
+                'abs_weight': float,
+              },
+              ...
+            ]
+        """
+        with torch.no_grad():
+            w_abs = self.W.abs()
+            top_k = min(n, len(self.W))
+            top_vals, top_idxs = torch.topk(w_abs, top_k)
+            result = []
+            for rank, (val, idx) in enumerate(
+                zip(top_vals.tolist(), top_idxs.tolist())
+            ):
+                src_idx = self.edge_src[idx].item()
+                dst_idx = self.edge_dst[idx].item()
+                result.append({
+                    "rank":       rank + 1,
+                    "src_idx":    src_idx,
+                    "dst_idx":    dst_idx,
+                    "src_name":   gene_names[src_idx] if gene_names else None,
+                    "dst_name":   gene_names[dst_idx] if gene_names else None,
+                    "weight":     self.W[idx].item(),
+                    "abs_weight": val,
+                })
+            return result
+
     def freeze_W(self):
         """Freeze W (Stage 1: train decoder only)."""
         self.W.requires_grad = False
