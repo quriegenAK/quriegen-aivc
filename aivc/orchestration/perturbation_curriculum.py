@@ -48,25 +48,30 @@ class PerturbationCurriculum:
             "description": "Kang 2018 IFN-B only (v1.0 baseline)",
         },
         2: {
-            "name": "add_ifng",
-            "datasets": ["kang", "frangieh_ifng"],
+            "name": "add_pbmc_ifng",
+            "datasets": ["kang", "pbmc_ifng"],
             "perturbation_ids": [0, 1, 2, 3],
-            "description": "Add IFN-G from Frangieh (shared JAK-STAT)",
+            "description": "Add PBMC-native IFN-G (same cell type, different cytokine)",
+            "use_for_response_training": True,
+            "biological_rationale": (
+                "IFN-G and IFN-B both activate JAK1->STAT1->IFIT1 cascade "
+                "in PBMCs. Training on both teaches W that this is a shared "
+                "causal mechanism, not IFN-B specific. "
+                "Cell type: PBMC (matches Kang 2018)."
+            ),
         },
         3: {
             "name": "add_cytokines",
-            "datasets": ["kang", "frangieh_ifng", "immport"],
+            "datasets": ["kang", "pbmc_ifng", "immport"],
             "perturbation_ids": [0, 1, 2, 3, 753, 754, 755, 756, 757, 758, 759],
-            "description": "Add ImmPort cytokines (IL-6, TNF-a — W training)",
+            "description": "Add ImmPort cytokines (PBMC). Frangieh used for W only.",
         },
         4: {
-            "name": "add_crispr_ko",
-            "datasets": ["kang", "frangieh_ifng", "immport", "frangieh_crispr_jak_stat"],
-            "perturbation_ids": [
-                0, 1, 2, 3, 753, 754, 755, 756, 757, 758, 759,
-                "jak1_ko", "stat1_ko", "stat2_ko", "irf9_ko", "jak2_ko",
-            ],
-            "description": "Add JAK/STAT CRISPR KOs (causal ground truth)",
+            "name": "add_w_pretrain_data",
+            "datasets": ["kang", "pbmc_ifng", "immport"],
+            "w_pretrain_only_datasets": ["frangieh_jakstat_grn"],
+            "perturbation_ids": [0, 1, 2, 3, 753, 754, 755, 756, 757, 758, 759],
+            "description": "Full corpus. Frangieh/Replogle for W pretraining only.",
         },
     }
 
@@ -139,6 +144,14 @@ class PerturbationCurriculum:
         self.history.append(result)
         self.current_stage = next_stage
         return next_stage
+
+    def get_w_pretrain_datasets(self, stage: int = None) -> list:
+        """
+        Return datasets used ONLY for Neumann W matrix pre-training.
+        These contribute to GRN edge direction learning but NOT to
+        perturbation response prediction. Fixed across all stages.
+        """
+        return ["frangieh_jakstat_grn", "replogle_housekeeping"]
 
     def get_stage_config(self, stage: int) -> dict:
         """Get configuration for a given stage."""
