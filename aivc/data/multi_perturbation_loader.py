@@ -525,6 +525,20 @@ class MultiPerturbationLoader:
         self._datasets["pbmc_ifng"] = adata_synth
         return adata_synth
 
+    def is_pbmc_ifng_synthetic(self) -> bool:
+        """
+        Returns True if the loaded PBMC IFN-G dataset is synthetic.
+        Use this to pass synthetic_ifng_used=True to advance_stage().
+        """
+        if "pbmc_ifng" not in self._datasets:
+            return False
+        adata = self._datasets["pbmc_ifng"]
+        if adata.uns.get("synthetic_ifng", False):
+            return True
+        if "SYNTHETIC_IFNG" in adata.obs.columns:
+            return bool(adata.obs["SYNTHETIC_IFNG"].any())
+        return False
+
     def build_combined_corpus(
         self,
         include_frangieh: bool = True,

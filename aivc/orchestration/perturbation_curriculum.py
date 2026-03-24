@@ -32,6 +32,8 @@ class StageResult:
     w_jak1_stat1: float = 0.0
     passed: bool = False
     reason: str = ""
+    synthetic_data_used: bool = False
+    data_quality: str = "real"  # "real" / "synthetic" / "approximate"
 
 
 class PerturbationCurriculum:
@@ -82,13 +84,15 @@ class PerturbationCurriculum:
     def advance_stage(self, current_stage: int, current_pearson_r: float,
                       jakstat_recovery: int = 0,
                       ifit1_fold_change: float = 0.0,
-                      w_jak1_stat1: float = 0.0) -> int:
+                      w_jak1_stat1: float = 0.0,
+                      synthetic_ifng_used: bool = False) -> int:
         """
         Advance to next stage if conditions are met.
 
         Conditions:
-          1. current Pearson r >= 0.873
-          2. JAK-STAT recovery >= previous stage recovery
+          1. Stage 2 must NOT use synthetic IFN-G data
+          2. current Pearson r >= 0.873
+          3. JAK-STAT recovery >= previous stage recovery
 
         Args:
             current_stage: Stage just completed (1-4).
@@ -96,10 +100,40 @@ class PerturbationCurriculum:
             jakstat_recovery: Number of JAK-STAT genes within 3x FC.
             ifit1_fold_change: Predicted IFIT1 fold change.
             w_jak1_stat1: W[JAK1, STAT1] weight.
+            synthetic_ifng_used: True if Stage 2 used synthetic IFN-G fallback.
 
         Returns:
             Next stage number, or current_stage if blocked.
         """
+        # ── Synthetic data gate ──
+        # Stage 2 with synthetic IFN-G teaches W nothing new about IFN-G
+        # biology. The r >= 0.873 pass is a false positive (training on
+        # IFN-B-like data). Block until real PBMC IFN-G data is loaded.
+        if current_stage == 2 and synthetic_ifng_used:
+            result = StageResult(
+                stage=current_stage,
+                pearson_r=current_pearson_r,
+                jakstat_recovery=jakstat_recovery,
+                ifit1_fold_change=ifit1_fold_change,
+                w_jak1_stat1=w_jak1_stat1,
+                passed=False,
+                reason=(
+                    "Stage 2 used SYNTHETIC IFN-G data (noisy copy of IFN-B). "
+                    "Stage 2 result is APPROXIMATE — biological signal is not "
+                    "validated. Cannot advance to Stage 3 until real PBMC "
+                    "IFN-G data is loaded. "
+                    "Download: OneK1K (Yazar 2022) or Dixit 2016 GSE90063."
+                ),
+                synthetic_data_used=True,
+                data_quality="synthetic",
+            )
+            logger.warning(
+                f"Stage 2 BLOCKED: synthetic IFN-G data. "
+                f"r={current_pearson_r:.4f} is not biologically meaningful."
+            )
+            self.history.append(result)
+            return current_stage
+
         result = StageResult(
             stage=current_stage,
             pearson_r=current_pearson_r,
@@ -164,8 +198,12 @@ class PerturbationCurriculum:
         lines = ["Perturbation Curriculum Report", "=" * 50]
         for result in self.history:
             status = "PASS" if result.passed else "BLOCKED"
+            quality_flag = (
+                " [SYNTHETIC DATA — NOT VALIDATED]"
+                if result.data_quality == "synthetic" else ""
+            )
             lines.append(
-                f"  Stage {result.stage}: {status} | "
+                f"  Stage {result.stage}: {status}{quality_flag} | "
                 f"r={result.pearson_r:.4f} JS={result.jakstat_recovery}/15 "
                 f"IFIT1={result.ifit1_fold_change:.1f}x "
                 f"W[J1,S1]={result.w_jak1_stat1:.4f}"
