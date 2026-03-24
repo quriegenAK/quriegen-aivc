@@ -175,6 +175,73 @@ class BiologicalCritic:
                         "Causal consistency loss may need higher weight."
                     )
 
+        # ── Mechanistic direction checks ─────────────────────────
+        # Require pred_np + ctrl_np + gene_to_idx in result.outputs.
+        # If absent: checks are skipped (not failed).
+        # Severity: WARNING only — not blocking until Stage 3+ training.
+        _pred_np     = result.outputs.get("pred_np")
+        _ctrl_np     = result.outputs.get("ctrl_np")
+        _gene_to_idx = result.outputs.get("gene_to_idx")
+        _W_top_edges = result.outputs.get("W_top_edges")
+
+        _direction_results = {}
+        _direction_n_passed = 0
+        _direction_n_run    = 0
+
+        if (
+            _pred_np is not None
+            and _ctrl_np is not None
+            and _gene_to_idx is not None
+        ):
+            _dc_stat1 = self._check_stat1_over_stat3(
+                _pred_np, _ctrl_np, _gene_to_idx
+            )
+            _dc_ifit1 = self._check_ifit1_over_oas2(
+                _pred_np, _ctrl_np, _gene_to_idx
+            )
+            _direction_results["stat1_over_stat3"] = _dc_stat1
+            _direction_results["ifit1_over_oas2"]  = _dc_ifit1
+
+            if _W_top_edges is not None:
+                _dc_jak1 = self._check_jak1_upstream_of_ifit1(
+                    _W_top_edges, _gene_to_idx
+                )
+                _direction_results["jak1_upstream_ifit1"] = _dc_jak1
+
+            for _name, _dc in _direction_results.items():
+                if _dc.get("skipped"):
+                    continue
+                _direction_n_run += 1
+                if _dc["passed"]:
+                    _direction_n_passed += 1
+                    checks_passed.append(
+                        f"[direction] {_dc['message']}"
+                    )
+                else:
+                    warnings.append(
+                        f"[direction WARN] {_dc['message']}"
+                    )
+                    bio_score = max(0.0, bio_score - 0.10)
+
+        _direction_ok = (
+            _direction_n_run == 0
+            or _direction_n_passed == _direction_n_run
+        )
+        if not _direction_ok:
+            _n_failed = _direction_n_run - _direction_n_passed
+            _mech_rec = (
+                f"{_n_failed}/{_direction_n_run} mechanistic direction "
+                f"checks failed. Model achieves correct aggregate metrics "
+                f"but pathway ordering may be wrong. "
+                f"Required: STAT1 > STAT3 (IFN-B not IL-6), "
+                f"IFIT1 > OAS2 (ISG hierarchy), "
+                f"W[JAK1->STAT1] > 0 (causal path positive). "
+                f"Run 5+ perturbations before trusting direction checks."
+            )
+        else:
+            _mech_rec = None
+        # ─────────────────────────────────────────────────────────
+
         # If no biological checks were applicable, pass by default
         if not checks_passed and not checks_failed:
             checks_passed.append(
@@ -190,4 +257,102 @@ class BiologicalCritic:
             biological_score=bio_score,
             uncertainty_flags=warnings,
             quarantined_outputs=quarantined,
+            recommendation=_mech_rec,
         )
+
+    # ── Mechanistic direction check methods ──────────────────────
+
+    def _check_stat1_over_stat3(self, pred_np, ctrl_np, gene_to_idx) -> dict:
+        """
+        IFN-B: STAT1 FC > STAT3 FC in PBMCs.
+        If STAT3 > STAT1: model may confuse IFN-B with IL-6.
+        Source: Stark & Darnell 2012.
+        """
+        import numpy as np
+        eps = 1e-6
+        stat1_idx = gene_to_idx.get("STAT1")
+        stat3_idx = gene_to_idx.get("STAT3")
+        if stat1_idx is None or stat3_idx is None:
+            return {"passed": True, "stat1_fc": 0.0, "stat3_fc": 0.0,
+                    "message": "STAT1 or STAT3 not in gene universe. Skipped.",
+                    "skipped": True}
+        stat1_fc = float((pred_np[:, stat1_idx].mean() + eps) /
+                         (ctrl_np[:, stat1_idx].mean() + eps))
+        stat3_fc = float((pred_np[:, stat3_idx].mean() + eps) /
+                         (ctrl_np[:, stat3_idx].mean() + eps))
+        passed = stat1_fc > stat3_fc
+        return {
+            "passed": passed, "stat1_fc": stat1_fc, "stat3_fc": stat3_fc,
+            "skipped": False,
+            "message": (
+                f"STAT1 FC {stat1_fc:.2f}x {'>' if passed else '<='} "
+                f"STAT3 FC {stat3_fc:.2f}x"
+                + ("" if passed else " — FAIL: model may confuse IFN-B with IL-6")
+            ),
+        }
+
+    def _check_ifit1_over_oas2(self, pred_np, ctrl_np, gene_to_idx) -> dict:
+        """
+        ISG induction hierarchy: IFIT1 FC > OAS2 FC in PBMC IFN-B.
+        Source: Rusinova et al. 2013.
+        """
+        import numpy as np
+        eps = 1e-6
+        ifit1_idx = gene_to_idx.get("IFIT1")
+        oas2_idx = gene_to_idx.get("OAS2")
+        if ifit1_idx is None or oas2_idx is None:
+            return {"passed": True, "ifit1_fc": 0.0, "oas2_fc": 0.0,
+                    "message": "IFIT1 or OAS2 not in gene universe. Skipped.",
+                    "skipped": True}
+        ifit1_fc = float((pred_np[:, ifit1_idx].mean() + eps) /
+                         (ctrl_np[:, ifit1_idx].mean() + eps))
+        oas2_fc = float((pred_np[:, oas2_idx].mean() + eps) /
+                        (ctrl_np[:, oas2_idx].mean() + eps))
+        passed = ifit1_fc > oas2_fc
+        return {
+            "passed": passed, "ifit1_fc": ifit1_fc, "oas2_fc": oas2_fc,
+            "skipped": False,
+            "message": (
+                f"IFIT1 FC {ifit1_fc:.2f}x {'>' if passed else '<='} "
+                f"OAS2 FC {oas2_fc:.2f}x"
+                + ("" if passed else " — FAIL: ISG induction hierarchy incorrect")
+            ),
+        }
+
+    def _check_jak1_upstream_of_ifit1(self, W_top_edges, gene_to_idx) -> dict:
+        """
+        Causal path: W[JAK1->STAT1] > 0 AND W[STAT1->IFIT1] > 0.
+        Both edges must be positive (activating causal relationship).
+        """
+        jak1_stat1_w = 0.0
+        stat1_ifit1_w = 0.0
+        for edge in (W_top_edges or []):
+            src = edge.get("src_name", "")
+            dst = edge.get("dst_name", "")
+            w = float(edge.get("weight", 0.0))
+            if src == "JAK1" and dst == "STAT1":
+                jak1_stat1_w = w
+            if src == "STAT1" and dst == "IFIT1":
+                stat1_ifit1_w = w
+        jak1_ok = jak1_stat1_w > 0
+        stat1_ok = stat1_ifit1_w > 0
+        passed = jak1_ok and stat1_ok
+        edge_desc = (
+            f"W[JAK1->STAT1]={jak1_stat1_w:.4f}, "
+            f"W[STAT1->IFIT1]={stat1_ifit1_w:.4f}"
+        )
+        if passed:
+            msg = f"{edge_desc} — both positive, causal path confirmed"
+        elif not jak1_ok and not stat1_ok:
+            msg = f"{edge_desc} — FAIL: both causal edges not yet learned"
+        elif not jak1_ok:
+            msg = f"{edge_desc} — FAIL: W[JAK1->STAT1] not positive"
+        else:
+            msg = f"{edge_desc} — FAIL: W[STAT1->IFIT1] not positive"
+        return {
+            "passed": passed,
+            "jak1_stat1_weight": jak1_stat1_w,
+            "stat1_ifit1_weight": stat1_ifit1_w,
+            "skipped": False,
+            "message": msg,
+        }
