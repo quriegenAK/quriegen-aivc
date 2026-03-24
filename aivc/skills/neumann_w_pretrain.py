@@ -57,6 +57,31 @@ def pretrain_W_from_replogle(
         logger.warning("Empty Replogle direction matrix. Skipping W pre-training.")
         return W
 
+    # ── VALIDATE NO JAK-STAT GENES IN PRETRAINING DATA ──
+    # Runtime guard: if the direction matrix somehow contains JAK-STAT
+    # genes (should not happen after housekeeping filter), remove them.
+    from aivc.data.housekeeping_genes import get_blocked_jakstat_genes
+    blocked_jakstat = get_blocked_jakstat_genes()
+    df_genes = set(replogle_direction_matrix.index.tolist())
+    jakstat_present = df_genes & blocked_jakstat
+    if jakstat_present:
+        logger.warning(
+            f"JAK-STAT genes found in W pretraining data: {jakstat_present}. "
+            f"These should have been filtered by filter_ko_genes_for_w_pretrain(). "
+            f"Removing them now."
+        )
+        safe_index = [
+            g for g in replogle_direction_matrix.index
+            if g not in blocked_jakstat
+        ]
+        replogle_direction_matrix = replogle_direction_matrix.loc[safe_index]
+        logger.info(f"After JAK-STAT removal: {len(replogle_direction_matrix)} KO genes remain.")
+
+        if len(replogle_direction_matrix) == 0:
+            logger.warning("No KO genes remain after JAK-STAT removal. Skipping W pre-training.")
+            return W
+    # ─────────────────────────────────────────────────────────────
+
     device = W.device
     edge_src = edge_index[0].to(device)
     edge_dst = edge_index[1].to(device)

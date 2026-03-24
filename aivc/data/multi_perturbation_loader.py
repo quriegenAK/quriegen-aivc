@@ -289,14 +289,37 @@ class MultiPerturbationLoader:
             ctrl_mean = X[ctrl_mask].mean(axis=0)
 
             # Compute direction matrix for each knockdown
-            ko_genes = [g for g in adata.obs[ko_col].unique() if g not in ctrl_labels]
-            logger.info(f"  Knockdown genes: {len(ko_genes)}")
+            ko_genes_all = [g for g in adata.obs[ko_col].unique() if g not in ctrl_labels]
+            logger.info(f"  All knockdown genes in Replogle: {len(ko_genes_all)}")
 
-            # Limit to JAK-STAT-related genes for speed if dataset is huge
+            # ── HOUSEKEEPING FILTER ──
+            # Restrict to housekeeping genes only. K562 (BCR-ABL1+) has
+            # aberrant JAK/STAT activation — using JAK-STAT KO effects
+            # from K562 would teach the model K562-specific regulation.
+            from aivc.data.housekeeping_genes import filter_ko_genes_for_w_pretrain
+            filter_result = filter_ko_genes_for_w_pretrain(
+                ko_genes=ko_genes_all,
+                gene_universe=self.gene_universe,
+                source="builtin",
+                verbose=True,
+            )
+            ko_genes = filter_result["safe_ko_genes"]
+            logger.info(
+                f"  After housekeeping filter: {len(ko_genes)} safe KO genes "
+                f"(from {len(ko_genes_all)} total)"
+            )
+
+            if len(ko_genes) == 0:
+                logger.warning(
+                    "No safe housekeeping knockdown genes found in Replogle. "
+                    "W pretraining will be skipped."
+                )
+                return pd.DataFrame()
+
             gene_names = adata.var_names.tolist()
             directions = {}
 
-            for ko_gene in ko_genes[:500]:  # cap at 500 for memory
+            for ko_gene in ko_genes:  # no [:500] cap — already filtered
                 ko_mask = adata.obs[ko_col] == ko_gene
                 if ko_mask.sum() < 5:
                     continue
