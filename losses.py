@@ -213,6 +213,88 @@ def combined_loss_v11(
     return total, breakdown
 
 
+def combined_loss_multimodal(
+    predicted: torch.Tensor,
+    actual_stim: torch.Tensor,
+    actual_ctrl: torch.Tensor,
+    neumann_module=None,
+    emb_pairs: list = None,
+    contrastive_loss_fn=None,
+    cross_modal_fn=None,
+    alpha: float = 1.0,
+    beta: float = 0.1,
+    gamma: float = 0.1,
+    lambda_contrast: float = 0.05,
+    lambda_cross: float = 0.05,
+) -> tuple:
+    """
+    Extended combined loss for multi-modal training.
+
+    Adds contrastive and cross-modal terms to the existing v1.1 loss.
+    CRITICAL: contrastive and cross-modal terms are ONLY added when
+    emb_pairs is not None AND the corresponding loss fn is not None.
+
+    For RNA-only training (Kang 2018), emb_pairs=None and this function
+    is identical to combined_loss_v11().
+
+    Args:
+        predicted, actual_stim, actual_ctrl, neumann_module,
+        alpha, beta, gamma: Same as combined_loss_v11().
+        emb_pairs:          list of (emb_a, emb_b) tuples --
+                            one per physically paired modality pair.
+                            None -> contrastive loss disabled.
+        contrastive_loss_fn: PairedModalityContrastiveLoss instance.
+                             None -> contrastive loss disabled.
+        cross_modal_fn:     CrossModalPredictionLoss instance.
+                            None -> cross-modal loss disabled.
+        lambda_contrast:    float -- contrastive loss weight. Default 0.05.
+        lambda_cross:       float -- cross-modal loss weight. Default 0.05.
+
+    Returns:
+        (total_loss, breakdown_dict)
+    """
+    base_loss, base_bd = combined_loss_v11(
+        predicted=predicted,
+        actual_stim=actual_stim,
+        actual_ctrl=actual_ctrl,
+        neumann_module=neumann_module,
+        alpha=alpha,
+        beta=beta,
+        gamma=gamma,
+    )
+
+    contrastive_term = torch.tensor(0.0, device=predicted.device)
+    cross_modal_term = torch.tensor(0.0, device=predicted.device)
+
+    if emb_pairs is not None and contrastive_loss_fn is not None:
+        for emb_a, emb_b in emb_pairs:
+            contrastive_term = contrastive_term + contrastive_loss_fn(emb_a, emb_b)
+        if len(emb_pairs) > 0:
+            contrastive_term = contrastive_term / len(emb_pairs)
+
+    if emb_pairs is not None and cross_modal_fn is not None:
+        for emb_a, emb_b in emb_pairs:
+            cm_result = cross_modal_fn(emb_a, emb_b)
+            cross_modal_term = cross_modal_term + cm_result["loss"]
+        if len(emb_pairs) > 0:
+            cross_modal_term = cross_modal_term / len(emb_pairs)
+
+    total = (
+        base_loss
+        + lambda_contrast * contrastive_term
+        + lambda_cross * cross_modal_term
+    )
+
+    breakdown = {
+        **base_bd,
+        "contrastive": contrastive_term.item(),
+        "cross_modal": cross_modal_term.item(),
+        "total": total.item(),
+    }
+
+    return total, breakdown
+
+
 # =========================================================================
 # Unit tests
 # =========================================================================

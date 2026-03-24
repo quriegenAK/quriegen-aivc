@@ -1,0 +1,38 @@
+{
+  "experiment_id": "quriegen_pbmc_batch1_pending",
+  "platform": "QuRIE-seq",
+  "created_by": "PENDING -- Thiago Patente",
+  "creation_date": "2026-03-24",
+  "pairs": [
+    {
+      "modality_a": "rna",
+      "modality_b": "protein",
+      "pairing_type": "unknown",
+      "paired_fraction": 0.0,
+      "barcode_col": null,
+      "protocol_ref": null,
+      "validated_by": null,
+      "notes": "PENDING WET LAB CONFIRMATION. QuRIE-seq protocol may physically co-measure RNA and surface protein via antibody-oligo conjugates. Thiago Patente must confirm: (1) Are RNA and protein captured in same droplet? (2) Is the barcode column shared across modalities? (3) Protocol document reference?"
+    },
+    {
+      "modality_a": "rna",
+      "modality_b": "phospho",
+      "pairing_type": "unknown",
+      "paired_fraction": 0.0,
+      "barcode_col": null,
+      "protocol_ref": null,
+      "validated_by": null,
+      "notes": "PENDING WET LAB CONFIRMATION. Phospho-proteomics in QuRIE-seq: is this from same cell lysis as RNA? Most phospho protocols require separate sample preparation."
+    },
+    {
+      "modality_a": "rna",
+      "modality_b": "atac",
+      "pairing_type": "unknown",
+      "paired_fraction": 0.0,
+      "barcode_col": null,
+      "protocol_ref": null,
+      "validated_by": null,
+      "notes": "PENDING. ATAC modality not yet measured in QuRIE-seq. Will require 10x Multiome or equivalent. When available: confirm whether barcode links RNA and ATAC from same nucleus."
+    }
+  ]
+}

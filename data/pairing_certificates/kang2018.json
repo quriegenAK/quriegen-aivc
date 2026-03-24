@@ -1,0 +1,18 @@
+{
+  "experiment_id": "kang_2018_pbmc_ifnb",
+  "platform": "10x Chromium v2",
+  "created_by": "Kang et al. 2018 (GSE96583)",
+  "creation_date": "2026-03-24",
+  "pairs": [
+    {
+      "modality_a": "rna",
+      "modality_b": "protein",
+      "pairing_type": "computational",
+      "paired_fraction": 0.0,
+      "barcode_col": null,
+      "protocol_ref": "GSE96583 -- scRNA-seq only. No protein measured.",
+      "validated_by": "Ash Khan",
+      "notes": "Kang 2018 is a single-modality scRNA-seq dataset. No protein or phospho modalities. ATAC not measured."
+    }
+  ]
+}
