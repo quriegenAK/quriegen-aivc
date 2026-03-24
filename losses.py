@@ -213,6 +213,44 @@ def combined_loss_v11(
     return total, breakdown
 
 
+def causal_ordering_loss(
+    attention_weights: torch.Tensor,
+    temporal_order: list = None,
+) -> torch.Tensor:
+    """
+    Penalises attention patterns that violate biological causal ordering.
+
+    Soft constraint: discourages upper-triangular attention weights
+    (future modalities attending to past modalities).
+    The hard mask in fusion.py provides the primary enforcement.
+
+    Temporal order:
+      Index 0 = ATAC, 1 = Phospho, 2 = RNA, 3 = Protein
+
+    Args:
+        attention_weights: (batch, n_heads, n_mod, n_mod)
+        temporal_order:    list of modality indices. Default [0,1,2,3].
+
+    Returns:
+        Scalar — mean upper-triangular attention weight.
+        Minimising this = enforcing causal order.
+    """
+    if temporal_order is None:
+        temporal_order = [0, 1, 2, 3]
+
+    n_mod = len(temporal_order)
+    device = attention_weights.device
+
+    # Upper triangular mask (strict: diagonal excluded)
+    upper_mask = torch.triu(
+        torch.ones(n_mod, n_mod, device=device, dtype=torch.bool),
+        diagonal=1,
+    )
+
+    violation_weights = attention_weights[..., upper_mask]
+    return violation_weights.abs().mean()
+
+
 def combined_loss_multimodal(
     predicted: torch.Tensor,
     actual_stim: torch.Tensor,
@@ -221,11 +259,13 @@ def combined_loss_multimodal(
     emb_pairs: list = None,
     contrastive_loss_fn=None,
     cross_modal_fn=None,
+    attn_weights: torch.Tensor = None,
     alpha: float = 1.0,
     beta: float = 0.1,
     gamma: float = 0.1,
     lambda_contrast: float = 0.05,
     lambda_cross: float = 0.05,
+    lambda_causal: float = 0.1,
 ) -> tuple:
     """
     Extended combined loss for multi-modal training.
@@ -279,16 +319,22 @@ def combined_loss_multimodal(
         if len(emb_pairs) > 0:
             cross_modal_term = cross_modal_term / len(emb_pairs)
 
+    causal_term = torch.tensor(0.0, device=predicted.device)
+    if attn_weights is not None:
+        causal_term = causal_ordering_loss(attn_weights)
+
     total = (
         base_loss
         + lambda_contrast * contrastive_term
         + lambda_cross * cross_modal_term
+        + lambda_causal * causal_term
     )
 
     breakdown = {
         **base_bd,
         "contrastive": contrastive_term.item(),
         "cross_modal": cross_modal_term.item(),
+        "causal": causal_term.item(),
         "total": total.item(),
     }
 

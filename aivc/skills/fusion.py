@@ -94,6 +94,9 @@ class TemporalCrossModalFusion(nn.Module):
         # Perturbation embedding
         self.pert_embedding = nn.Embedding(10, pert_dim)  # up to 10 perturbations
 
+        # Causal masking: set False to ablate for experiments
+        self.use_causal_mask = True
+
     def forward(
         self,
         rna_emb: torch.Tensor,
@@ -158,8 +161,26 @@ class TemporalCrossModalFusion(nn.Module):
 
         # Scaled dot-product attention
         scale = math.sqrt(self.head_dim)
-        attn_weights = torch.matmul(q, k.transpose(-2, -1)) / scale  # (batch, n_heads, 4, 4)
-        attn_weights = F.softmax(attn_weights, dim=-1)
+        attn_scores = torch.matmul(q, k.transpose(-2, -1)) / scale  # (batch, n_heads, 4, 4)
+
+        # ── Causal mask ─────────────────────────────────────────
+        # Temporal order: ATAC(0) → Phospho(1) → RNA(2) → Protein(3)
+        # Lower-triangular: modality at time t attends to t' <= t only.
+        #   ATAC    attends to: [ATAC]
+        #   Phospho attends to: [ATAC, Phospho]
+        #   RNA     attends to: [ATAC, Phospho, RNA]
+        #   Protein attends to: [ATAC, Phospho, RNA, Protein]
+        if self.use_causal_mask:
+            causal_mask = torch.tril(
+                torch.ones(n_mod, n_mod, device=device, dtype=torch.bool)
+            )
+            causal_mask = causal_mask.unsqueeze(0).unsqueeze(0)  # (1, 1, 4, 4)
+            attn_scores = attn_scores.masked_fill(~causal_mask, float('-inf'))
+        # ─────────────────────────────────────────────────────────
+
+        attn_weights = F.softmax(attn_scores, dim=-1)
+        # Handle NaN from all-inf rows (ATAC row has only self-attention)
+        attn_weights = torch.nan_to_num(attn_weights, nan=0.0)
         attn_weights = self.attn_dropout(attn_weights)
 
         attn_output = torch.matmul(attn_weights, v)  # (batch, n_heads, 4, head_dim)
@@ -216,6 +237,15 @@ class TemporalCrossModalFusion(nn.Module):
         q, k = qkv[0], qkv[1]
 
         scale = math.sqrt(self.head_dim)
-        attn_weights = F.softmax(torch.matmul(q, k.transpose(-2, -1)) / scale, dim=-1)
+        attn_scores = torch.matmul(q, k.transpose(-2, -1)) / scale
+
+        if self.use_causal_mask:
+            causal_mask = torch.tril(
+                torch.ones(4, 4, device=device, dtype=torch.bool)
+            ).unsqueeze(0).unsqueeze(0)
+            attn_scores = attn_scores.masked_fill(~causal_mask, float('-inf'))
+
+        attn_weights = F.softmax(attn_scores, dim=-1)
+        attn_weights = torch.nan_to_num(attn_weights, nan=0.0)
 
         return attn_weights  # (batch, n_heads, 4, 4)
