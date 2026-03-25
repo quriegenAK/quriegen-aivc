@@ -18,6 +18,12 @@ Key design decisions:
   - TSS score < 4.0 → discard (failed ATAC library)
   - Prediction score < 0.5 → discard (doublets + ambient RNA)
   - WNN is for visualisation only — use MOFA+/MultiVI for encoder fusion
+
+KNOWN STUB: Step 6 (compute_chromvar_scores in tf_motif_scanner.py) raises
+NotImplementedError. The ATAC pipeline will crash at Step 6 when run on real
+10x Multiome data. Steps 1-5 are functional. To run the full pipeline:
+implement tf_motif_scanner.py with a chromVAR-equivalent using JASPAR 2024
+PWMs. The pipeline runs end-to-end on mock data (tests use mocks).
   - ATACSeqEncoder input = chromvar_scores, NOT raw peak counts
 """
 import logging

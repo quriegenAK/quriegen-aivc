@@ -1,18 +1,33 @@
 """
-Cross-modal fusion for AIVC v3.0 — extends to 4 modalities.
+Cross-modal fusion for AIVC — 4 modalities, enforced causal ordering.
 
-Current (v2.0): RNA (128) + Protein (128) + Phospho (64) = 320-dim
-Extended (v3.0): RNA (128) + Protein (128) + Phospho (64) + ATAC (64) = 384-dim
+Architecture: RNA (128) + Protein (128) + Phospho (64) + ATAC (64) = 384-dim output
 
 Temporal encoding:
-  ATAC    = t=0 (chromatin state precedes all other signals)
+  ATAC    = t=0 (chromatin state, baseline)
   Phospho = t=1 (kinase signalling, seconds)
   RNA     = t=2 (transcription, minutes)
   Protein = t=3 (translation, hours)
 
-The Q*KV attention must learn that ATAC contributes CAUSALLY to RNA
-and Protein, not just correlationally. The SCM enforces this ordering
-via causal consistency loss.
+Causal ordering enforcement (Phase 3):
+  A lower-triangular attention mask is applied before softmax.
+  This forces: modality at time t attends ONLY to t' <= t.
+  Protein cannot attend to RNA (future cannot influence past).
+  Upper-triangle attention weight = 0.0 (confirmed by test).
+  use_causal_mask=True is the default. Set False only for ablation.
+
+This is a TEMPORAL ORDERING CONSTRAINT, not a Pearl do-calculus structural
+causal model. do(X) interventions are not implemented.
+
+Loss: Combined loss includes causal_ordering_loss() term (lambda_causal=0.1)
+which penalises residual upper-triangular attention weight.
+See losses.py: combined_loss_multimodal(attn_weights=..., lambda_causal=...).
+
+Status: Coded and tested. Not yet trained on real multi-modal data.
+Protein/Phospho encoders are not yet implemented (no class files).
+ATAC encoder coded but awaiting 10x Multiome data. When only RNA is
+available: zero-filled modality embeddings are passed; the causal mask
+applies but has no effect on RNA-only training.
 """
 import torch
 import torch.nn as nn

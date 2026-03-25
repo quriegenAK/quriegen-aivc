@@ -2,16 +2,34 @@
 Multi-Perturbation Data Loader for AIVC v1.1.
 
 Unified loader for multi-perturbation training corpus:
-  - Kang 2018 (IFN-B, PBMCs) — primary benchmark
-  - Frangieh 2021 (IFN-G + CRISPR, melanoma) — shared JAK-STAT
-  - ImmPort SDY702 (cytokines, PBMCs) — W training only
-  - Replogle 2022 (CRISPRi, K562) — GRN causal directions only
+
+RESPONSE TRAINING (perturbation response prediction):
+  - Kang 2018 (IFN-B, PBMCs) — primary benchmark [IDs: 0,1]
+  - PBMC IFN-G (OneK1K / Dixit 2016) — Stage 2 dataset [IDs: 2,3]
+    NOTE: Falls back to synthetic IFN-G if real dataset absent.
+    Synthetic = noisy copy of Kang IFN-B. Stage 2 blocked if used.
+
+W MATRIX PRE-TRAINING ONLY (USE_FOR_W_ONLY=True):
+  - Frangieh 2021 (IFN-G + CRISPR, melanoma) [IDs: 2..752]
+    BLOCKED from response training. Reason: BCR-ABL1+ K562 background,
+    constitutively active JAK2/STAT5. Melanoma biology is wrong for
+    PBMC perturbation response prediction.
+  - ImmPort SDY702 (cytokines, PBMCs, bulk RNA) [IDs: 753+]
+  - Replogle 2022 (CRISPRi, K562) — housekeeping genes only [no IDs]
+    BLOCKED: JAK-STAT, BCR-ABL1, oncogenes, immune receptor KOs.
+    Reason: K562 has constitutively active JAK2. Pathway-specific
+    edges must be learned from PBMC data only.
 
 CRITICAL RULES:
-  1. Kang 2018 test donors are LOCKED and SACRED.
-  2. Perturbation IDs never overlap: Kang [0,1], Frangieh [2..752], ImmPort [753+]
-  3. Cell type embeddings shared for PBMCs only (Kang + ImmPort), not Frangieh.
-  4. Normalisation identical: log1p, 10k counts, Kang 2018 HVG universe.
+  1. Kang 2018 test donors are LOCKED AND SACRED.
+  2. Perturbation IDs are hard-coded (PERT_ID_RANGES). Never auto-assigned.
+  3. Cell type embeddings shared for PBMCs only (Kang + ImmPort + PBMC IFN-G).
+     NOT shared with Frangieh (melanoma cells).
+  4. Normalisation: log1p, 10k total counts, Kang 2018 HVG universe.
+  5. Frangieh USE_FOR_W_ONLY=True is enforced in load_frangieh() line 163.
+
+RESPONSE_TRAINING_DATASETS = {"kang", "pbmc_ifng"}
+W_PRETRAIN_ONLY_DATASETS = {"frangieh", "immport", "replogle"}
 """
 import logging
 from typing import Optional

@@ -1,9 +1,51 @@
 """
 aivc/critics/biological.py — Biological plausibility validation.
 
-Validates biological plausibility.
-The hardest critic. Most dangerous failure mode is a model that is
-statistically correct but biologically impossible.
+The hardest critic. Most dangerous failure mode: a model that is
+statistically correct (r=0.873) but biologically wrong (STAT3 > STAT1).
+
+Checks performed:
+  1. JAK-STAT recovery score (primary — >=8/15 genes within 3x FC)
+  2. Quarantine low-plausibility predictions (plausibility_score < 0.3)
+  3. IFIT1 fold change direction (must be induced, not suppressed)
+  4. CD14+ monocyte vs B-cell r (monocytes are primary IFN-B responders)
+  5. Mean plausibility score (> 0.4)
+  6. Quarantine fraction (< 0.3)
+  7. ATAC JAK-STAT coverage (v3.0, >=10/15 genes with peak-gene links)
+  8. IRF/STAT motif enrichment direction (v3.0)
+  9. ATAC causal attention ordering (v3.0)
+
+Mechanistic direction checks (added Phase 3):
+  These require pred_np, ctrl_np, gene_to_idx in result.outputs.
+  If absent, checks are skipped (not failed).
+  Severity: WARNING only — not blocking until 5+ perturbations are trained.
+  Rationale: on single-perturbation (IFN-B only) training, directional
+  ratios may be marginal due to correlation rather than causation.
+
+  _check_stat1_over_stat3():
+    IFN-B in PBMCs activates STAT1 homodimer (type I IFN response).
+    STAT3 is activated by IL-6 family cytokines, NOT primarily by IFN-B.
+    Rule: predicted STAT1 FC > predicted STAT3 FC.
+    Failure: model may be confusing IFN-B with IL-6 response.
+
+  _check_ifit1_over_oas2():
+    IFIT1 is among the top 3 most induced ISGs in PBMC IFN-B stimulation.
+    OAS2 is induced but at lower fold change than IFIT1.
+    Rule: predicted IFIT1 FC > predicted OAS2 FC.
+    Failure: ISG induction hierarchy is wrong.
+    Source: Rusinova et al. 2013, IFN response atlas.
+
+  _check_jak1_upstream_of_ifit1():
+    Causal path: JAK1 -> STAT1 -> IFIT1 (IFN-B signalling in PBMCs).
+    Rule: W[JAK1->STAT1] > 0 AND W[STAT1->IFIT1] > 0.
+    Failure: Neumann W matrix has not yet learned the causal cascade.
+    Expected after proper training: both edges in top-20 W edges.
+
+Inputs (all optional in result.outputs):
+  "pred_np":     np.ndarray (n_cells, n_genes) predicted stim expression
+  "ctrl_np":     np.ndarray (n_cells, n_genes) ctrl expression
+  "gene_to_idx": dict gene_name -> column index
+  "W_top_edges": list from neumann_module.get_top_edges(n=100, gene_names)
 """
 
 from aivc.interfaces import SkillResult, ValidationReport

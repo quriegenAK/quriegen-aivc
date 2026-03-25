@@ -25,8 +25,31 @@ For IFIT1:
   This is what produces 107x, not 2x.
 
 Training schedule (Tahoe TX1-CD two-stage):
-  Stage 1 (epochs 1-10):  Freeze W, train ResponseDecoder only
-  Stage 2 (epochs 11+):   Unfreeze W, train jointly with L1 penalty
+  Stage 1 (epochs 1-10):  Freeze W. Train ResponseDecoder only.
+                          enforce_sparsity() not called (W frozen).
+  Stage 2 (epochs 11+):   Unfreeze W. Train jointly with L1 penalty.
+                          enforce_sparsity(threshold=1e-4) called every
+                          10 epochs (proximal gradient operator).
+
+Sparsity enforcement (Phase 1 Step 1):
+  WHY: Adam + L1 never produces exact zeros. Without enforce_sparsity(),
+       W becomes fully dense by epoch ~100 (confirmed: density=1.000 at
+       epoch 200 without enforcement). This multiplies sparse matmul cost
+       by ~650x.
+  FIX: enforce_sparsity(threshold=1e-4) zeros all |W| < 1e-4 every 10
+       epochs using the proximal gradient operator for L1.
+  RESULT: W density ~0.63 at epoch 100 with lambda_l1=0.01 (target range).
+
+Housekeeping gene restriction (Phase 2 Step 5):
+  W is pre-trained from Replogle 2022 CRISPRi direction matrix.
+  Only the 267-gene housekeeping safe set is used (ribosomal proteins,
+  splicing factors, EIF translation, POLR2, proteasome, chaperones).
+  72 genes are blocked: JAK-STAT pathway, BCR-ABL1 targets, oncogenes,
+  immune receptors. Reason: K562 has constitutively active JAK2/STAT5
+  (BCR-ABL1). Using K562 JAK1-KO to set W[JAK1,STAT1] direction would
+  reflect leukaemia biology, not PBMC IFN-B regulation.
+  W[JAK1,STAT1] is learned entirely from Kang 2018 PBMC training data.
+  See: aivc/data/housekeeping_genes.py, aivc/skills/neumann_w_pretrain.py
 """
 import torch
 import torch.nn as nn

@@ -10,6 +10,14 @@ tiledbsoma is an OPTIONAL dependency. If not installed:
   - Ingestion scripts print clear installation instructions
   - Training falls back to h5ad automatically
 
+KNOWN BUG (open): ingest_from_anndata() enriches local obs/var DataFrames
+with is_jakstat, is_hvg, USE_FOR_W_ONLY, etc., but passes the ORIGINAL adata
+(not the enriched copy) to sio.from_anndata(). All metadata enrichment is
+silently dropped on ingestion. All SOMA queries on is_jakstat / USE_FOR_W_ONLY
+return wrong results until this is fixed.
+FIX (not yet committed): add adata.obs = obs; adata.var = var immediately
+before the sio.from_anndata() call.
+
 Scale projections (reference, not tested):
   10k cells:  SOMA 0.5s vs h5ad 1.0s (2x)
   30k cells:  SOMA 1.5s vs h5ad 3.0s (2x)

@@ -1,17 +1,25 @@
 """
 Perturbation Curriculum — staged multi-perturbation training.
 
-Adds perturbations incrementally, blocking progression if Pearson r drops.
+Adds perturbations incrementally, blocking progression if Pearson r
+drops below baseline (0.873) or if synthetic data is used.
 
 Stage 1: Kang 2018 only (IFN-B, baseline r=0.873)
-Stage 2: + IFN-G from Frangieh (shared JAK-STAT, 2 cytokines)
-Stage 3: + ImmPort cytokines (IL-6, TNF-a, W training only)
-Stage 4: + Frangieh CRISPR KOs (JAK1-KO, STAT1-KO — causal ground truth)
+Stage 2: + PBMC-native IFN-G (same cell type, different cytokine)
+         NOTE: Frangieh 2021 was removed from Stage 2 response training.
+         Reason: melanoma cells (BCR-ABL1+, constitutively active JAK2)
+         inject incorrect PBMC biology. Frangieh is used for W-matrix
+         GRN pre-training only (USE_FOR_W_ONLY=True).
+         Stage 2 BLOCKED if synthetic IFN-G fallback is used — requires
+         real PBMC IFN-G dataset (OneK1K or Dixit 2016 GSE90063).
+Stage 3: + ImmPort cytokines (W-pretraining only, USE_FOR_W_ONLY=True)
+Stage 4: + housekeeping-filtered Replogle CRISPRi KOs (W-pretraining only)
 
 RULES:
-  - Stages advance in order, never skip.
+  - Stages advance in order. Never skip.
   - Pearson r on Kang 2018 test set must stay >= 0.873 to advance.
   - JAK-STAT recovery must not decrease between stages.
+  - Stage 2 blocked if synthetic_ifng_used=True (see advance_stage()).
 """
 import logging
 from dataclasses import dataclass, field

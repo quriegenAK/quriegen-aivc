@@ -22,6 +22,22 @@ Outputs:
   models/v1.1/sweep_results.pt       — full sweep results
   models/v1.1/model_v11_best.pt      — best model from sweep
   results/training_log_v11.txt       — training log
+
+STATUS (March 2026):
+  - Code is complete including Neumann propagation, sparsity enforcement,
+    LFC beta sweep, and JAK-STAT validation.
+  - NOT YET RUN on GPU. Awaiting H100 training run.
+  - Expected v1.1 improvements after GPU run:
+      JAK-STAT recovery: 7/15 -> 10+/15 (cascade propagation)
+      IFIT1 predicted FC: 2x -> 15-40x (Neumann K=3)
+      CD14 monocyte r: 0.745 -> >0.80
+      Pearson r: must stay >=0.873 (regression guard enforced)
+  - Stage 2 curriculum requires real PBMC IFN-G dataset.
+    Synthetic fallback (from _make_synthetic_ifng_fallback) is blocked
+    from advancing the curriculum.
+  - lambda_l1=0.01 is confirmed as the effective default (achieves target
+    sparsity). Values 0.0001 and 0.001 achieve insufficient sparsity but
+    remain in the sweep for documentation purposes.
 """
 import random
 import os
