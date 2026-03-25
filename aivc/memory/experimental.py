@@ -22,6 +22,10 @@ class ExperimentalMemory:
         self.storage_path = storage_path or self.STORAGE_PATH
         self._runs: list[dict] = []
         self._load()
+        # ── MLflow backend (additive — no-op if mlflow not installed) ──
+        from aivc.memory.mlflow_backend import MLflowBackend
+        self._mlflow = MLflowBackend()
+        # ─────────────────────────────────────────────────────────────
 
     def _load(self) -> None:
         """Load experiment history from disk."""
@@ -73,6 +77,12 @@ class ExperimentalMemory:
 
         self._runs.append(run_record)
         self._save()
+
+        # Mirror to MLflow if available (non-blocking — never raises)
+        try:
+            self._mlflow.log_final_metrics(metrics)
+        except Exception:
+            pass  # MLflow failure never breaks existing JSON path
 
     def get_best_run(self, metric: str = "pearson_r_mean") -> Optional[dict]:
         """
@@ -127,6 +137,22 @@ class ExperimentalMemory:
                 "success": run.get("success"),
             })
         return history
+
+    def get_mlflow_summary(self) -> list:
+        """
+        Query MLflow for all v1.1 sweep runs and return a summary table.
+        Returns JSON-serialisable list sorted by test_r descending.
+        Falls back to JSON history if MLflow unavailable.
+        """
+        mlflow_summary = self._mlflow.get_sweep_summary()
+        if mlflow_summary:
+            return mlflow_summary
+        # Fallback: return from JSON history
+        return sorted(
+            self.get_hyperparameter_history(),
+            key=lambda r: r.get("results", {}).get("pearson_r_mean", 0),
+            reverse=True,
+        )
 
     def get_all_runs(self) -> list[dict]:
         """Return all stored runs."""

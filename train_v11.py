@@ -62,6 +62,7 @@ if torch.cuda.is_available():
 from perturbation_model import PerturbationPredictor, CellTypeEmbedding
 from losses import combined_loss_v11
 from aivc.skills.neumann_propagation import NeumannPropagation
+from aivc.memory.mlflow_backend import MLflowBackend
 
 # =========================================================================
 # 0. Device
@@ -280,6 +281,25 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
     print(f"TRAINING: {tag}")
     print(f"{'='*70}")
 
+    # ── Start MLflow run for this configuration ───────────────────
+    _run_id = mlflow_backend.start_run(
+        run_name=tag,
+        params={
+            "lfc_beta": lfc_beta,
+            "neumann_K": neumann_K,
+            "lambda_l1": lambda_l1,
+            "n_epochs": n_epochs,
+            "n_genes": n_genes,
+            "n_edges": edge_index.shape[1],
+            "seed": SEED,
+            "stage1_epochs": 10,
+            "stage2_start": 11,
+            "sparsity_threshold": 1e-4,
+            "dataset": "kang2018_pbmc",
+        },
+    )
+    # ─────────────────────────────────────────────────────────────
+
     random.seed(SEED)
     np.random.seed(SEED)
     torch.manual_seed(SEED)
@@ -416,6 +436,16 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
                 "n_pruned":      n_pruned,
                 "val_r":         val_r,
             })
+            # ── Log to MLflow (per-epoch timeline) ──────────────────
+            mlflow_backend.log_epoch_metrics(
+                epoch=epoch,
+                train_losses=avg,
+                val_r=val_r,
+                w_density=w_density,
+                w_density_large=w_density_large,
+                n_pruned=n_pruned,
+            )
+            # ─────────────────────────────────────────────────────────
             print(
                 f"  E{epoch:3d} | "
                 f"MSE={avg['mse']:.4f} "
@@ -482,7 +512,7 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
     print(f"    CD14 mono r: {ct_r.get('CD14+ Monocytes', 0):.4f}")
     print(f"    Time: {elapsed:.0f}s")
 
-    return {
+    result = {
         "lfc_beta": lfc_beta,
         "neumann_K": neumann_K,
         "lambda_l1": lambda_l1,
@@ -504,12 +534,37 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
         "top_w_edges": model.neumann.get_top_edges(n=20, gene_names=gene_names),
     }
 
+    # ── Log final metrics + artifacts to MLflow ────────────────
+    mlflow_backend.log_final_metrics(result)
+    mlflow_backend.log_sparsity_history(result.get("sparsity_history", []))
+    mlflow_backend.log_top_edges(
+        top_edges=result.get("top_w_edges", []),
+        n_jakstat_in_top20=sum(
+            1 for e in result.get("top_w_edges", [])
+            if (e.get("src_name"), e.get("dst_name")) in {
+                ("JAK1", "STAT1"), ("JAK2", "STAT1"),
+                ("STAT1", "IFIT1"), ("STAT1", "MX1"),
+                ("STAT2", "IFIT1"), ("IRF9", "IFIT1"),
+            }
+        ),
+    )
+    mlflow_backend.log_model_checkpoint(save_path)
+    mlflow_backend.end_run(
+        status="FINISHED" if result["test_r"] >= 0.863 else "FAILED"
+    )
+    # ─────────────────────────────────────────────────────────────
+
+    return result
+
 
 # =========================================================================
 # 5. Sweep
 # =========================================================================
 os.makedirs("models/v1.1", exist_ok=True)
 os.makedirs("results", exist_ok=True)
+
+# Initialise MLflow backend for sweep logging
+mlflow_backend = MLflowBackend()
 
 SWEEP = {
     "lfc_betas": [0.05, 0.10, 0.20, 0.50],
@@ -634,6 +689,10 @@ for r in sweep_results:
 with open("results/training_log_v11.txt", "w") as f:
     f.write("\n".join(log_lines))
 print(f"\n  Saved: results/training_log_v11.txt")
+
+# ── Print MLflow sweep summary (works locally too) ────────────
+mlflow_backend.print_sweep_table()
+# ─────────────────────────────────────────────────────────────
 
 print(f"\n{'='*70}")
 print("v1.1 TRAINING COMPLETE")
