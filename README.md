@@ -11,7 +11,7 @@ Multi-omics AI platform for perturbation response prediction in primary immune c
 | Phospho encoder | Architecture defined | No implementation class yet |
 | ATAC encoder | Coded, untrained | Awaiting 10x Multiome data |
 | Temporal fusion (384-dim) | Coded, causal mask enforced | Not yet trained multi-modal |
-| Neumann cascade (K=3) | Coded, sparsity enforced | Awaiting H100 training run |
+| Neumann cascade (K=3) | Coded, sparsity enforced | W scale fixed (v1.2); sweep pending re-run |
 | Contrastive loss | Coded, gated | Activates when pairing confirmed |
 | 3-critic validation gate | Live | Includes mechanistic direction checks |
 | TileDB-SOMA store | Coded | USE_SOMA_STORE=False default |
@@ -19,12 +19,31 @@ Multi-omics AI platform for perturbation response prediction in primary immune c
 
 ## Benchmark
 
+| Version | Pearson r | JAK-STAT 3x | IFIT1 FC | CD14 r | Config |
+|---------|-----------|-------------|----------|--------|--------|
+| v1.0    | 0.873     | 7/15        | 2x       | 0.745  | —      |
+| v1.1    | pending   | pending     | pending  | pending | sweep not yet completed with fixed W scale |
+
 - Pearson r = 0.873 on held-out donors (Kang 2018, GSE96583, IFN-beta stimulation)
 - Benchmark integrity confirmed: IFIT1 ambient RNA in ctrl cells = 3.0% (CLEAN)
-- JAK-STAT recovery: 7/15 genes within 3x fold change (target: >=8/15 in v1.1)
-- CD14+ monocyte r = 0.745 (target: >=0.80 in v1.1)
+- JAK-STAT recovery: 7/15 genes within 3x fold change (target: >=10/15 in v1.2)
+- CD14+ monocyte r = 0.745 (target: >=0.80 in v1.2)
+- v1.2 W scale fix: W_init range changed from [0, 0.01] to [0, 0.1] to make cascade numerically active
 
 Compares against: CPA (r=0.856), scGEN (r=0.820) on identical test split.
+
+## Zero-shot generalisation
+
+| Mode            | Dataset           | Checkpoint | r (aggregate) | r (delta vs ctrl) | Verdict    |
+|-----------------|-------------------|-----------|---------------|-------------------|------------|
+| held-out donors | Kang 2018 test    | v1.0      | 0.9033        | N/A               | CONSISTENT |
+| zero-shot       | Norman 2019 K562  | v1.0      | 0.9908        | 0.0000            | MEMORISED  |
+
+**Interpretation:** The aggregate r=0.99 on Norman 2019 is misleading. Per-perturbation analysis across 17 CRISPRi perturbations shows the model's predicted delta is zero — it returns the control expression profile unchanged. The model adds no predictive value over the naive baseline of assuming ctrl = stim. This is the expected result for v1.0 (single-perturbation, single-cell-type training). Cross-perturbation generalisation requires multi-perturbation training (Stage 2 curriculum).
+
+Held-out donor validation (r=0.903) confirms strong within-perturbation generalisation: the model predicts IFN-B response in unseen donors accurately.
+
+See `results/series_a_zero_shot_framing.txt` for Series A narrative and next experiment plan.
 
 ## Model architecture
 
@@ -113,12 +132,17 @@ ATAC (chromVAR TF) --> MLP                  -->  64-dim  [coded, no data]
 │   ├── test_soma_store.py                # 15 tests
 │   ├── test_causal_mask.py               # 10 tests (fusion causal enforcement)
 │   ├── test_synthetic_gate.py            # 8 tests (Stage 2 synthetic block)
-│   └── test_mechanistic_checks.py        # 15 tests (direction checks)
+│   ├── test_mechanistic_checks.py        # 15 tests (direction checks)
+│   ├── test_h100_readiness.py            # 19 tests (GPU readiness)
+│   ├── test_zero_shot_eval.py            # 8 tests (zero-shot evaluation)
+│   └── test_pbmc_ifng_validator.py       # 8 tests (IFN-γ dataset validation)
 │
 ├── scripts/
 │   ├── run_soupx_equivalent.py           # Ambient RNA decontamination CLI
 │   ├── ingest_to_soma.py                 # SOMA store ingestion CLI
-│   └── generate_pairing_certificates.py  # Certificate JSON generation
+│   ├── generate_pairing_certificates.py  # Certificate JSON generation
+│   ├── evaluate_zero_shot.py             # Zero-shot generalisation evaluation
+│   └── download_pbmc_ifng.py             # PBMC IFN-γ dataset downloader + validator
 │
 └── data/pairing_certificates/
     ├── kang2018.json                     # RNA only, COMPUTATIONAL
@@ -144,27 +168,38 @@ python scripts/run_soupx_equivalent.py \
 # Generate pairing certificates
 python scripts/generate_pairing_certificates.py
 
-# Run all tests (126 tests, 0 expected failures)
+# Run all tests
 python -m pytest tests/ -v
 ```
 
 ## Open bugs
 
-| Bug | File | Fix |
-|-----|------|-----|
-| SOMA metadata loss on ingestion | aivc/data/soma_store.py | Add `adata.obs = obs; adata.var = var` before `sio.from_anndata()` |
-| tf_motif_scanner.py NotImplementedError | aivc/preprocessing/tf_motif_scanner.py | Implement chromVAR-equivalent (JASPAR 2024) |
+| Bug | File | Status |
+|-----|------|--------|
+| SCMEngine used random nn.Linear as decoder | api/server.py | FIXED — now uses model.decoder (trained ResponseDecoder) |
+| SOMA metadata loss on ingestion | aivc/data/soma_store.py | OPEN — add `adata.obs = obs; adata.var = var` before `sio.from_anndata()` |
+| tf_motif_scanner.py NotImplementedError | aivc/preprocessing/tf_motif_scanner.py | OPEN — implement chromVAR-equivalent (JASPAR 2024) |
 
 ## What is NOT yet implemented
 
 - ProteinEncoder and PhosphoEncoder (no class files exist)
-- SCM do(X) interventions (temporal mask != Pearl SCM)
 - React UI / Explorer Dashboard / Python SDK
-- FastAPI + Triton serving endpoint
+- Triton serving endpoint
 - MLflow model registry integration
 - Active learning loop (one wet-lab cycle not yet completed)
-- Zero-shot validation on unseen perturbation
+- Zero-shot validation: confirmed MEMORISED on Norman 2019 (delta=0.000); pending multi-perturbation training
 - Cross-cell-type generalisation testing
+- Stage 2 training with real PBMC IFN-γ dataset (validation script implemented, pending download)
+
+## Stage 2 unlock status
+
+**Status: READY TO RUN** when real IFN-G dataset is available.
+
+- Checklist: `docs/stage2_unlock_checklist.md`
+- Script: `scripts/run_stage2_unlock.sh`
+- Blocking: Real PBMC IFN-G dataset (not synthetic — synthetic fallback explicitly blocked by `perturbation_curriculum.py`)
+- Expected improvement: JAK-STAT 3x 7/15 -> 10+/15, IFIT1 3.75x -> 15-40x
+- Full technical narrative: `docs/series_a_technical_narrative.md`
 
 ## Requirements
 

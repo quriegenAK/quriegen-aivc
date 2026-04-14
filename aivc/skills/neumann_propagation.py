@@ -106,7 +106,7 @@ class NeumannPropagation(nn.Module):
         if edge_attr is not None:
             # Normalise confidence scores to small initial weights
             # STRING scores are 0-1000; normalise to ~0.001-0.01
-            init_weights = edge_attr.float() / 100000.0
+            init_weights = edge_attr.float() / 10000.0
         else:
             init_weights = torch.full((n_edges,), 0.01)
 
@@ -182,7 +182,7 @@ class NeumannPropagation(nn.Module):
             active = (self.W.abs() > 1e-6).float().mean().item()
         return active
 
-    def enforce_sparsity(self, threshold: float = 1e-4) -> dict:
+    def enforce_sparsity(self, threshold: float = 1e-3) -> dict:
         """
         Proximal gradient operator for L1 regularisation.
         Hard-thresholds W: any edge weight with |W| < threshold -> 0.0 exactly.

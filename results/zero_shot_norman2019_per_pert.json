@@ -1,0 +1,130 @@
+{
+  "per_perturbation": [
+    {
+      "perturbation": "IRF1_SET",
+      "n_cells": 444,
+      "r_pred_stim": 0.8293,
+      "r_ctrl_stim": 0.8293,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "IRF1",
+      "n_cells": 427,
+      "r_pred_stim": 0.9919,
+      "r_ctrl_stim": 0.9919,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "KLF1",
+      "n_cells": 1960,
+      "r_pred_stim": 0.9947,
+      "r_ctrl_stim": 0.9947,
+      "delta": 0.0
+    },
+    {
+      "perturbation": "BAK1",
+      "n_cells": 1457,
+      "r_pred_stim": 0.9989,
+      "r_ctrl_stim": 0.9989,
+      "delta": 0.0
+    },
+    {
+      "perturbation": "CEBPE",
+      "n_cells": 1233,
+      "r_pred_stim": 0.9916,
+      "r_ctrl_stim": 0.9916,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "CEBPE_RUNX1T1",
+      "n_cells": 1219,
+      "r_pred_stim": 0.9961,
+      "r_ctrl_stim": 0.9961,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "UBASH3B",
+      "n_cells": 1202,
+      "r_pred_stim": 0.9961,
+      "r_ctrl_stim": 0.9961,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "ETS2",
+      "n_cells": 1201,
+      "r_pred_stim": 0.9929,
+      "r_ctrl_stim": 0.9929,
+      "delta": 0.0
+    },
+    {
+      "perturbation": "TBX3_TBX2",
+      "n_cells": 1167,
+      "r_pred_stim": 0.965,
+      "r_ctrl_stim": 0.965,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "OSR2",
+      "n_cells": 1003,
+      "r_pred_stim": 0.9939,
+      "r_ctrl_stim": 0.9939,
+      "delta": 0.0
+    },
+    {
+      "perturbation": "SLC4A1",
+      "n_cells": 1000,
+      "r_pred_stim": 0.994,
+      "r_ctrl_stim": 0.994,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "SET",
+      "n_cells": 986,
+      "r_pred_stim": 0.8975,
+      "r_ctrl_stim": 0.8975,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "ELMSAN1",
+      "n_cells": 937,
+      "r_pred_stim": 0.9959,
+      "r_ctrl_stim": 0.9959,
+      "delta": 0.0
+    },
+    {
+      "perturbation": "ETS2_CNN1",
+      "n_cells": 905,
+      "r_pred_stim": 0.9985,
+      "r_ctrl_stim": 0.9985,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "MAP2K6",
+      "n_cells": 878,
+      "r_pred_stim": 0.9989,
+      "r_ctrl_stim": 0.9989,
+      "delta": 0.0
+    },
+    {
+      "perturbation": "FOXF1",
+      "n_cells": 874,
+      "r_pred_stim": 0.9994,
+      "r_ctrl_stim": 0.9994,
+      "delta": -0.0
+    },
+    {
+      "perturbation": "C19orf26",
+      "n_cells": 872,
+      "r_pred_stim": 0.985,
+      "r_ctrl_stim": 0.985,
+      "delta": -0.0
+    }
+  ],
+  "summary": {
+    "mean_r_pred_stim": 0.9776,
+    "mean_r_ctrl_stim": 0.9776,
+    "mean_delta": 0.0,
+    "n_evaluated": 17,
+    "n_model_beats_ctrl": 0
+  }
+}

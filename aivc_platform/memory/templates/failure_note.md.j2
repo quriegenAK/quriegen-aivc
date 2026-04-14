@@ -1,0 +1,68 @@
+---
+run_id: {{ meta.run_id }}
+date: {{ now | fmt_dt }}
+dataset: {{ meta.dataset }}
+status: {{ meta.status.value }}
+decision: {{ decision.value }}
+tags: [failure, {{ config.project }}, {{ failure_bucket }}]
+---
+
+# Failure · {{ meta.run_id }}
+
+**Date:** {{ now | fmt_dt }}
+**Decision:** `{{ decision.value }}`
+**Failure reason:** {{ failure_reason }}
+**Failure note (JSON):** `{{ meta.failure_note_path or "n/a" }}`
+
+## RunMetadata
+
+| field | value |
+| --- | --- |
+| run_id | {{ meta.run_id }} |
+| dataset | {{ meta.dataset }} |
+| modality | {{ meta.modality.value }} |
+| pearson_r | {{ meta.pearson_r | fmt_float }} |
+| pearson_r_std | {{ meta.pearson_r_std | fmt_float }} |
+| delta_nonzero_pct | {{ meta.delta_nonzero_pct | fmt_pct }} |
+| ctrl_memorisation_score | {{ meta.ctrl_memorisation_score | fmt_float }} |
+| jakstat_within_3x | {{ meta.jakstat_within_3x }} |
+| ifit1_pred_fc | {{ meta.ifit1_pred_fc | fmt_float }} |
+| lfc_beta | {{ meta.lfc_beta }} |
+| neumann_k | {{ meta.neumann_k }} |
+| lambda_l1 | {{ meta.lambda_l1 }} |
+| w_scale_range | [{{ meta.w_scale_range[0] }}, {{ meta.w_scale_range[1] }}] |
+| frozen_modules | {{ meta.frozen_modules | join(", ") }} |
+| checkpoint_path | `{{ meta.checkpoint_path or "n/a" }}` |
+| wandb_url | {{ meta.wandb_url or wandb_url_default }} |
+| started_at | {{ meta.started_at | fmt_dt }} |
+| finished_at | {{ (meta.finished_at or now) | fmt_dt }} |
+| training_time_s | {{ meta.training_time_s }} |
+| anndata_hash | {{ anndata_hash }} |
+
+## EvalSuite summary
+
+- Kang r:                 {{ suite.kang.pearson_r | fmt_float }}  (guard passed: {{ suite.kang.regression_guard_passed }})
+- Norman delta_nonzero %: {% if suite.norman %}{{ suite.norman.delta_nonzero_pct | fmt_pct }}{% else %}n/a (skipped){% endif %}
+- Halt reason:            {{ suite.halt_reason or "n/a" }}
+
+## Suspected causes (ranked by likelihood)
+
+{% for cause in suspected_causes %}
+{{ loop.index }}. **{{ cause.label }}** — {{ cause.rationale }}
+{% endfor %}
+
+## Next actions — training_agent checklist
+
+{% for action in next_actions %}
+- [ ] {{ action }}
+{% endfor %}
+
+---
+
+{% if config.auto_link and related_failures %}
+**Related failures:**
+{% for rf in related_failures %}
+- [[failures/{{ rf }}]]
+{% endfor %}
+{% endif %}
+**See also:** [[papers/kang2018]] · [[papers/norman2019]]

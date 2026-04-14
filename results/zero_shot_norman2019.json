@@ -1,0 +1,18 @@
+{
+  "pearson_r": 0.9908,
+  "pearson_r_naive_ctrl": 0.9908,
+  "pearson_r_delta_vs_ctrl": 0.0,
+  "pearson_r_baseline": 0.873,
+  "jakstat_3x": 11,
+  "ifit1_pred_fc": 7.66,
+  "generalisation_delta": 0.1178,
+  "is_overfit": false,
+  "verdict_raw": "GENERALISES",
+  "verdict_corrected": "MEMORISED",
+  "correction_reason": "Aggregate r=0.99 is an artifact. Model predicts ctrl+delta where delta~0 on K562 CRISPRi data. r(pred,stim) == r(ctrl,stim) for all 17 perturbations tested. The model adds zero predictive value over the naive baseline of returning ctrl expression unchanged. This is expected: v1.0 was trained exclusively on IFN-B PBMC data.",
+  "dataset": "Norman 2019 (GSE133344, K562 CRISPRi)",
+  "gene_overlap": 2906,
+  "n_perturbations_tested": 17,
+  "n_model_beats_ctrl": 0,
+  "interpretation": "v1.0 model is IFN-B specific. Its learned perturbation embedding and decoder produce near-zero response on K562 CRISPRi input. Multi-perturbation training (Stage 2+) required for generalisation."
+}

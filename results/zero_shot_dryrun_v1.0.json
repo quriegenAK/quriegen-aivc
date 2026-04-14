@@ -1,0 +1,16 @@
+{
+  "mode": "dry_run",
+  "dry_run_r": 0.9033,
+  "pearson_r_baseline": 0.873,
+  "jakstat_3x": 7,
+  "ifit1_pred_fc": 3.75,
+  "test_donors": [
+    "patient_1244",
+    "patient_1256",
+    "patient_1488"
+  ],
+  "n_ctrl_cells": 6018,
+  "n_stim_cells": 6039,
+  "gene_overlap": 3010,
+  "verdict": "CONSISTENT"
+}

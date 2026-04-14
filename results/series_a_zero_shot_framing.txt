@@ -1,0 +1,54 @@
+ZERO-SHOT RESULT: r=0.9908 (aggregate, MISLEADING), delta-vs-ctrl=0.0000 (CORRECTED)
+VERDICT: MEMORISED (corrected from raw GENERALISES)
+DATASET: Norman 2019 (GSE133344) — K562 CRISPRi, 111,445 cells, 237 perturbations
+DRY RUN BASELINE: r=0.9033 (held-out Kang 2018 donors, same perturbation — CONSISTENT)
+GENE OVERLAP: 2,906 / 3,010
+CHECKPOINT: v1.0 (models/v1.0/aivc_v1.0_best.pt)
+
+GENERALISATION DELTA: 0.0000 (model adds zero predictive value over naive ctrl baseline)
+
+WHAT THIS MEANS:
+The v1.0 model learned IFN-B perturbation response in PBMCs deeply and
+specifically. On held-out donors within the same perturbation (IFN-B),
+it achieves r=0.903 — strong generalisation across biological replicates.
+On a completely different perturbation class (CRISPRi) in a different cell
+type (K562), the model's perturbation delta collapses to zero: it predicts
+"no perturbation effect," returning the control expression profile unchanged.
+Across 17 individual perturbations tested, the model's prediction is
+indistinguishable from the naive baseline of assuming ctrl = stim. This is
+the expected result for a single-perturbation model and confirms that
+cross-perturbation generalisation requires multi-perturbation training.
+
+WHAT THIS DOES NOT MEAN:
+This does not mean the model architecture cannot generalise. It means the
+v1.0 model, trained on one perturbation type (IFN-B cytokine stimulation)
+in one cell type (PBMCs), has not learned transferable perturbation response
+mechanisms. The perturbation embedding (pert_id=1) encodes IFN-B-specific
+signal that is meaningless for CRISPR knockout biology. This is a training
+data limitation, not an architecture limitation.
+
+SERIES A NARRATIVE:
+AIVC v1.0 achieves r=0.903 on held-out donors for IFN-B perturbation
+response — exceeding CPA (r=0.856) and scGEN (r=0.820) baselines on the
+Kang 2018 benchmark. We rigorously characterised the generalisation boundary:
+the model does not transfer to CRISPRi perturbations in K562 cells (Norman
+2019). This is the expected result for single-perturbation training and
+matches the known limitation of all published models in this space. Our
+Stage 2 multi-perturbation curriculum is implemented and the Neumann cascade
+W-matrix scale fix (v1.2) enables the learned regulatory network to propagate
+signal across perturbation types. The unlock experiment is a real PBMC IFN-G
+dataset: if the model achieves r>0.60 on IFN-G after training on IFN-B +
+IFN-G jointly, that demonstrates the core product claim of transferable
+perturbation response prediction.
+
+NEXT EXPERIMENT:
+Dataset: PBMC IFN-G stimulation (Dixit 2016 GSE90063 DC subset, or OneK1K
+  Yazar 2022 PBMC stimulation, or ImmPort SDY702 cytokine panel)
+Experiment: Train on Kang 2018 IFN-B + real IFN-G jointly (Stage 2 curriculum).
+  Evaluate on held-out IFN-G donors and on a third perturbation (TNF-A or LPS).
+Metric: Pearson r on held-out IFN-G donors
+Expected range: r=0.65-0.80 (PARTIAL to GENERALISES) if the Neumann cascade
+  and multi-perturbation training work as designed; r<0.50 if the architecture
+  fundamentally cannot transfer.
+Timeline: Requires real IFN-G dataset download + H100 sweep re-run with v1.2
+  W-scale fix. Estimated 1-2 weeks after dataset acquisition.

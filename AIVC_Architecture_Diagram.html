@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIVC GeneLink — Architecture Diagram</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; padding: 30px; }
+
+  .page { max-width: 1180px; margin: 0 auto; }
+  .page-title { text-align: center; font-size: 1.6rem; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+  .page-sub { text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 28px; }
+
+  /* ===== ARCHITECTURE DIAGRAM ===== */
+  .arch { position: relative; width: 1120px; margin: 0 auto; }
+
+  /* Layer bands */
+  .layer {
+    position: relative;
+    border-radius: 10px;
+    padding: 14px 18px 18px;
+    margin-bottom: 8px;
+  }
+  .layer-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+  }
+
+  /* Box grid inside layers */
+  .boxes { display: flex; gap: 10px; flex-wrap: wrap; }
+  .box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+    flex: 1;
+    min-width: 130px;
+    border: 1.5px solid;
+    position: relative;
+  }
+  .box-title { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+  .box-desc { font-size: 10px; color: #666; line-height: 1.4; }
+
+  /* Highlighted box */
+  .box.highlight {
+    border-width: 2.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* Arrow connectors between layers */
+  .arrow-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    position: relative;
+  }
+  .arrow-row .arrow-shaft {
+    width: 2px;
+    height: 20px;
+    background: #888;
+  }
+  .arrow-row .arrow-head {
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #888;
+  }
+  .arrow-row .arrow-label {
+    position: absolute;
+    right: 80px;
+    font-size: 9.5px;
+    color: #888;
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  /* Feedback arrow (curved, red) */
+  .feedback-arrow {
+    position: absolute;
+    right: -40px;
+    top: 0;
+    width: 40px;
+    height: 100%;
+  }
+
+  /* Color palette per layer */
+  .l1 { background: #e3f0fc; border-color: #4a90d9; }
+  .l1 .layer-label { color: #1a5fa8; }
+  .l1 .box { border-color: #4a90d9; }
+  .l1 .box-title { color: #1a5fa8; }
+
+  .l2 { background: #e5f5e0; border-color: #4caf50; }
+  .l2 .layer-label { color: #2e7d32; }
+  .l2 .box { border-color: #4caf50; }
+  .l2 .box-title { color: #2e7d32; }
+
+  .l3 { background: #fff3e0; border-color: #ef8c00; }
+  .l3 .layer-label { color: #e65100; }
+  .l3 .box { border-color: #ef8c00; }
+  .l3 .box-title { color: #e65100; }
+
+  .l4 { background: #fce4ec; border-color: #e53935; }
+  .l4 .layer-label { color: #b71c1c; }
+  .l4 .box { border-color: #e53935; }
+  .l4 .box-title { color: #b71c1c; }
+
+  .l5 { background: #ede7f6; border-color: #7e57c2; }
+  .l5 .layer-label { color: #4527a0; }
+  .l5 .box { border-color: #7e57c2; }
+  .l5 .box-title { color: #4527a0; }
+
+  .l6 { background: #e0f2f1; border-color: #009688; }
+  .l6 .layer-label { color: #00695c; }
+  .l6 .box { border-color: #009688; }
+  .l6 .box-title { color: #00695c; }
+
+  .l7 { background: #fffde7; border-color: #f9a825; }
+  .l7 .layer-label { color: #e65100; }
+  .l7 .box { border-color: #f9a825; }
+  .l7 .box-title { color: #e65100; }
+
+  /* Encoder sub-section */
+  .encoder-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .encoder-box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    flex: 1;
+    border: 2px solid #ef8c00;
+  }
+  .encoder-box .enc-title { font-size: 13px; font-weight: 800; color: #e65100; margin-bottom: 2px; }
+  .encoder-box .enc-arch { font-size: 10px; color: #555; }
+  .encoder-box .enc-out { font-size: 9.5px; color: #999; margin-top: 3px; }
+
+  /* Fusion bar */
+  .fusion-bar {
+    background: linear-gradient(90deg, #fff8e1, #ffe0b2);
+    border: 2px solid #ef6c00;
+    border-radius: 8px;
+    padding: 14px 20px;
+    text-align: center;
+    margin: 0 0 10px;
+  }
+  .fusion-bar .f-title { font-size: 14px; font-weight: 800; color: #e65100; }
+  .fusion-bar .f-desc { font-size: 10.5px; color: #666; margin-top: 2px; }
+
+  /* Inner arrows within model layer */
+  .inner-arrows {
+    display: flex;
+    justify-content: space-around;
+    padding: 0 60px;
+    height: 24px;
+  }
+  .inner-arrows .ia {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .inner-arrows .ia .ia-shaft { width: 2px; height: 12px; background: #ef8c00; }
+  .inner-arrows .ia .ia-head { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid #ef8c00; }
+
+  /* Decoder row */
+  .decoder-row { display: flex; gap: 10px; }
+  .decoder-box {
+    background: #fff;
+    border: 1.5px solid #ef8c00;
+    border-radius: 6px;
+    padding: 10px 12px;
+    text-align: center;
+    flex: 1;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e65100;
+  }
+
+  /* Source boxes */
+  .sources { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .src-box {
+    background: #bbdefb;
+    border: 1.5px solid #1565c0;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0d47a1;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  /* Section labels inside layers */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+
+  /* Feedback loop */
+  .feedback-container {
+    position: relative;
+    margin: 0 auto;
+    width: 1120px;
+  }
+  .feedback-overlay {
+    position: absolute;
+    top: 0;
+    right: -50px;
+    width: 50px;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* Watermark */
+  .watermark { text-align: center; font-size: 10px; color: #bbb; margin-top: 20px; }
+
+  /* ===== ERD ===== */
+  .erd-title { text-align: center; font-size: 1.4rem; font-weight: 800; color: #1a1a2e; margin: 60px 0 4px; }
+  .erd-sub { text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 24px; }
+
+  .erd-canvas {
+    position: relative;
+    width: 1120px;
+    height: 950px;
+    margin: 0 auto;
+    background: #fafbfc;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .entity {
+    position: absolute;
+    background: #fff;
+    border: 1.5px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    min-width: 200px;
+  }
+  .entity-header {
+    background: #0f3460;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 12px;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .entity-header.orange { background: #ef6c00; }
+  .entity-header.gold { background: #f9a825; color: #333; }
+  .entity-body { padding: 8px 12px; font-size: 10.5px; font-family: 'JetBrains Mono', 'Fira Code', monospace; line-height: 1.55; }
+  .entity-body .pk { font-weight: 700; color: #333; }
+  .entity-body .fk { color: #0f3460; font-style: italic; }
+  .entity-body .attr { color: #555; }
+  .entity-body .sep { border-top: 1px solid #eee; margin: 4px 0; }
+  .entity-body .note { color: #c62828; font-weight: 600; font-size: 10px; }
+
+  /* SVG for relationship lines */
+  .erd-lines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .erd-lines path, .erd-lines line { stroke: #777; stroke-width: 1.5; fill: none; }
+  .erd-lines polygon { fill: #777; }
+  .erd-lines text { font-family: 'Inter', sans-serif; font-size: 9px; fill: #999; font-style: italic; }
+
+  /* Scale notes box */
+  .scale-notes {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 10.5px;
+    line-height: 1.6;
+    color: #555;
+  }
+  .scale-notes strong { color: #333; }
+
+  @media print {
+    body { background: #fff; padding: 10px; }
+    .layer, .erd-canvas { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<div class="page-title">AIVC GeneLink — World-Class Multi-Omics Architecture</div>
+<p class="page-sub">7-layer production-grade platform for same-cell multi-omics AI &nbsp;|&nbsp; QuRIE-Gen Confidential &nbsp;|&nbsp; 2026-03-23</p>
+
+<div class="arch">
+
+  <!-- ========== LAYER 1: DATA INGESTION ========== -->
+  <div class="layer l1">
+    <div class="layer-label">Layer 1 — Data Ingestion &amp; Processing</div>
+    <div class="boxes">
+      <div class="box">
+        <div class="box-title">Ingestion Gateway</div>
+        <div class="box-desc">FastAPI + Celery<br>Schema validation, queue</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Format Adapters</div>
+        <div class="box-desc">QuRIE / 10x / CITE<br>→ MuData</div>
+      </div>
+      <div class="box">
+        <div class="box-title">QC Pipeline</div>
+        <div class="box-desc">Scanpy + ArchR<br>Doublets, FRiP, TSS</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Normalization</div>
+        <div class="box-desc">scran / CLR / chromVAR<br>Per-modality</div>
+      </div>
+      <div class="box highlight" style="border-color: #0d47a1; background: #e3f2fd;">
+        <div class="box-title" style="color: #0d47a1;">★ Same-Cell Linker</div>
+        <div class="box-desc">Barcode-based pairing<br><b>Key differentiator</b></div>
+      </div>
+      <div class="box">
+        <div class="box-title">Data Catalog</div>
+        <div class="box-desc">DVC + Lineage DB<br>Version everything</div>
+      </div>
+    </div>
+    <div class="section-label" style="margin-top: 10px;">Data Sources</div>
+    <div class="sources">
+      <div class="src-box">QuRIE-seq</div>
+      <div class="src-box">10x Multiome</div>
+      <div class="src-box">CITEseq</div>
+      <div class="src-box">Kang 2018</div>
+      <div class="src-box">Frangieh 2021</div>
+      <div class="src-box">Replogle 2022</div>
+      <div class="src-box">ImmPort</div>
+    </div>
+  </div>
+
+  <!-- Arrow 1→2 -->
+  <div class="arrow-row">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="arrow-shaft"></div>
+      <div class="arrow-head"></div>
+    </div>
+    <span class="arrow-label">Processed cells + metadata</span>
+  </div>
+
+  <!-- ========== LAYER 2: FEATURE STORE ========== -->
+  <div class="layer l2">
+    <div class="layer-label">Layer 2 — Feature Store / Data Lake</div>
+    <div class="boxes">
+      <div class="box">
+        <div class="box-title">Cell Store</div>
+        <div class="box-desc">Parquet on S3<br>Partitioned by exp/sample<br>DuckDB queries</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Graph Store</div>
+        <div class="box-desc">Gene-Gene (STRING PPI)<br>Peak-Gene links<br>Kinase-Substrate</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Embedding Store</div>
+        <div class="box-desc">pgvector / FAISS<br>Cell embeddings<br>ANN search</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Metadata Store</div>
+        <div class="box-desc">PostgreSQL<br>Experiment / Sample / Cell<br>Perturbation catalog</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Feature Registry</div>
+        <div class="box-desc">Feast / Custom<br>Definitions + versions<br>Train-serve parity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow 2→3 -->
+  <div class="arrow-row">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="arrow-shaft"></div>
+      <div class="arrow-head"></div>
+    </div>
+    <span class="arrow-label">Feature vectors + graphs</span>
+  </div>
+
+  <!-- ========== LAYER 3: MODEL ========== -->
+  <div class="layer l3">
+    <div class="layer-label">Layer 3 — Multi-Modal Model</div>
+
+    <div class="section-label">Modality-Specific Encoders</div>
+    <div class="encoder-row">
+      <div class="encoder-box">
+        <div class="enc-title">RNA Encoder</div>
+        <div class="enc-arch">GAT (2-layer, 4-head) on PPI graph</div>
+        <div class="enc-out">→ (batch, n_genes, 128)</div>
+      </div>
+      <div class="encoder-box">
+        <div class="enc-title">Protein Encoder</div>
+        <div class="enc-arch">MLP + Cross-Attention to RNA</div>
+        <div class="enc-out">→ (batch, 128)</div>
+      </div>
+      <div class="encoder-box">
+        <div class="enc-title">Phospho Encoder</div>
+        <div class="enc-arch">MLP + Kinase-Substrate GAT</div>
+        <div class="enc-out">→ (batch, 64)</div>
+      </div>
+      <div class="encoder-box">
+        <div class="enc-title">ATAC Encoder</div>
+        <div class="enc-arch">MLP on chromVAR TF scores</div>
+        <div class="enc-out">→ (batch, 64)</div>
+      </div>
+    </div>
+
+    <!-- Inner arrows: encoders → fusion -->
+    <div class="inner-arrows">
+      <div class="ia"><div class="ia-shaft"></div><div class="ia-head"></div></div>
+      <div class="ia"><div class="ia-shaft"></div><div class="ia-head"></div></div>
+      <div class="ia"><div class="ia-shaft"></div><div class="ia-head"></div></div>
+      <div class="ia"><div class="ia-shaft"></div><div class="ia-head"></div></div>
+    </div>
+
+    <!-- Fusion -->
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+      <div class="fusion-bar" style="flex: 2;">
+        <div class="f-title">Temporal Cross-Modal Fusion</div>
+        <div class="f-desc">Causal masking + Modality dropout &nbsp;|&nbsp; ATAC(t=0) → Phospho(t=1) → RNA(t=2) → Protein(t=3) &nbsp;|&nbsp; Output: 384-dim shared latent</div>
+      </div>
+      <div class="fusion-bar" style="flex: 1; border-color: #c62828;">
+        <div class="f-title" style="color: #c62828;">Structural Causal Model</div>
+        <div class="f-desc">do(X) interventions<br>Causal consistency loss</div>
+      </div>
+    </div>
+
+    <!-- Inner arrows: fusion → decoders -->
+    <div class="inner-arrows" style="padding: 0 180px;">
+      <div class="ia"><div class="ia-shaft"></div><div class="ia-head"></div></div>
+    </div>
+
+    <div class="section-label">Task-Specific Decoders</div>
+    <div class="decoder-row">
+      <div class="decoder-box">Perturbation Response</div>
+      <div class="decoder-box">Cell Type Classifier</div>
+      <div class="decoder-box">GRN Inference (Neumann)</div>
+      <div class="decoder-box">Drug Sensitivity</div>
+    </div>
+
+    <!-- Losses -->
+    <div style="display: flex; gap: 8px; margin-top: 10px; justify-content: center;">
+      <span style="background:#e3f2fd; border:1px solid #4a90d9; border-radius:4px; padding:4px 10px; font-size:10px; font-weight:700; color:#1a5fa8;">L_paired_contrastive</span>
+      <span style="background:#e5f5e0; border:1px solid #4caf50; border-radius:4px; padding:4px 10px; font-size:10px; font-weight:700; color:#2e7d32;">L_cross_modal</span>
+      <span style="background:#fff3e0; border:1px solid #ef8c00; border-radius:4px; padding:4px 10px; font-size:10px; font-weight:700; color:#e65100;">L_causal</span>
+      <span style="background:#fce4ec; border:1px solid #e53935; border-radius:4px; padding:4px 10px; font-size:10px; font-weight:700; color:#b71c1c;">L_perturbation</span>
+      <span style="background:#ede7f6; border:1px solid #7e57c2; border-radius:4px; padding:4px 10px; font-size:10px; font-weight:700; color:#4527a0;">λ · ||W||₁</span>
+    </div>
+  </div>
+
+  <!-- Arrow 3→4 -->
+  <div class="arrow-row">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="arrow-shaft"></div>
+      <div class="arrow-head"></div>
+    </div>
+    <span class="arrow-label">Embeddings + predictions</span>
+  </div>
+
+  <!-- ========== LAYER 4: TRAINING ========== -->
+  <div class="layer l4">
+    <div class="layer-label">Layer 4 — Training &amp; Experimentation</div>
+    <div class="boxes">
+      <div class="box">
+        <div class="box-title">Experiment Tracker</div>
+        <div class="box-desc">MLflow / W&amp;B<br>Params, metrics, artifacts</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Distributed Training</div>
+        <div class="box-desc">PyTorch DDP<br>DeepSpeed ZeRO</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Curriculum Manager</div>
+        <div class="box-desc">Stage 1→4 progression<br>Regression guards</div>
+      </div>
+      <div class="box">
+        <div class="box-title">HPO</div>
+        <div class="box-desc">Optuna / Ray Tune<br>Bayesian optimization</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Critic Gate</div>
+        <div class="box-desc">Statistical + Method<br>+ Biological validation</div>
+      </div>
+      <div class="box">
+        <div class="box-title">CI/CD Pipeline</div>
+        <div class="box-desc">GH Actions + DVC<br>Bio regression guards</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow 4→5 -->
+  <div class="arrow-row">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="arrow-shaft"></div>
+      <div class="arrow-head"></div>
+    </div>
+    <span class="arrow-label">Trained models + metrics</span>
+  </div>
+
+  <!-- ========== LAYER 5: SERVING ========== -->
+  <div class="layer l5">
+    <div class="layer-label">Layer 5 — Serving / Inference</div>
+    <div class="boxes">
+      <div class="box">
+        <div class="box-title">Model Registry</div>
+        <div class="box-desc">MLflow Registry<br>Version + Stage (dev/prod)</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Inference API</div>
+        <div class="box-desc">FastAPI + Triton<br>REST / gRPC endpoints</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Batch Inference</div>
+        <div class="box-desc">Ray / Spark<br>Atlas-level scoring</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Embedding Cache</div>
+        <div class="box-desc">Redis + FAISS<br>Low-latency retrieval</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow 5→6 -->
+  <div class="arrow-row">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="arrow-shaft"></div>
+      <div class="arrow-head"></div>
+    </div>
+    <span class="arrow-label">API responses</span>
+  </div>
+
+  <!-- ========== LAYER 6: APP/UI ========== -->
+  <div class="layer l6">
+    <div class="layer-label">Layer 6 — Application / UI</div>
+    <div class="boxes">
+      <div class="box">
+        <div class="box-title">Explorer Dashboard</div>
+        <div class="box-desc">React + D3 / Plotly<br>Interactive UMAP/tSNE</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Perturbation Simulator</div>
+        <div class="box-desc">Counterfactual "what-if"<br>do(gene=KO) queries</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Experiment Designer</div>
+        <div class="box-desc">High-uncertainty regions<br>Active Learning UI</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Python SDK</div>
+        <div class="box-desc">aivc.predict() API<br>Notebook integration</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Report Generator</div>
+        <div class="box-desc">Automated notebooks<br>Investor-ready figures</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow 6→7 -->
+  <div class="arrow-row">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="arrow-shaft"></div>
+      <div class="arrow-head"></div>
+    </div>
+    <span class="arrow-label">Uncertainty signals</span>
+  </div>
+
+  <!-- ========== LAYER 7: ACTIVE LEARNING ========== -->
+  <div class="layer l7">
+    <div class="layer-label">Layer 7 — Active Learning Loop (Wet Lab Integration)</div>
+    <div class="boxes">
+      <div class="box">
+        <div class="box-title">Uncertainty Quantifier</div>
+        <div class="box-desc">MC Dropout<br>Deep Ensembles</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Experiment Recommender</div>
+        <div class="box-desc">UCB / EI acquisition<br>Rank by info gain</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Wet Lab Queue</div>
+        <div class="box-desc">LIMS / Benchling API<br>Push to lab</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Data Ingest Trigger</div>
+        <div class="box-desc">S3 Event / Webhook<br>Auto-trigger pipeline</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Model Update</div>
+        <div class="box-desc">Incremental fine-tune<br>Curriculum progression</div>
+      </div>
+    </div>
+    <!-- Feedback annotation -->
+    <div style="text-align: center; margin-top: 10px; font-size: 11px; color: #c62828; font-weight: 600;">
+      ↻ New QuRIE-seq data feeds back to Layer 1 — closes the discovery loop
+    </div>
+  </div>
+
+</div><!-- /arch -->
+
+<div class="watermark">AIVC GeneLink Architecture v2.0 &nbsp;|&nbsp; QuRIE-Gen Confidential &nbsp;|&nbsp; 2026-03-23</div>
+
+
+<!-- ============================================================ -->
+<!-- ========== ERD DIAGRAM ========== -->
+<!-- ============================================================ -->
+
+<div class="erd-title">AIVC GeneLink — Entity Relationship Diagram</div>
+<p class="erd-sub">Designed for billion-cell scale &nbsp;|&nbsp; Same-cell pairing as the join anchor</p>
+
+<div class="erd-canvas">
+
+  <!-- SVG relationship lines (drawn BEHIND entities) -->
+  <svg class="erd-lines" viewBox="0 0 1120 950">
+    <!-- Experiment → Sample (1:N) -->
+    <path d="M 215 75 L 260 75"/>
+    <polygon points="255,71 265,75 255,79"/>
+    <text x="220" y="68">1:N</text>
+
+    <!-- Sample → Cell (1:N) -->
+    <path d="M 465 75 L 530 75"/>
+    <polygon points="525,71 535,75 525,79"/>
+    <text x="480" y="68">1:N</text>
+
+    <!-- Sample → Perturbation (N:1) -->
+    <path d="M 465 130 L 530 130 L 530 70 L 830 70"/>
+    <polygon points="825,66 835,70 825,74"/>
+    <text x="660" y="63">N:1</text>
+
+    <!-- Cell → Measurement (1:N per modality) -->
+    <path d="M 650 220 L 650 280"/>
+    <polygon points="646,275 650,285 654,275"/>
+    <text x="660" y="255">1:N per modality</text>
+
+    <!-- Modality → Feature (1:N) -->
+    <path d="M 215 340 L 260 340"/>
+    <polygon points="255,336 265,340 255,344"/>
+    <text x="220" y="333">1:N</text>
+
+    <!-- Modality → Measurement (FK) -->
+    <path d="M 140 390 L 140 430 L 570 430 L 570 400"/>
+    <polygon points="566,405 570,395 574,405"/>
+    <text x="350" y="425">1:N</text>
+
+    <!-- Cell → Embedding (1:N per model) -->
+    <path d="M 600 220 L 600 250 L 140 250 L 140 530"/>
+    <polygon points="136,525 140,535 144,525"/>
+    <text x="350" y="245">1:N per model</text>
+
+    <!-- Cell → ModelOutput (1:N per task) -->
+    <path d="M 700 220 L 700 480 L 440 480 L 440 530"/>
+    <polygon points="436,525 440,535 444,525"/>
+    <text x="570" y="475">1:N per task</text>
+
+    <!-- Model → Embedding (1:N) -->
+    <path d="M 620 610 L 260 610"/>
+    <polygon points="265,606 255,610 265,614"/>
+    <text x="430" y="603">1:N</text>
+
+    <!-- Model → ModelOutput (1:N) -->
+    <path d="M 620 580 L 490 580"/>
+    <polygon points="495,576 485,580 495,584"/>
+
+    <!-- Model → AL_Recommendation (1:N) -->
+    <path d="M 860 610 L 860 530 L 940 530"/>
+    <polygon points="935,526 945,530 935,534"/>
+    <text x="870" y="523">1:N</text>
+
+    <!-- Feature → FeatureGraphEdge (N:M) -->
+    <path d="M 340 430 L 340 470 L 140 470 L 140 750"/>
+    <polygon points="136,745 140,755 144,745"/>
+    <text x="200" y="465">N:M via edges</text>
+  </svg>
+
+  <!-- EXPERIMENT -->
+  <div class="entity" style="left: 15px; top: 20px; width: 200px;">
+    <div class="entity-header">EXPERIMENT</div>
+    <div class="entity-body">
+      <div class="pk">PK experiment_id UUID</div>
+      <div class="sep"></div>
+      <div class="attr">name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">species &nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">platform &nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">date_created TIMESTAMP</div>
+    </div>
+  </div>
+
+  <!-- SAMPLE -->
+  <div class="entity" style="left: 265px; top: 20px; width: 200px;">
+    <div class="entity-header">SAMPLE</div>
+    <div class="entity-body">
+      <div class="pk">PK sample_id &nbsp;&nbsp;&nbsp;&nbsp;UUID</div>
+      <div class="fk">FK experiment_id UUID</div>
+      <div class="sep"></div>
+      <div class="attr">donor_id &nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">tissue &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">condition &nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">perturbation_id INT</div>
+      <div class="attr">in_test_set &nbsp;BOOLEAN</div>
+      <div class="attr">cell_count &nbsp;&nbsp;BIGINT</div>
+    </div>
+  </div>
+
+  <!-- CELL -->
+  <div class="entity" style="left: 535px; top: 20px; width: 220px;">
+    <div class="entity-header">CELL</div>
+    <div class="entity-body">
+      <div class="pk">PK cell_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BIGINT</div>
+      <div class="fk">FK sample_id &nbsp;&nbsp;&nbsp;UUID</div>
+      <div class="sep"></div>
+      <div class="attr">barcode &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR(32)</div>
+      <div class="attr">cell_type &nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">n_genes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INT</div>
+      <div class="attr">n_umi &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INT</div>
+      <div class="attr">doublet_score FLOAT</div>
+      <div class="attr">qc_pass &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BOOLEAN</div>
+      <div class="attr">partition_key INT</div>
+      <div class="note">★ same-cell link anchor</div>
+    </div>
+  </div>
+
+  <!-- PERTURBATION -->
+  <div class="entity" style="left: 835px; top: 20px; width: 220px;">
+    <div class="entity-header orange">PERTURBATION</div>
+    <div class="entity-body">
+      <div class="pk">PK perturbation_id INT</div>
+      <div class="sep"></div>
+      <div class="attr">name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">type &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENUM</div>
+      <div class="attr">&nbsp; cytokine|crispr_ko</div>
+      <div class="attr">&nbsp; |drug|genetic</div>
+      <div class="attr">target_genes &nbsp;VARCHAR[]</div>
+      <div class="attr">dosage &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLOAT</div>
+      <div class="attr">time_hours &nbsp;&nbsp;FLOAT</div>
+      <div class="attr">dataset_source VARCHAR</div>
+    </div>
+  </div>
+
+  <!-- MODALITY -->
+  <div class="entity" style="left: 15px; top: 280px; width: 200px;">
+    <div class="entity-header">MODALITY</div>
+    <div class="entity-body">
+      <div class="pk">PK modality_id &nbsp;&nbsp;INT</div>
+      <div class="sep"></div>
+      <div class="attr">name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">temporal_order INT</div>
+      <div class="attr">norm_method &nbsp;VARCHAR</div>
+      <div class="attr">feature_count INT</div>
+    </div>
+  </div>
+
+  <!-- FEATURE -->
+  <div class="entity" style="left: 265px; top: 280px; width: 220px;">
+    <div class="entity-header">FEATURE</div>
+    <div class="entity-body">
+      <div class="pk">PK feature_id &nbsp;&nbsp;&nbsp;INT</div>
+      <div class="fk">FK modality_id &nbsp;&nbsp;INT</div>
+      <div class="sep"></div>
+      <div class="attr">name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">feature_type &nbsp;ENUM</div>
+      <div class="attr">&nbsp; gene|protein|phospho</div>
+      <div class="attr">&nbsp; |peak|tf_motif</div>
+      <div class="attr">chromosome &nbsp;&nbsp;VARCHAR</div>
+    </div>
+  </div>
+
+  <!-- MEASUREMENT -->
+  <div class="entity" style="left: 535px; top: 280px; width: 240px;">
+    <div class="entity-header">MEASUREMENT</div>
+    <div class="entity-body">
+      <div class="pk">PK cell_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BIGINT</div>
+      <div class="pk">PK modality_id &nbsp;&nbsp;&nbsp;INT</div>
+      <div class="sep"></div>
+      <div class="attr">values &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLOAT[]</div>
+      <div class="attr">&nbsp; (sparse COO or dense)</div>
+      <div class="attr">quality_score &nbsp;FLOAT</div>
+      <div class="attr">n_nonzero &nbsp;&nbsp;&nbsp;&nbsp;INT</div>
+      <div class="attr">norm_version &nbsp;INT</div>
+      <div class="note" style="margin-top:4px;">Partitioned: cell_id % 1024</div>
+    </div>
+  </div>
+
+  <!-- EMBEDDING -->
+  <div class="entity" style="left: 15px; top: 530px; width: 240px;">
+    <div class="entity-header">EMBEDDING</div>
+    <div class="entity-body">
+      <div class="pk">PK embedding_id &nbsp;&nbsp;BIGINT</div>
+      <div class="fk">FK cell_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BIGINT</div>
+      <div class="fk">FK model_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UUID</div>
+      <div class="sep"></div>
+      <div class="attr">modality &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">vector &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLOAT[384]</div>
+      <div class="attr">layer &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">&nbsp; encoder|fused|latent</div>
+      <div class="attr">created_at &nbsp;&nbsp;&nbsp;TIMESTAMP</div>
+    </div>
+  </div>
+
+  <!-- MODEL_OUTPUT -->
+  <div class="entity" style="left: 315px; top: 530px; width: 240px;">
+    <div class="entity-header">MODEL_OUTPUT</div>
+    <div class="entity-body">
+      <div class="pk">PK output_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BIGINT</div>
+      <div class="fk">FK cell_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BIGINT</div>
+      <div class="fk">FK model_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UUID</div>
+      <div class="sep"></div>
+      <div class="attr">task &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">&nbsp; perturbation_response</div>
+      <div class="attr">&nbsp; |cell_type|grn|drug</div>
+      <div class="attr">predicted &nbsp;&nbsp;&nbsp;&nbsp;FLOAT[]</div>
+      <div class="attr">confidence &nbsp;&nbsp;&nbsp;FLOAT</div>
+      <div class="attr">critic_pass &nbsp;&nbsp;BOOLEAN</div>
+    </div>
+  </div>
+
+  <!-- MODEL -->
+  <div class="entity" style="left: 620px; top: 530px; width: 230px;">
+    <div class="entity-header">MODEL</div>
+    <div class="entity-body">
+      <div class="pk">PK model_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UUID</div>
+      <div class="sep"></div>
+      <div class="attr">name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">version &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+      <div class="attr">stage &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENUM</div>
+      <div class="attr">&nbsp; dev|staging|prod</div>
+      <div class="attr">pearson_r &nbsp;&nbsp;&nbsp;&nbsp;FLOAT</div>
+      <div class="attr">jakstat_recovery INT</div>
+      <div class="attr">checkpoint_uri VARCHAR</div>
+      <div class="attr">hyperparams &nbsp;&nbsp;JSONB</div>
+      <div class="attr">data_hash &nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+    </div>
+  </div>
+
+  <!-- AL_RECOMMENDATION -->
+  <div class="entity" style="left: 900px; top: 480px; width: 200px;">
+    <div class="entity-header gold">AL_RECOMMENDATION</div>
+    <div class="entity-body">
+      <div class="pk">PK rec_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INT</div>
+      <div class="fk">FK model_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UUID</div>
+      <div class="sep"></div>
+      <div class="attr">target_genes &nbsp;VARCHAR[]</div>
+      <div class="attr">uncertainty &nbsp;&nbsp;FLOAT</div>
+      <div class="attr">priority &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INT</div>
+      <div class="attr">status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENUM</div>
+      <div class="attr">&nbsp; pending|queued|done</div>
+    </div>
+  </div>
+
+  <!-- FEATURE_GRAPH_EDGE -->
+  <div class="entity" style="left: 15px; top: 750px; width: 260px;">
+    <div class="entity-header">FEATURE_GRAPH_EDGE</div>
+    <div class="entity-body">
+      <div class="pk">PK edge_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BIGINT</div>
+      <div class="fk">FK source_feat_id INT</div>
+      <div class="fk">FK target_feat_id INT</div>
+      <div class="sep"></div>
+      <div class="attr">edge_type &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENUM</div>
+      <div class="attr">&nbsp; ppi|peak_gene|kinase</div>
+      <div class="attr">&nbsp; |tf_target|causal</div>
+      <div class="attr">weight &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLOAT</div>
+      <div class="attr">source &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VARCHAR</div>
+    </div>
+  </div>
+
+  <!-- Scale notes -->
+  <div class="scale-notes">
+    <strong>Scale &amp; Partitioning Strategy:</strong> &nbsp;
+    CELL: ~10⁹ rows, BIGINT PK, partitioned by <code>cell_id % 1024</code> &nbsp;|&nbsp;
+    MEASUREMENT: ~4×10⁹ rows (4 modalities/cell), composite PK, Parquet columnar ~10:1 compression &nbsp;|&nbsp;
+    EMBEDDING: ~10⁹ rows (384-dim), pgvector ANN search &nbsp;|&nbsp;
+    FEATURE_GRAPH: ~10⁶ edges, in-memory during training &nbsp;|&nbsp;
+    <strong>Same-cell join:</strong> <code>cell_id</code> is the universal anchor — all modalities share one cell_id per physical cell
+  </div>
+
+</div><!-- /erd-canvas -->
+
+<div class="watermark">AIVC GeneLink ERD v2.0 &nbsp;|&nbsp; QuRIE-Gen Confidential &nbsp;|&nbsp; 2026-03-23</div>
+
+</div><!-- /page -->
+
+</body>
+</html>

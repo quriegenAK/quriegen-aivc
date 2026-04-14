@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIVC GeneLink — World-Class Architecture Review &amp; Redesign</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a2e;
+    --accent: #0f3460;
+    --accent2: #16213e;
+    --highlight: #e94560;
+    --green: #0a8754;
+    --orange: #e67e22;
+    --border: #dee2e6;
+    --light-bg: #f8f9fa;
+    --code-bg: #f1f3f5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--fg); line-height: 1.65; max-width: 1200px; margin: 0 auto; padding: 40px 32px; }
+  h1 { font-size: 2.2rem; font-weight: 800; color: var(--accent2); margin-bottom: 8px; letter-spacing: -0.5px; }
+  h2 { font-size: 1.6rem; font-weight: 700; color: var(--accent); margin: 48px 0 16px; border-bottom: 3px solid var(--highlight); padding-bottom: 8px; }
+  h3 { font-size: 1.2rem; font-weight: 600; color: var(--accent2); margin: 32px 0 12px; }
+  h4 { font-size: 1.05rem; font-weight: 600; color: #444; margin: 20px 0 8px; }
+  p { margin-bottom: 12px; }
+  .subtitle { font-size: 1.1rem; color: #555; margin-bottom: 32px; }
+  .meta { display: flex; gap: 24px; color: #666; font-size: 0.85rem; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+
+  /* Cards for findings */
+  .finding { background: var(--light-bg); border-left: 4px solid var(--highlight); padding: 16px 20px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+  .finding.good { border-left-color: var(--green); }
+  .finding.warn { border-left-color: var(--orange); }
+  .finding-label { font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .finding.good .finding-label { color: var(--green); }
+  .finding.warn .finding-label { color: var(--orange); }
+  .finding .finding-label { color: var(--highlight); }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 0.92rem; }
+  th, td { padding: 10px 14px; text-align: left; border: 1px solid var(--border); }
+  th { background: var(--accent); color: white; font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.3px; }
+  tr:nth-child(even) { background: var(--light-bg); }
+
+  /* Code */
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.88em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+  /* Diagram containers */
+  .diagram-container { margin: 32px 0; padding: 24px; background: #fafbfc; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
+  .diagram-title { font-size: 1rem; font-weight: 700; color: var(--accent); text-align: center; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* SVG styles */
+  svg text { font-family: 'Inter', -apple-system, sans-serif; }
+
+  /* Score badges */
+  .score { display: inline-block; padding: 3px 10px; border-radius: 12px; font-weight: 700; font-size: 0.82rem; }
+  .score-red { background: #fde8e8; color: #c0392b; }
+  .score-orange { background: #fef3e2; color: #e67e22; }
+  .score-green { background: #e8f5e9; color: #0a8754; }
+
+  /* Improvement cards */
+  .improvement { background: linear-gradient(135deg, #f8f9fa 0%, #e8eef5 100%); border: 1px solid #d0d8e5; padding: 20px; margin: 16px 0; border-radius: 8px; }
+  .improvement-num { display: inline-block; width: 32px; height: 32px; background: var(--accent); color: white; border-radius: 50%; text-align: center; line-height: 32px; font-weight: 700; margin-right: 12px; font-size: 0.9rem; }
+
+  /* TOC */
+  .toc { background: var(--light-bg); border: 1px solid var(--border); border-radius: 8px; padding: 24px 32px; margin: 24px 0 40px; }
+  .toc h3 { margin-top: 0; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  @media print {
+    body { max-width: 100%; padding: 20px; }
+    .diagram-container { break-inside: avoid; }
+    h2 { break-before: page; }
+  }
+</style>
+</head>
+<body>
+
+<h1>AIVC GeneLink: World-Class Architecture Review &amp; Redesign</h1>
+<p class="subtitle">Critical assessment and production-grade redesign for a multi-omics same-cell AI platform</p>
+<div class="meta">
+  <span><strong>Prepared for:</strong> QuRIE-Gen / Ash Khan</span>
+  <span><strong>Date:</strong> 2026-03-23</span>
+  <span><strong>Version:</strong> 2.0 Architecture Proposal</span>
+  <span><strong>Classification:</strong> Confidential</span>
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#exec">Executive Summary</a></li>
+    <li><a href="#review">Deep Critical Review</a></li>
+    <li><a href="#arch">World-Class Architecture (Redesign)</a></li>
+    <li><a href="#archdiag">Architecture Diagram</a></li>
+    <li><a href="#erd">High-Level ERD</a></li>
+    <li><a href="#top5">Top 5 Improvements</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="exec">A. Executive Summary</h2>
+
+<h3>Where We Are Today</h3>
+<p>The current AIVC GeneLink system is a <strong>prototype-grade</strong> perturbation response predictor built on a 2-layer GAT with Neumann cascade propagation. It achieves Pearson r=0.873 on Kang 2018 PBMCs (IFN-&beta;), beating CPA (0.856) and scGEN (0.820). The orchestration layer (<code>aivc/</code>) introduces skill-based workflow composition, critic validation, session memory, and a structural causal model — all architecturally sound ideas.</p>
+
+<p>However, the system is <strong>not production-ready</strong> and has significant gaps preventing it from being a world-class multi-omics platform.</p>
+
+<h3>Key Issues (Brutally Honest)</h3>
+<table>
+  <tr><th>Dimension</th><th>Current State</th><th>Score</th></tr>
+  <tr><td>Architecture Modularity</td><td>Flat scripts + aivc/ framework — two parallel systems not integrated</td><td><span class="score score-orange">5/10</span></td></tr>
+  <tr><td>Model Design</td><td>Single-modality GAT with placeholder multi-modal code</td><td><span class="score score-orange">4/10</span></td></tr>
+  <tr><td>Data Strategy</td><td>File-based NumPy arrays, no schema, no versioning</td><td><span class="score score-red">3/10</span></td></tr>
+  <tr><td>Infrastructure</td><td>Manual S3 scripts, no orchestration, no CI/CD</td><td><span class="score score-red">2/10</span></td></tr>
+  <tr><td>Multi-Modal Fusion</td><td>Written but never trained — zero validation</td><td><span class="score score-red">2/10</span></td></tr>
+  <tr><td>Same-Cell Pairing</td><td>OT pairing exists for RNA only — not leveraging QuRIE-seq</td><td><span class="score score-red">1/10</span></td></tr>
+  <tr><td>Scale Readiness</td><td>~24K cells max, no sharding, no streaming</td><td><span class="score score-red">2/10</span></td></tr>
+</table>
+
+<h3>What Changes Are Needed</h3>
+<p>To reach Insilico Medicine / Recursion Pharmaceuticals caliber: (1) separate the data platform from the model layer with a proper feature store; (2) build and validate modality-specific encoders with real multi-omics data; (3) replace file-based data handling with a scalable cell-level database; (4) implement distributed training infrastructure; (5) close the active learning loop with real wet-lab integration; (6) establish CI/CD with biological regression guards.</p>
+
+<!-- ============================================================ -->
+<h2 id="review">B. Deep Critical Review</h2>
+
+<h3>B.1 Architecture</h3>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>Dual architecture with no integration.</strong> The root directory contains standalone scripts (<code>train_v11.py</code>, <code>evaluate_v11.py</code>) that operate independently from the <code>aivc/</code> skill-orchestrator framework. The orchestrator's <code>GATTrainer</code> skill wraps <code>train_week3.py</code>, not the latest <code>train_v11.py</code>. This means the orchestrator cannot actually run the best model. The two systems have diverged.
+</div>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>No data layer separation.</strong> Training scripts directly load <code>.h5ad</code> files, perform normalization inline, build graphs inline, and compute OT pairing inline. There is no distinction between raw data, processed features, and training-ready tensors. Every script re-derives everything from scratch.
+</div>
+
+<div class="finding warn">
+  <div class="finding-label">Warning</div>
+  <strong>Model checkpoints scattered.</strong> Model files exist in 4+ locations: root directory (<code>model_fixed.pt</code>, <code>model_perturbation*.pt</code>, <code>model_week3*.pt</code>), <code>models/v1.0/</code>, <code>models/week4/</code>. No model registry, no metadata linking a checkpoint to its training config/data hash.
+</div>
+
+<div class="finding good">
+  <div class="finding-label">Strength</div>
+  <strong>Critic system is well-conceived.</strong> The three-critic pattern (statistical, methodological, biological) is excellent. The biological critic with JAK-STAT recovery checks and quarantine thresholds is exactly the kind of domain-aware validation that differentiates serious platforms.
+</div>
+
+<div class="finding good">
+  <div class="finding-label">Strength</div>
+  <strong>Session memory with test-donor locking.</strong> The <code>SessionMemory.lock_test_donors()</code> pattern that prevents test set leakage is production-grade thinking — rare in academic codebases.
+</div>
+
+<h3>B.2 Model Design</h3>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>Multi-modal is vaporware.</strong> <code>TemporalCrossModalFusion</code>, <code>ATACSeqEncoder</code>, <code>StructuralCausalModel</code>, and <code>MultiDatasetDomainAdaptation</code> are implemented but never instantiated in any training script. Zero evidence of multi-modal training runs. The system is functionally single-modality (RNA only).
+</div>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>No protein or phospho-protein encoder.</strong> The fusion module references <code>protein_dim=128</code> and <code>phospho_dim=64</code> but no <code>ProteinEncoder</code> or <code>PhosphoEncoder</code> class exists anywhere in the codebase. The ATAC encoder exists but protein/phospho are missing entirely.
+</div>
+
+<div class="finding warn">
+  <div class="finding-label">Warning</div>
+  <strong>GeneLink backbone is underspecified for multi-omics.</strong> The current <code>GeneLink</code> GAT operates on a single gene-level graph (STRING PPI). For multi-omics, you need a heterogeneous graph with peak nodes, TF nodes, gene nodes, and protein nodes — each with typed edges. The current architecture cannot accommodate this without a rewrite.
+</div>
+
+<div class="finding warn">
+  <div class="finding-label">Warning</div>
+  <strong>Neumann propagation doesn't scale.</strong> The Neumann series <code>W^k</code> with dense multiplication is O(n&sup2;) per step. At 3,010 genes this is fine. At 20,000+ genes (genome-wide) this becomes prohibitive. Need sparse implementation with edge-list-based message passing.
+</div>
+
+<div class="finding good">
+  <div class="finding-label">Strength</div>
+  <strong>SCM with do-intervention is novel.</strong> The <code>do_peak_closed()</code> counterfactual — "what if this enhancer was silenced?" — is a compelling differentiator if connected to real ATAC data. The temporal ordering (ATAC→Phospho→RNA→Protein) is biologically sound.
+</div>
+
+<h3>B.3 Data Strategy</h3>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>No schema, no versioning, no lineage.</strong> Data is NumPy arrays on disk (<code>X_ctrl_ot.npy</code>, <code>X_stim_ot.npy</code>) with no metadata about which preprocessing version produced them, which gene list was used, or which cells were included. Regenerating training data requires re-running the full pipeline from scratch.
+</div>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>Same-cell pairing is not exploited.</strong> QuRIE-seq's key differentiator is paired same-cell multi-omics. The current OT pairing operates within RNA only (matching ctrl↔stim cells). There is no mechanism to align RNA + protein + phospho + ATAC measurements from the same physical cell — which is the entire point of the technology.
+</div>
+
+<div class="finding warn">
+  <div class="finding-label">Warning</div>
+  <strong>ImmPort pseudo-cell generation is scientifically questionable.</strong> <code>load_immport()</code> generates 50 pseudo-single-cells per bulk sample by adding Gaussian noise (<code>N(0, 0.1*|x|)</code>). This creates artificial data that doesn't reflect real single-cell heterogeneity. It's a reasonable bootstrap for W pre-training only (correctly flagged via <code>USE_FOR_W_ONLY</code>), but needs explicit documentation of limitations.
+</div>
+
+<h3>B.4 Infrastructure</h3>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>No CI/CD, no containerization, no reproducibility guarantee.</strong> <code>setup_gpu_instance.sh</code> is a manual bootstrap script. No Docker/Podman, no Terraform/Pulumi, no GitHub Actions. A collaborator cannot reproduce results without following a manual setup guide.
+</div>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>No experiment tracking.</strong> <code>ExperimentalMemory</code> saves JSON to disk — this is not MLflow, W&amp;B, or even a SQLite database. Hyperparameter sweeps in <code>train_v11.py</code> produce <code>.pt</code> files with no queryable metadata store.
+</div>
+
+<div class="finding">
+  <div class="finding-label">Critical Gap</div>
+  <strong>No serving infrastructure.</strong> No API, no model registry, no inference endpoint. The system cannot serve predictions to downstream consumers (UI, notebooks, wet-lab recommendations).
+</div>
+
+<!-- ============================================================ -->
+<h2 id="arch">C. World-Class Architecture (Redesign)</h2>
+
+<p>The following architecture is designed for a production-grade multi-omics AI platform capable of processing billions of cells across 4 modalities, with same-cell pairing as the core differentiator.</p>
+
+<h3>C.1 — Layer 1: Data Ingestion &amp; Processing</h3>
+
+<h4>Purpose</h4>
+<p>Accept raw multi-omics data from QuRIE-seq and external sources, validate, normalize, and register in the data catalog.</p>
+
+<h4>Components</h4>
+<table>
+  <tr><th>Component</th><th>Technology</th><th>Responsibility</th></tr>
+  <tr><td>Ingestion Gateway</td><td>FastAPI + Celery</td><td>Accept h5ad/h5mu uploads, validate schema, queue processing</td></tr>
+  <tr><td>Format Adapters</td><td>Custom Python</td><td>QuRIE-seq → MuData, 10x Multiome → MuData, CITEseq → MuData</td></tr>
+  <tr><td>QC Pipeline</td><td>Scanpy + ArchR + custom</td><td>Per-modality QC: doublet detection, ambient RNA removal, TSS enrichment, FRiP score</td></tr>
+  <tr><td>Normalization</td><td>scran (RNA), CLR (protein), chromVAR (ATAC), median-centering (phospho)</td><td>Modality-appropriate normalization with audit trail</td></tr>
+  <tr><td>Same-Cell Linker</td><td>Custom (barcode-based)</td><td><strong>Core differentiator:</strong> Link measurements across modalities by cell barcode. Validate pairing integrity. Flag cells with missing modalities.</td></tr>
+  <tr><td>Data Catalog</td><td>DVC + custom metadata DB</td><td>Version every artifact (raw → processed → features) with full lineage</td></tr>
+</table>
+
+<h4>Design Decision: Same-Cell Pairing</h4>
+<p>QuRIE-seq produces physically paired measurements. Every cell gets a <code>cell_barcode</code> that links its RNA, protein, phospho, and ATAC profiles. This is NOT the same as computational integration (Seurat WNN, MOFA+). Same-cell data eliminates the "integration problem" entirely — the pairing is ground truth. The architecture must preserve this linkage end-to-end, from ingestion through to inference.</p>
+
+<h3>C.2 — Layer 2: Feature Store / Data Lake</h3>
+
+<h4>Purpose</h4>
+<p>Store processed cell-level data at scale (billions of cells) with fast random access for training and serving.</p>
+
+<h4>Components</h4>
+<table>
+  <tr><th>Component</th><th>Technology</th><th>Responsibility</th></tr>
+  <tr><td>Cell Store</td><td>Apache Parquet on S3 (partitioned by experiment/sample) + DuckDB for queries</td><td>Store per-cell feature vectors (RNA: 2000-dim HVG, Protein: 200-dim, Phospho: 100-dim, ATAC: 800-dim chromVAR)</td></tr>
+  <tr><td>Graph Store</td><td>Neo4j or custom edge-list on Parquet</td><td>Gene-gene (STRING PPI), peak-gene links, TF-gene regulatory edges, protein-protein interactions</td></tr>
+  <tr><td>Embedding Store</td><td>Pinecone / pgvector / FAISS on S3</td><td>Pre-computed cell embeddings for similarity search, atlas alignment, neighbor queries</td></tr>
+  <tr><td>Metadata Store</td><td>PostgreSQL</td><td>Experiment, sample, cell metadata. Donor info, perturbation conditions, cell type annotations.</td></tr>
+  <tr><td>Feature Registry</td><td>Feast or custom</td><td>Track feature definitions (gene lists, normalization params, graph versions). Point-in-time correctness for training vs. serving.</td></tr>
+</table>
+
+<h4>Design Decision: Parquet over HDF5</h4>
+<p>AnnData/h5ad is convenient for small datasets but fails at scale: no column pruning, no predicate pushdown, no partition-level skipping. Parquet with Hive-style partitioning (<code>experiment_id/sample_id/</code>) enables reading only the cells needed for a training batch. DuckDB provides SQL over Parquet with zero-copy reads.</p>
+
+<h3>C.3 — Layer 3: Multi-Modal Model Layer</h3>
+
+<h4>Purpose</h4>
+<p>Modality-specific encoding → shared latent space → cross-modal learning → task-specific decoders.</p>
+
+<h4>Encoders</h4>
+<table>
+  <tr><th>Encoder</th><th>Architecture</th><th>Input</th><th>Output</th><th>Rationale</th></tr>
+  <tr><td><strong>RNA Encoder</strong></td><td>GAT (2-layer, 4-head) on PPI graph</td><td>(batch, n_genes) on gene graph</td><td>(batch, n_genes, 128)</td><td>Graph structure captures gene-gene interactions. Gene-level embeddings enable per-gene predictions.</td></tr>
+  <tr><td><strong>Protein Encoder</strong></td><td>MLP (3-layer) + cross-attention to RNA</td><td>(batch, n_proteins)</td><td>(batch, 128)</td><td>Protein panels are small (100-300). Cross-attention to RNA encoder queries gene-protein relationships.</td></tr>
+  <tr><td><strong>Phospho Encoder</strong></td><td>MLP (3-layer) + kinase-substrate graph attention</td><td>(batch, n_phosphosites)</td><td>(batch, 64)</td><td>Phospho-sites are sparse. Kinase-substrate graph (PhosphoSitePlus) provides biological structure.</td></tr>
+  <tr><td><strong>ATAC Encoder</strong></td><td>MLP on chromVAR TF scores</td><td>(batch, n_tfs)</td><td>(batch, 64)</td><td>Already implemented. chromVAR scores are dense aggregations of sparse peaks.</td></tr>
+</table>
+
+<h4>Fusion: Temporal Cross-Modal Attention</h4>
+<p>The existing <code>TemporalCrossModalFusion</code> design is sound. Key modifications:</p>
+<table>
+  <tr><th>Modification</th><th>Rationale</th></tr>
+  <tr><td>Add <strong>causal masking</strong> to attention: future modalities cannot attend to past</td><td>Enforces biological temporal order. ATAC (t=0) is causal; protein (t=3) is effect. Protein should not influence ATAC prediction.</td></tr>
+  <tr><td>Add <strong>modality dropout</strong> (randomly zero a modality during training)</td><td>Enables graceful degradation when a modality is missing at inference time. Critical for real-world deployment where not every cell has all 4 measurements.</td></tr>
+  <tr><td>Replace perturbation embedding with <strong>perturbation-aware cross-attention</strong></td><td>Fixed embedding for 10 perturbations doesn't scale. A learned perturbation representation (from gene targets, dosage, time) generalizes to unseen perturbations.</td></tr>
+</table>
+
+<h4>Cross-Modal Learning with Paired Data</h4>
+<p>This is where QuRIE-seq paired data becomes the key differentiator:</p>
+<table>
+  <tr><th>Loss</th><th>Formula Concept</th><th>Purpose</th></tr>
+  <tr><td>Paired Contrastive</td><td>Same-cell modality pairs are positive, cross-cell pairs are negative</td><td>Align modality-specific embeddings for the same cell in shared latent space</td></tr>
+  <tr><td>Cross-Modal Prediction</td><td>Predict protein from RNA embedding (and vice versa) for same-cell pairs</td><td>Learn cross-modal relationships that only same-cell data can provide</td></tr>
+  <tr><td>Causal Consistency</td><td>ATAC→Phospho→RNA→Protein ordering enforced</td><td>Already in SCM. Strengthen with paired data ground truth.</td></tr>
+  <tr><td>Perturbation Response</td><td>MSE + LFC + cosine (existing combined loss)</td><td>Primary task loss. Extended to multi-modal predictions.</td></tr>
+</table>
+
+<h4>Optional: Causal Modeling Layer</h4>
+<p>Extend the existing SCM with learned interventional distributions. For each <code>do(gene=knockdown)</code> intervention, propagate through the learned W matrix (Neumann series) to predict downstream effects across all modalities. Validate against Replogle 2022 CRISPRi ground truth.</p>
+
+<h3>C.4 — Layer 4: Training &amp; Experimentation</h3>
+
+<table>
+  <tr><th>Component</th><th>Technology</th><th>Responsibility</th></tr>
+  <tr><td>Experiment Tracker</td><td>MLflow or W&amp;B</td><td>Log every run: hyperparams, metrics, artifacts, data hashes, git SHA</td></tr>
+  <tr><td>Distributed Training</td><td>PyTorch DDP / DeepSpeed ZeRO</td><td>Multi-GPU training for billion-cell datasets</td></tr>
+  <tr><td>Data Loader</td><td>PyTorch IterableDataset + streaming from Parquet</td><td>Stream cells from feature store. No full-dataset-in-memory requirement.</td></tr>
+  <tr><td>Curriculum Manager</td><td>Extended PerturbationCurriculum</td><td>Staged training across datasets and modalities. Regression guards.</td></tr>
+  <tr><td>Hyperparameter Optimization</td><td>Optuna or Ray Tune</td><td>Bayesian HPO replacing manual sweep grids</td></tr>
+  <tr><td>Critic Gate</td><td>Statistical + Methodological + Biological critics</td><td>No model graduates training without passing all three. Already partially implemented.</td></tr>
+  <tr><td>CI/CD Pipeline</td><td>GitHub Actions + DVC</td><td>On every PR: run unit tests, check regression guards, validate data lineage</td></tr>
+</table>
+
+<h3>C.5 — Layer 5: Serving / Inference</h3>
+
+<table>
+  <tr><th>Component</th><th>Technology</th><th>Responsibility</th></tr>
+  <tr><td>Model Registry</td><td>MLflow Model Registry</td><td>Version, stage (dev/staging/prod), metadata for every model</td></tr>
+  <tr><td>Inference API</td><td>FastAPI + TorchServe or Triton</td><td>REST/gRPC endpoints: predict perturbation response, generate embeddings, run counterfactuals</td></tr>
+  <tr><td>Batch Inference</td><td>Spark or Ray</td><td>Score millions of cells for atlas-level analysis</td></tr>
+  <tr><td>Embedding Cache</td><td>Redis + FAISS</td><td>Cache frequently-queried cell embeddings for low-latency retrieval</td></tr>
+  <tr><td>A/B Testing</td><td>Custom routing layer</td><td>Compare model versions on live inference traffic</td></tr>
+</table>
+
+<h3>C.6 — Layer 6: Application / UI</h3>
+
+<table>
+  <tr><th>Component</th><th>Technology</th><th>Responsibility</th></tr>
+  <tr><td>Explorer Dashboard</td><td>React + D3.js / Plotly</td><td>Interactive UMAP/tSNE of cell embeddings. Color by cell type, perturbation, modality contribution.</td></tr>
+  <tr><td>Perturbation Simulator</td><td>React + API calls</td><td>Select gene → see predicted response across cell types and modalities. "What if STAT1 is knocked down?"</td></tr>
+  <tr><td>Experiment Designer</td><td>React + Active Learning API</td><td>View high-uncertainty regions. Recommend next QuRIE-seq experiments.</td></tr>
+  <tr><td>Jupyter Integration</td><td>Python SDK</td><td>Programmatic access to all API endpoints. <code>aivc.predict(gene='STAT1', perturbation='knockdown')</code></td></tr>
+  <tr><td>Report Generator</td><td>Automated notebooks</td><td>Generate investor-ready figures on demand</td></tr>
+</table>
+
+<h3>C.7 — Layer 7: Active Learning Loop (Wet Lab Integration)</h3>
+
+<table>
+  <tr><th>Component</th><th>Technology</th><th>Responsibility</th></tr>
+  <tr><td>Uncertainty Quantifier</td><td>MC Dropout / Deep Ensembles</td><td>Identify cells/genes/perturbations where model is least confident</td></tr>
+  <tr><td>Experiment Recommender</td><td>Acquisition function (UCB/EI)</td><td>Rank next-best experiments by expected information gain</td></tr>
+  <tr><td>Wet Lab Queue</td><td>LIMS integration or Benchling API</td><td>Push recommended experiments to lab management system</td></tr>
+  <tr><td>Data Ingest Trigger</td><td>Webhook / S3 event</td><td>When new QuRIE-seq data arrives, trigger ingestion → retraining pipeline</td></tr>
+  <tr><td>Model Update</td><td>Incremental fine-tuning</td><td>Update model with new data without full retraining. Curriculum stage progression.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="archdiag">D. Architecture Diagram</h2>
+
+<div class="diagram-container">
+  <div class="diagram-title">AIVC GeneLink — World-Class Multi-Omics Architecture</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 1520" width="1140" height="1520">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+      </marker>
+      <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f3460"/>
+      </marker>
+      <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e94560"/>
+      </marker>
+      <linearGradient id="layer1-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8f4fd"/><stop offset="100%" stop-color="#d1e8f8"/></linearGradient>
+      <linearGradient id="layer2-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8f5e9"/><stop offset="100%" stop-color="#c8e6c9"/></linearGradient>
+      <linearGradient id="layer3-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff3e0"/><stop offset="100%" stop-color="#ffe0b2"/></linearGradient>
+      <linearGradient id="layer4-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fce4ec"/><stop offset="100%" stop-color="#f8bbd0"/></linearGradient>
+      <linearGradient id="layer5-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ede7f6"/><stop offset="100%" stop-color="#d1c4e9"/></linearGradient>
+      <linearGradient id="layer6-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e0f2f1"/><stop offset="100%" stop-color="#b2dfdb"/></linearGradient>
+      <linearGradient id="layer7-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff9c4"/><stop offset="100%" stop-color="#fff176"/></linearGradient>
+    </defs>
+
+    <!-- Layer 7: Active Learning (top — feeds back down) -->
+    <rect x="20" y="20" width="1100" height="160" rx="8" fill="url(#layer7-bg)" stroke="#f9a825" stroke-width="2"/>
+    <text x="40" y="50" font-size="14" font-weight="700" fill="#e65100">LAYER 7 — ACTIVE LEARNING LOOP (WET LAB INTEGRATION)</text>
+    <rect x="40" y="65" width="195" height="52" rx="6" fill="#fff" stroke="#f9a825"/>
+    <text x="137" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Uncertainty</text>
+    <text x="137" y="103" text-anchor="middle" font-size="10" fill="#666">MC Dropout / Ensembles</text>
+    <rect x="255" y="65" width="195" height="52" rx="6" fill="#fff" stroke="#f9a825"/>
+    <text x="352" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Experiment Recommender</text>
+    <text x="352" y="103" text-anchor="middle" font-size="10" fill="#666">UCB / EI Acquisition</text>
+    <rect x="470" y="65" width="195" height="52" rx="6" fill="#fff" stroke="#f9a825"/>
+    <text x="567" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Wet Lab Queue</text>
+    <text x="567" y="103" text-anchor="middle" font-size="10" fill="#666">LIMS / Benchling API</text>
+    <rect x="685" y="65" width="195" height="52" rx="6" fill="#fff" stroke="#f9a825"/>
+    <text x="782" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Data Ingest Trigger</text>
+    <text x="782" y="103" text-anchor="middle" font-size="10" fill="#666">S3 Event / Webhook</text>
+    <rect x="900" y="65" width="195" height="52" rx="6" fill="#fff" stroke="#f9a825"/>
+    <text x="997" y="87" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Model Update</text>
+    <text x="997" y="103" text-anchor="middle" font-size="10" fill="#666">Incremental Fine-tune</text>
+    <!-- Arrows between L7 boxes -->
+    <line x1="235" y1="91" x2="255" y2="91" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="450" y1="91" x2="470" y2="91" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="665" y1="91" x2="685" y2="91" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="880" y1="91" x2="900" y2="91" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <!-- Feedback arrow -->
+    <path d="M 997 117 L 997 148 L 570 148 L 570 192" stroke="#e94560" stroke-width="2" fill="none" marker-end="url(#arrow-red)" stroke-dasharray="6 3"/>
+    <text x="780" y="145" font-size="10" fill="#e94560" font-style="italic">New QuRIE-seq data → re-ingest</text>
+
+    <!-- Layer 6: Application / UI -->
+    <rect x="20" y="192" width="1100" height="130" rx="8" fill="url(#layer6-bg)" stroke="#00897b" stroke-width="2"/>
+    <text x="40" y="222" font-size="14" font-weight="700" fill="#004d40">LAYER 6 — APPLICATION / UI</text>
+    <rect x="40" y="237" width="200" height="52" rx="6" fill="#fff" stroke="#00897b"/>
+    <text x="140" y="259" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Explorer Dashboard</text>
+    <text x="140" y="275" text-anchor="middle" font-size="10" fill="#666">React + D3 / Plotly</text>
+    <rect x="260" y="237" width="200" height="52" rx="6" fill="#fff" stroke="#00897b"/>
+    <text x="360" y="259" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Perturbation Simulator</text>
+    <text x="360" y="275" text-anchor="middle" font-size="10" fill="#666">Counterfactual "what-if"</text>
+    <rect x="480" y="237" width="200" height="52" rx="6" fill="#fff" stroke="#00897b"/>
+    <text x="580" y="259" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Experiment Designer</text>
+    <text x="580" y="275" text-anchor="middle" font-size="10" fill="#666">Active Learning UI</text>
+    <rect x="700" y="237" width="200" height="52" rx="6" fill="#fff" stroke="#00897b"/>
+    <text x="800" y="259" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Python SDK</text>
+    <text x="800" y="275" text-anchor="middle" font-size="10" fill="#666">aivc.predict() API</text>
+    <rect x="920" y="237" width="175" height="52" rx="6" fill="#fff" stroke="#00897b"/>
+    <text x="1007" y="259" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Report Generator</text>
+    <text x="1007" y="275" text-anchor="middle" font-size="10" fill="#666">Auto notebooks</text>
+
+    <!-- Layer 5: Serving / Inference -->
+    <rect x="20" y="334" width="1100" height="130" rx="8" fill="url(#layer5-bg)" stroke="#7e57c2" stroke-width="2"/>
+    <text x="40" y="364" font-size="14" font-weight="700" fill="#4527a0">LAYER 5 — SERVING / INFERENCE</text>
+    <rect x="40" y="379" width="210" height="52" rx="6" fill="#fff" stroke="#7e57c2"/>
+    <text x="145" y="401" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Model Registry</text>
+    <text x="145" y="417" text-anchor="middle" font-size="10" fill="#666">MLflow / Version + Stage</text>
+    <rect x="270" y="379" width="210" height="52" rx="6" fill="#fff" stroke="#7e57c2"/>
+    <text x="375" y="401" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Inference API</text>
+    <text x="375" y="417" text-anchor="middle" font-size="10" fill="#666">FastAPI + Triton</text>
+    <rect x="500" y="379" width="210" height="52" rx="6" fill="#fff" stroke="#7e57c2"/>
+    <text x="605" y="401" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Batch Inference</text>
+    <text x="605" y="417" text-anchor="middle" font-size="10" fill="#666">Ray / Spark</text>
+    <rect x="730" y="379" width="210" height="52" rx="6" fill="#fff" stroke="#7e57c2"/>
+    <text x="835" y="401" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Embedding Cache</text>
+    <text x="835" y="417" text-anchor="middle" font-size="10" fill="#666">Redis + FAISS</text>
+
+    <!-- Layer 4: Training & Experimentation -->
+    <rect x="20" y="476" width="1100" height="130" rx="8" fill="url(#layer4-bg)" stroke="#c62828" stroke-width="2"/>
+    <text x="40" y="506" font-size="14" font-weight="700" fill="#b71c1c">LAYER 4 — TRAINING &amp; EXPERIMENTATION</text>
+    <rect x="40" y="521" width="155" height="52" rx="6" fill="#fff" stroke="#c62828"/>
+    <text x="117" y="543" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Experiment</text>
+    <text x="117" y="559" text-anchor="middle" font-size="10" fill="#666">MLflow / W&amp;B</text>
+    <rect x="210" y="521" width="155" height="52" rx="6" fill="#fff" stroke="#c62828"/>
+    <text x="287" y="543" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Distributed</text>
+    <text x="287" y="559" text-anchor="middle" font-size="10" fill="#666">DDP / DeepSpeed</text>
+    <rect x="380" y="521" width="155" height="52" rx="6" fill="#fff" stroke="#c62828"/>
+    <text x="457" y="543" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Curriculum</text>
+    <text x="457" y="559" text-anchor="middle" font-size="10" fill="#666">Stage 1→4 Manager</text>
+    <rect x="550" y="521" width="155" height="52" rx="6" fill="#fff" stroke="#c62828"/>
+    <text x="627" y="543" text-anchor="middle" font-size="11" font-weight="600" fill="#333">HPO</text>
+    <text x="627" y="559" text-anchor="middle" font-size="10" fill="#666">Optuna / Ray Tune</text>
+    <rect x="720" y="521" width="155" height="52" rx="6" fill="#fff" stroke="#c62828"/>
+    <text x="797" y="543" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Critic Gate</text>
+    <text x="797" y="559" text-anchor="middle" font-size="10" fill="#666">Stat + Method + Bio</text>
+    <rect x="890" y="521" width="205" height="52" rx="6" fill="#fff" stroke="#c62828"/>
+    <text x="992" y="543" text-anchor="middle" font-size="11" font-weight="600" fill="#333">CI/CD Pipeline</text>
+    <text x="992" y="559" text-anchor="middle" font-size="10" fill="#666">GH Actions + Bio Guards</text>
+
+    <!-- Layer 3: Multi-Modal Model -->
+    <rect x="20" y="618" width="1100" height="310" rx="8" fill="url(#layer3-bg)" stroke="#ef6c00" stroke-width="2"/>
+    <text x="40" y="648" font-size="14" font-weight="700" fill="#e65100">LAYER 3 — MULTI-MODAL MODEL</text>
+
+    <!-- Encoders row -->
+    <text x="40" y="672" font-size="11" font-weight="600" fill="#555">MODALITY-SPECIFIC ENCODERS</text>
+    <rect x="40" y="682" width="220" height="64" rx="6" fill="#fff" stroke="#ef6c00" stroke-width="1.5"/>
+    <text x="150" y="704" text-anchor="middle" font-size="12" font-weight="700" fill="#e65100">RNA Encoder</text>
+    <text x="150" y="720" text-anchor="middle" font-size="10" fill="#666">GAT (2L, 4H) on PPI Graph</text>
+    <text x="150" y="734" text-anchor="middle" font-size="10" fill="#888">→ (batch, n_genes, 128)</text>
+
+    <rect x="280" y="682" width="220" height="64" rx="6" fill="#fff" stroke="#ef6c00" stroke-width="1.5"/>
+    <text x="390" y="704" text-anchor="middle" font-size="12" font-weight="700" fill="#ef6c00">Protein Encoder</text>
+    <text x="390" y="720" text-anchor="middle" font-size="10" fill="#666">MLP + RNA Cross-Attn</text>
+    <text x="390" y="734" text-anchor="middle" font-size="10" fill="#888">→ (batch, 128)</text>
+
+    <rect x="520" y="682" width="220" height="64" rx="6" fill="#fff" stroke="#ef6c00" stroke-width="1.5"/>
+    <text x="630" y="704" text-anchor="middle" font-size="12" font-weight="700" fill="#ef6c00">Phospho Encoder</text>
+    <text x="630" y="720" text-anchor="middle" font-size="10" fill="#666">MLP + Kinase-Substrate GAT</text>
+    <text x="630" y="734" text-anchor="middle" font-size="10" fill="#888">→ (batch, 64)</text>
+
+    <rect x="760" y="682" width="220" height="64" rx="6" fill="#fff" stroke="#ef6c00" stroke-width="1.5"/>
+    <text x="870" y="704" text-anchor="middle" font-size="12" font-weight="700" fill="#ef6c00">ATAC Encoder</text>
+    <text x="870" y="720" text-anchor="middle" font-size="10" fill="#666">MLP on chromVAR scores</text>
+    <text x="870" y="734" text-anchor="middle" font-size="10" fill="#888">→ (batch, 64)</text>
+
+    <!-- Arrows from encoders to fusion -->
+    <line x1="150" y1="746" x2="150" y2="770" stroke="#ef6c00" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="390" y1="746" x2="390" y2="770" stroke="#ef6c00" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="630" y1="746" x2="630" y2="770" stroke="#ef6c00" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="870" y1="746" x2="870" y2="770" stroke="#ef6c00" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Fusion -->
+    <rect x="40" y="770" width="690" height="56" rx="6" fill="#fff8e1" stroke="#ef6c00" stroke-width="2"/>
+    <text x="385" y="794" text-anchor="middle" font-size="13" font-weight="700" fill="#e65100">Temporal Cross-Modal Fusion (Causal Masking + Modality Dropout)</text>
+    <text x="385" y="812" text-anchor="middle" font-size="10" fill="#666">ATAC(t=0) → Phospho(t=1) → RNA(t=2) → Protein(t=3)  |  Output: 384-dim shared latent</text>
+
+    <!-- SCM -->
+    <rect x="750" y="770" width="345" height="56" rx="6" fill="#fff8e1" stroke="#c62828" stroke-width="2"/>
+    <text x="922" y="794" text-anchor="middle" font-size="13" font-weight="700" fill="#c62828">Structural Causal Model</text>
+    <text x="922" y="812" text-anchor="middle" font-size="10" fill="#666">do(X) interventions + consistency loss</text>
+
+    <!-- Arrow from fusion to decoders -->
+    <line x1="385" y1="826" x2="385" y2="852" stroke="#ef6c00" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Decoders row -->
+    <text x="40" y="865" font-size="11" font-weight="600" fill="#555">TASK-SPECIFIC DECODERS</text>
+    <rect x="40" y="874" width="245" height="40" rx="5" fill="#fff" stroke="#ef6c00"/>
+    <text x="162" y="899" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Perturbation Response</text>
+    <rect x="305" y="874" width="245" height="40" rx="5" fill="#fff" stroke="#ef6c00"/>
+    <text x="427" y="899" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Cell Type Classifier</text>
+    <rect x="570" y="874" width="245" height="40" rx="5" fill="#fff" stroke="#ef6c00"/>
+    <text x="692" y="899" text-anchor="middle" font-size="11" font-weight="600" fill="#333">GRN Inference (Neumann)</text>
+    <rect x="835" y="874" width="260" height="40" rx="5" fill="#fff" stroke="#ef6c00"/>
+    <text x="965" y="899" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Drug Sensitivity Predictor</text>
+
+    <!-- Layer 2: Feature Store -->
+    <rect x="20" y="940" width="1100" height="160" rx="8" fill="url(#layer2-bg)" stroke="#2e7d32" stroke-width="2"/>
+    <text x="40" y="970" font-size="14" font-weight="700" fill="#1b5e20">LAYER 2 — FEATURE STORE / DATA LAKE</text>
+    <rect x="40" y="985" width="200" height="80" rx="6" fill="#fff" stroke="#2e7d32"/>
+    <text x="140" y="1010" text-anchor="middle" font-size="11" font-weight="700" fill="#333">Cell Store</text>
+    <text x="140" y="1025" text-anchor="middle" font-size="10" fill="#666">Parquet on S3</text>
+    <text x="140" y="1040" text-anchor="middle" font-size="10" fill="#666">(partitioned by exp/sample)</text>
+    <text x="140" y="1055" text-anchor="middle" font-size="10" fill="#888">+ DuckDB queries</text>
+
+    <rect x="260" y="985" width="200" height="80" rx="6" fill="#fff" stroke="#2e7d32"/>
+    <text x="360" y="1010" text-anchor="middle" font-size="11" font-weight="700" fill="#333">Graph Store</text>
+    <text x="360" y="1025" text-anchor="middle" font-size="10" fill="#666">Gene-Gene (STRING PPI)</text>
+    <text x="360" y="1040" text-anchor="middle" font-size="10" fill="#666">Peak-Gene Links</text>
+    <text x="360" y="1055" text-anchor="middle" font-size="10" fill="#888">Kinase-Substrate</text>
+
+    <rect x="480" y="985" width="200" height="80" rx="6" fill="#fff" stroke="#2e7d32"/>
+    <text x="580" y="1010" text-anchor="middle" font-size="11" font-weight="700" fill="#333">Embedding Store</text>
+    <text x="580" y="1025" text-anchor="middle" font-size="10" fill="#666">pgvector / FAISS</text>
+    <text x="580" y="1040" text-anchor="middle" font-size="10" fill="#666">Cell embeddings</text>
+    <text x="580" y="1055" text-anchor="middle" font-size="10" fill="#888">Nearest-neighbor search</text>
+
+    <rect x="700" y="985" width="200" height="80" rx="6" fill="#fff" stroke="#2e7d32"/>
+    <text x="800" y="1010" text-anchor="middle" font-size="11" font-weight="700" fill="#333">Metadata Store</text>
+    <text x="800" y="1025" text-anchor="middle" font-size="10" fill="#666">PostgreSQL</text>
+    <text x="800" y="1040" text-anchor="middle" font-size="10" fill="#666">Experiment / Sample / Cell</text>
+    <text x="800" y="1055" text-anchor="middle" font-size="10" fill="#888">Perturbation catalog</text>
+
+    <rect x="920" y="985" width="175" height="80" rx="6" fill="#fff" stroke="#2e7d32"/>
+    <text x="1007" y="1010" text-anchor="middle" font-size="11" font-weight="700" fill="#333">Feature Registry</text>
+    <text x="1007" y="1025" text-anchor="middle" font-size="10" fill="#666">Feast / Custom</text>
+    <text x="1007" y="1040" text-anchor="middle" font-size="10" fill="#666">Definitions + versions</text>
+    <text x="1007" y="1055" text-anchor="middle" font-size="10" fill="#888">Training-serving parity</text>
+
+    <!-- Layer 1: Data Ingestion -->
+    <rect x="20" y="1120" width="1100" height="190" rx="8" fill="url(#layer1-bg)" stroke="#1565c0" stroke-width="2"/>
+    <text x="40" y="1150" font-size="14" font-weight="700" fill="#0d47a1">LAYER 1 — DATA INGESTION &amp; PROCESSING</text>
+
+    <rect x="40" y="1165" width="170" height="52" rx="6" fill="#fff" stroke="#1565c0"/>
+    <text x="125" y="1187" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Ingestion Gateway</text>
+    <text x="125" y="1203" text-anchor="middle" font-size="10" fill="#666">FastAPI + Celery</text>
+
+    <rect x="225" y="1165" width="170" height="52" rx="6" fill="#fff" stroke="#1565c0"/>
+    <text x="310" y="1187" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Format Adapters</text>
+    <text x="310" y="1203" text-anchor="middle" font-size="10" fill="#666">QuRIE/10x/CITE → MuData</text>
+
+    <rect x="410" y="1165" width="170" height="52" rx="6" fill="#fff" stroke="#1565c0"/>
+    <text x="495" y="1187" text-anchor="middle" font-size="11" font-weight="600" fill="#333">QC Pipeline</text>
+    <text x="495" y="1203" text-anchor="middle" font-size="10" fill="#666">Scanpy + ArchR + custom</text>
+
+    <rect x="595" y="1165" width="170" height="52" rx="6" fill="#fff" stroke="#1565c0"/>
+    <text x="680" y="1187" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Normalization</text>
+    <text x="680" y="1203" text-anchor="middle" font-size="10" fill="#666">scran/CLR/chromVAR</text>
+
+    <rect x="780" y="1165" width="170" height="52" rx="6" fill="#e3f2fd" stroke="#0d47a1" stroke-width="2"/>
+    <text x="865" y="1187" text-anchor="middle" font-size="11" font-weight="700" fill="#0d47a1">Same-Cell Linker</text>
+    <text x="865" y="1203" text-anchor="middle" font-size="10" fill="#0d47a1">Barcode Pairing ★</text>
+
+    <rect x="965" y="1165" width="130" height="52" rx="6" fill="#fff" stroke="#1565c0"/>
+    <text x="1030" y="1187" text-anchor="middle" font-size="11" font-weight="600" fill="#333">Data Catalog</text>
+    <text x="1030" y="1203" text-anchor="middle" font-size="10" fill="#666">DVC + Lineage</text>
+
+    <!-- Data Sources -->
+    <text x="40" y="1244" font-size="11" font-weight="600" fill="#555">DATA SOURCES</text>
+    <rect x="40" y="1254" width="150" height="40" rx="5" fill="#bbdefb" stroke="#1565c0"/>
+    <text x="115" y="1279" text-anchor="middle" font-size="11" font-weight="600" fill="#0d47a1">QuRIE-seq</text>
+    <rect x="210" y="1254" width="150" height="40" rx="5" fill="#bbdefb" stroke="#1565c0"/>
+    <text x="285" y="1279" text-anchor="middle" font-size="11" font-weight="600" fill="#0d47a1">10x Multiome</text>
+    <rect x="380" y="1254" width="150" height="40" rx="5" fill="#bbdefb" stroke="#1565c0"/>
+    <text x="455" y="1279" text-anchor="middle" font-size="11" font-weight="600" fill="#0d47a1">CITEseq</text>
+    <rect x="550" y="1254" width="150" height="40" rx="5" fill="#bbdefb" stroke="#1565c0"/>
+    <text x="625" y="1279" text-anchor="middle" font-size="11" font-weight="600" fill="#0d47a1">Kang 2018</text>
+    <rect x="720" y="1254" width="150" height="40" rx="5" fill="#bbdefb" stroke="#1565c0"/>
+    <text x="795" y="1279" text-anchor="middle" font-size="11" font-weight="600" fill="#0d47a1">Frangieh 2021</text>
+    <rect x="890" y="1254" width="150" height="40" rx="5" fill="#bbdefb" stroke="#1565c0"/>
+    <text x="965" y="1279" text-anchor="middle" font-size="11" font-weight="600" fill="#0d47a1">Replogle 2022</text>
+
+    <!-- Vertical data flow arrows between layers -->
+    <line x1="570" y1="1120" x2="570" y2="1100" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="570" y1="940" x2="570" y2="920" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="570" y1="618" x2="570" y2="606" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="570" y1="476" x2="570" y2="464" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="570" y1="334" x2="570" y2="322" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="570" y1="192" x2="570" y2="180" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Cross-layer labels -->
+    <text x="590" y="1115" font-size="9" fill="#555" font-style="italic">Processed cells + metadata</text>
+    <text x="590" y="935" font-size="9" fill="#555" font-style="italic">Feature vectors + graphs</text>
+    <text x="590" y="612" font-size="9" fill="#555" font-style="italic">Embeddings + predictions</text>
+    <text x="590" y="470" font-size="9" fill="#555" font-style="italic">Trained models + metrics</text>
+    <text x="590" y="328" font-size="9" fill="#555" font-style="italic">Registered models</text>
+    <text x="590" y="186" font-size="9" fill="#555" font-style="italic">API responses</text>
+
+    <!-- Watermark -->
+    <text x="570" y="1510" text-anchor="middle" font-size="10" fill="#999">AIVC GeneLink Architecture v2.0 — QuRIE-Gen Confidential — 2026-03-23</text>
+  </svg>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="erd">E. High-Level ERD</h2>
+
+<div class="diagram-container">
+  <div class="diagram-title">AIVC GeneLink — Entity Relationship Diagram (Billion-Cell Scale)</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 920" width="1100" height="920">
+    <defs>
+      <marker id="erd-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+      </marker>
+      <marker id="erd-one" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+        <line x1="0" y1="0" x2="0" y2="10" stroke="#555" stroke-width="2"/>
+      </marker>
+      <marker id="erd-many" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+        <path d="M 0 5 L 8 0 M 0 5 L 8 10 M 0 5 L 8 5" stroke="#555" stroke-width="1.5" fill="none"/>
+      </marker>
+    </defs>
+
+    <style>
+      .ent-box { fill: #fff; stroke: #333; stroke-width: 1.5; rx: 6; }
+      .ent-header { fill: #0f3460; rx: 6; }
+      .ent-header-text { fill: white; font-size: 13px; font-weight: 700; text-anchor: middle; }
+      .ent-pk { fill: #333; font-size: 10.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+      .ent-fk { fill: #0f3460; font-size: 10.5px; font-style: italic; font-family: 'JetBrains Mono', monospace; }
+      .ent-attr { fill: #555; font-size: 10.5px; font-family: 'JetBrains Mono', monospace; }
+      .rel-line { stroke: #555; stroke-width: 1.5; fill: none; }
+      .rel-label { fill: #888; font-size: 9px; font-style: italic; }
+    </style>
+
+    <!-- EXPERIMENT -->
+    <g transform="translate(20, 20)">
+      <rect class="ent-box" x="0" y="0" width="220" height="150"/>
+      <rect class="ent-header" x="0" y="0" width="220" height="28"/>
+      <text class="ent-header-text" x="110" y="19">EXPERIMENT</text>
+      <text class="ent-pk" x="12" y="50">PK  experiment_id  UUID</text>
+      <line x1="8" y1="57" x2="212" y2="57" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="72">name            VARCHAR</text>
+      <text class="ent-attr" x="12" y="87">species         VARCHAR</text>
+      <text class="ent-attr" x="12" y="102">platform        VARCHAR</text>
+      <text class="ent-attr" x="12" y="117">date_created    TIMESTAMP</text>
+      <text class="ent-attr" x="12" y="132">description     TEXT</text>
+    </g>
+
+    <!-- SAMPLE -->
+    <g transform="translate(320, 20)">
+      <rect class="ent-box" x="0" y="0" width="220" height="180"/>
+      <rect class="ent-header" x="0" y="0" width="220" height="28"/>
+      <text class="ent-header-text" x="110" y="19">SAMPLE</text>
+      <text class="ent-pk" x="12" y="50">PK  sample_id      UUID</text>
+      <text class="ent-fk" x="12" y="65">FK  experiment_id  UUID</text>
+      <line x1="8" y1="72" x2="212" y2="72" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="87">donor_id        VARCHAR</text>
+      <text class="ent-attr" x="12" y="102">tissue          VARCHAR</text>
+      <text class="ent-attr" x="12" y="117">condition       VARCHAR</text>
+      <text class="ent-attr" x="12" y="132">perturbation_id INT</text>
+      <text class="ent-attr" x="12" y="147">in_test_set     BOOLEAN</text>
+      <text class="ent-attr" x="12" y="162">cell_count      BIGINT</text>
+    </g>
+
+    <!-- CELL -->
+    <g transform="translate(620, 20)">
+      <rect class="ent-box" x="0" y="0" width="220" height="210"/>
+      <rect class="ent-header" x="0" y="0" width="220" height="28"/>
+      <text class="ent-header-text" x="110" y="19">CELL</text>
+      <text class="ent-pk" x="12" y="50">PK  cell_id        BIGINT</text>
+      <text class="ent-fk" x="12" y="65">FK  sample_id      UUID</text>
+      <line x1="8" y1="72" x2="212" y2="72" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="87">barcode         VARCHAR(32)</text>
+      <text class="ent-attr" x="12" y="102">cell_type       VARCHAR</text>
+      <text class="ent-attr" x="12" y="117">n_genes         INT</text>
+      <text class="ent-attr" x="12" y="132">n_umi           INT</text>
+      <text class="ent-attr" x="12" y="147">doublet_score   FLOAT</text>
+      <text class="ent-attr" x="12" y="162">qc_pass         BOOLEAN</text>
+      <text class="ent-attr" x="12" y="177">partition_key   INT</text>
+      <text class="ent-attr" x="12" y="192" style="fill:#c62828; font-weight:600">★ same-cell link anchor</text>
+    </g>
+
+    <!-- MODALITY -->
+    <g transform="translate(20, 260)">
+      <rect class="ent-box" x="0" y="0" width="220" height="135"/>
+      <rect class="ent-header" x="0" y="0" width="220" height="28"/>
+      <text class="ent-header-text" x="110" y="19">MODALITY</text>
+      <text class="ent-pk" x="12" y="50">PK  modality_id    INT</text>
+      <line x1="8" y1="57" x2="212" y2="57" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="72">name            VARCHAR</text>
+      <text class="ent-attr" x="12" y="87">temporal_order  INT</text>
+      <text class="ent-attr" x="12" y="102">norm_method     VARCHAR</text>
+      <text class="ent-attr" x="12" y="117">feature_count   INT</text>
+    </g>
+
+    <!-- FEATURE -->
+    <g transform="translate(320, 260)">
+      <rect class="ent-box" x="0" y="0" width="220" height="165"/>
+      <rect class="ent-header" x="0" y="0" width="220" height="28"/>
+      <text class="ent-header-text" x="110" y="19">FEATURE</text>
+      <text class="ent-pk" x="12" y="50">PK  feature_id     INT</text>
+      <text class="ent-fk" x="12" y="65">FK  modality_id    INT</text>
+      <line x1="8" y1="72" x2="212" y2="72" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="87">name            VARCHAR</text>
+      <text class="ent-attr" x="12" y="102">feature_type    ENUM</text>
+      <text class="ent-attr" x="12" y="117">   gene|protein|phospho</text>
+      <text class="ent-attr" x="12" y="132">   |peak|tf_motif</text>
+      <text class="ent-attr" x="12" y="147">chromosome      VARCHAR</text>
+    </g>
+
+    <!-- MEASUREMENT (the big one) -->
+    <g transform="translate(620, 260)">
+      <rect class="ent-box" x="0" y="0" width="240" height="180"/>
+      <rect class="ent-header" x="0" y="0" width="240" height="28"/>
+      <text class="ent-header-text" x="120" y="19">MEASUREMENT</text>
+      <text class="ent-pk" x="12" y="50">PK  cell_id        BIGINT</text>
+      <text class="ent-pk" x="12" y="65">PK  modality_id    INT</text>
+      <line x1="8" y1="72" x2="228" y2="72" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="87">values          FLOAT[]</text>
+      <text class="ent-attr" x="12" y="102">   (sparse COO or dense)</text>
+      <text class="ent-attr" x="12" y="117">quality_score   FLOAT</text>
+      <text class="ent-attr" x="12" y="132">n_nonzero       INT</text>
+      <text class="ent-attr" x="12" y="147">norm_version    INT</text>
+      <text class="ent-attr" x="12" y="162" style="fill:#888; font-size:9px">Partitioned: cell_id % 1024</text>
+    </g>
+
+    <!-- EMBEDDING -->
+    <g transform="translate(20, 480)">
+      <rect class="ent-box" x="0" y="0" width="240" height="180"/>
+      <rect class="ent-header" x="0" y="0" width="240" height="28"/>
+      <text class="ent-header-text" x="120" y="19">EMBEDDING</text>
+      <text class="ent-pk" x="12" y="50">PK  embedding_id   BIGINT</text>
+      <text class="ent-fk" x="12" y="65">FK  cell_id        BIGINT</text>
+      <text class="ent-fk" x="12" y="80">FK  model_id       UUID</text>
+      <line x1="8" y1="87" x2="228" y2="87" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="102">modality        VARCHAR</text>
+      <text class="ent-attr" x="12" y="117">vector          FLOAT[384]</text>
+      <text class="ent-attr" x="12" y="132">layer           VARCHAR</text>
+      <text class="ent-attr" x="12" y="147">   encoder|fused|latent</text>
+      <text class="ent-attr" x="12" y="162">created_at      TIMESTAMP</text>
+    </g>
+
+    <!-- MODEL_OUTPUT -->
+    <g transform="translate(320, 480)">
+      <rect class="ent-box" x="0" y="0" width="240" height="195"/>
+      <rect class="ent-header" x="0" y="0" width="240" height="28"/>
+      <text class="ent-header-text" x="120" y="19">MODEL_OUTPUT</text>
+      <text class="ent-pk" x="12" y="50">PK  output_id      BIGINT</text>
+      <text class="ent-fk" x="12" y="65">FK  cell_id        BIGINT</text>
+      <text class="ent-fk" x="12" y="80">FK  model_id       UUID</text>
+      <line x1="8" y1="87" x2="228" y2="87" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="102">task            VARCHAR</text>
+      <text class="ent-attr" x="12" y="117">   perturbation_response</text>
+      <text class="ent-attr" x="12" y="132">   |cell_type|grn|drug</text>
+      <text class="ent-attr" x="12" y="147">predicted       FLOAT[]</text>
+      <text class="ent-attr" x="12" y="162">confidence      FLOAT</text>
+      <text class="ent-attr" x="12" y="177">critic_pass     BOOLEAN</text>
+    </g>
+
+    <!-- MODEL -->
+    <g transform="translate(620, 480)">
+      <rect class="ent-box" x="0" y="0" width="240" height="210"/>
+      <rect class="ent-header" x="0" y="0" width="240" height="28"/>
+      <text class="ent-header-text" x="120" y="19">MODEL</text>
+      <text class="ent-pk" x="12" y="50">PK  model_id       UUID</text>
+      <line x1="8" y1="57" x2="228" y2="57" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="72">name            VARCHAR</text>
+      <text class="ent-attr" x="12" y="87">version         VARCHAR</text>
+      <text class="ent-attr" x="12" y="102">stage           ENUM</text>
+      <text class="ent-attr" x="12" y="117">   dev|staging|prod</text>
+      <text class="ent-attr" x="12" y="132">pearson_r       FLOAT</text>
+      <text class="ent-attr" x="12" y="147">jakstat_recovery INT</text>
+      <text class="ent-attr" x="12" y="162">checkpoint_uri  VARCHAR</text>
+      <text class="ent-attr" x="12" y="177">hyperparams     JSONB</text>
+      <text class="ent-attr" x="12" y="192">data_hash       VARCHAR</text>
+    </g>
+
+    <!-- FEATURE_GRAPH_EDGE -->
+    <g transform="translate(20, 720)">
+      <rect class="ent-box" x="0" y="0" width="260" height="165"/>
+      <rect class="ent-header" x="0" y="0" width="260" height="28"/>
+      <text class="ent-header-text" x="130" y="19">FEATURE_GRAPH_EDGE</text>
+      <text class="ent-pk" x="12" y="50">PK  edge_id        BIGINT</text>
+      <text class="ent-fk" x="12" y="65">FK  source_feat_id INT</text>
+      <text class="ent-fk" x="12" y="80">FK  target_feat_id INT</text>
+      <line x1="8" y1="87" x2="248" y2="87" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="102">edge_type       ENUM</text>
+      <text class="ent-attr" x="12" y="117">   ppi|peak_gene|kinase</text>
+      <text class="ent-attr" x="12" y="132">   |tf_target|causal</text>
+      <text class="ent-attr" x="12" y="147">weight          FLOAT</text>
+    </g>
+
+    <!-- PERTURBATION -->
+    <g transform="translate(820, 20)">
+      <rect class="ent-box" x="0" y="0" width="240" height="195" fill="#fff3e0"/>
+      <rect x="0" y="0" width="240" height="28" rx="6" fill="#ef6c00"/>
+      <text class="ent-header-text" x="120" y="19">PERTURBATION</text>
+      <text class="ent-pk" x="12" y="50">PK  perturbation_id INT</text>
+      <line x1="8" y1="57" x2="228" y2="57" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="72">name            VARCHAR</text>
+      <text class="ent-attr" x="12" y="87">type            ENUM</text>
+      <text class="ent-attr" x="12" y="102">   cytokine|crispr_ko</text>
+      <text class="ent-attr" x="12" y="117">   |drug|genetic</text>
+      <text class="ent-attr" x="12" y="132">target_genes    VARCHAR[]</text>
+      <text class="ent-attr" x="12" y="147">dosage          FLOAT</text>
+      <text class="ent-attr" x="12" y="162">time_hours      FLOAT</text>
+      <text class="ent-attr" x="12" y="177">dataset_source  VARCHAR</text>
+    </g>
+
+    <!-- ACTIVE_LEARNING_QUEUE -->
+    <g transform="translate(820, 260)">
+      <rect class="ent-box" x="0" y="0" width="240" height="150" fill="#fff9c4"/>
+      <rect x="0" y="0" width="240" height="28" rx="6" fill="#f9a825"/>
+      <text class="ent-header-text" x="120" y="19">AL_RECOMMENDATION</text>
+      <text class="ent-pk" x="12" y="50">PK  rec_id         INT</text>
+      <text class="ent-fk" x="12" y="65">FK  model_id       UUID</text>
+      <line x1="8" y1="72" x2="228" y2="72" stroke="#ddd"/>
+      <text class="ent-attr" x="12" y="87">target_genes    VARCHAR[]</text>
+      <text class="ent-attr" x="12" y="102">uncertainty     FLOAT</text>
+      <text class="ent-attr" x="12" y="117">priority        INT</text>
+      <text class="ent-attr" x="12" y="132">status          ENUM</text>
+    </g>
+
+    <!-- Relationships -->
+    <!-- Experiment 1 ——< Sample -->
+    <line x1="240" y1="80" x2="320" y2="80" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="275" y="73" class="rel-label">1:N</text>
+
+    <!-- Sample 1 ——< Cell -->
+    <line x1="540" y1="80" x2="620" y2="80" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="575" y="73" class="rel-label">1:N</text>
+
+    <!-- Cell 1 ——< Measurement -->
+    <line x1="730" y1="230" x2="730" y2="260" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="740" y="248" class="rel-label">1:N (per modality)</text>
+
+    <!-- Modality 1 ——< Feature -->
+    <line x1="240" y1="330" x2="320" y2="330" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="275" y="323" class="rel-label">1:N</text>
+
+    <!-- Cell ——< Embedding -->
+    <path d="M 620 210 L 620 240 L 140 240 L 140 480" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="350" y="235" class="rel-label">1:N (per model)</text>
+
+    <!-- Cell ——< ModelOutput -->
+    <path d="M 730 230 L 730 450 L 440 450 L 440 480" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="590" y="443" class="rel-label">1:N (per task per model)</text>
+
+    <!-- Model —— Embedding -->
+    <line x1="620" y1="570" x2="260" y2="570" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="430" y="563" class="rel-label">1:N</text>
+
+    <!-- Model —— ModelOutput -->
+    <line x1="620" y1="540" x2="560" y2="540" class="rel-line" marker-end="url(#erd-many)"/>
+
+    <!-- Feature —— FeatureGraphEdge -->
+    <path d="M 320 395 L 150 395 L 150 720" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="158" y="560" class="rel-label">N:M via edges</text>
+
+    <!-- Sample —— Perturbation -->
+    <line x1="540" y1="110" x2="820" y2="110" class="rel-line"/>
+    <text x="680" y="103" class="rel-label">N:1</text>
+
+    <!-- Measurement-Modality -->
+    <path d="M 130 395 L 130 440 L 620 440" class="rel-line" marker-end="url(#erd-many)"/>
+    <text x="380" y="433" class="rel-label">1:N</text>
+
+    <!-- Scale annotations -->
+    <g transform="translate(360, 740)">
+      <rect x="0" y="0" width="700" height="160" rx="8" fill="#f5f5f5" stroke="#ccc"/>
+      <text x="20" y="25" font-size="13" font-weight="700" fill="#333">Scale &amp; Partitioning Strategy</text>
+      <text x="20" y="50" font-size="11" fill="#555">CELL:          ~10⁹ rows.  Partitioned by cell_id % 1024 shards.  BIGINT PK.</text>
+      <text x="20" y="68" font-size="11" fill="#555">MEASUREMENT:   ~4 × 10⁹ rows (4 modalities per cell).  Composite PK (cell_id, modality_id).</text>
+      <text x="20" y="86" font-size="11" fill="#555">                 Stored as Parquet with columnar compression (~10:1 for sparse RNA).</text>
+      <text x="20" y="104" font-size="11" fill="#555">EMBEDDING:     ~10⁹ rows (one 384-dim vector per cell).  pgvector for ANN search.</text>
+      <text x="20" y="122" font-size="11" fill="#555">FEATURE_GRAPH: ~10⁶ edges.  In-memory during training.  Neo4j for exploratory queries.</text>
+      <text x="20" y="140" font-size="11" fill="#555">SAME-CELL:     The cell_id is the join key.  All modality measurements share the same cell_id.</text>
+    </g>
+
+    <text x="550" y="915" text-anchor="middle" font-size="10" fill="#999">AIVC GeneLink ERD v2.0 — QuRIE-Gen Confidential — 2026-03-23</text>
+  </svg>
+</div>
+
+<h3>ERD Implementation Notes</h3>
+
+<h4>Same-Cell Linkage (The Key Differentiator)</h4>
+<p>The <code>CELL</code> entity is the anchor for same-cell pairing. When QuRIE-seq produces measurements, each physical cell gets one <code>cell_id</code>. Its RNA, protein, phospho, and ATAC measurements are stored as separate rows in <code>MEASUREMENT</code>, all sharing the same <code>cell_id</code>. A simple join on <code>cell_id</code> reconstructs the full multi-omics profile. This is fundamentally different from computational integration where pairing is inferred — here, the pairing is physically guaranteed.</p>
+
+<h4>Scalability to Billions</h4>
+<p>MEASUREMENT is the largest table (~4B rows for 1B cells × 4 modalities). Partitioning strategy: hash-partition on <code>cell_id % 1024</code> for parallel reads. Parquet columnar format with dictionary encoding for sparse RNA data achieves ~10:1 compression. DuckDB enables SQL queries directly over Parquet without loading into a database.</p>
+
+<h4>Feature Graph vs. Measurement</h4>
+<p>The <code>FEATURE_GRAPH_EDGE</code> table stores biological relationships between features (genes, proteins, peaks). This is separate from measurements — it represents prior knowledge (STRING PPI, PhosphoSitePlus, peak-gene links). During training, this graph is loaded once and reused. The edge types enable heterogeneous graph construction for the GAT encoder.</p>
+
+<!-- ============================================================ -->
+<h2 id="top5">F. Top 5 Improvements to Reach World-Class</h2>
+
+<div class="improvement">
+  <span class="improvement-num">1</span>
+  <strong>Build and Validate Real Multi-Modal Encoders</strong>
+  <p style="margin-top:8px">The single highest-impact change. Today, multi-modal code is vaporware — written but untrained. Implement ProteinEncoder (MLP + cross-attention to RNA), PhosphoEncoder (MLP + kinase-substrate graph), connect them through the fusion module, and train on actual paired QuRIE-seq data. Without this, the platform has no differentiator over scGPT, Geneformer, or CPA.</p>
+  <p><strong>Success metric:</strong> Multi-modal model outperforms RNA-only model on perturbation prediction (Pearson r delta > 0.02). Cross-modal prediction loss (predict protein from RNA) converges below random baseline.</p>
+</div>
+
+<div class="improvement">
+  <span class="improvement-num">2</span>
+  <strong>Implement Same-Cell Contrastive Learning</strong>
+  <p style="margin-top:8px">QuRIE-seq's physical pairing is unused. Implement paired contrastive loss: for each cell, its RNA embedding and protein embedding should be closer to each other than to embeddings from other cells. This creates a shared latent space grounded in biological reality — not computational integration. Add cross-modal prediction tasks (RNA→protein, protein→RNA) to learn directional relationships.</p>
+  <p><strong>Success metric:</strong> Cell embeddings from different modalities cluster by cell identity (not modality). Cross-modal prediction R² > 0.5 on held-out cells.</p>
+</div>
+
+<div class="improvement">
+  <span class="improvement-num">3</span>
+  <strong>Replace File-Based Data with Scalable Feature Store</strong>
+  <p style="margin-top:8px">Move from scattered NumPy arrays and h5ad files to a proper data platform: Parquet on S3 for cell measurements, PostgreSQL for metadata, DVC for versioning and lineage. Implement streaming data loaders that read directly from Parquet (no full-dataset-in-memory). This unblocks scaling from 24K cells to millions without code changes.</p>
+  <p><strong>Success metric:</strong> Training starts within 60 seconds regardless of dataset size. Complete data lineage from raw input to model checkpoint. Any team member can reproduce results with a single command.</p>
+</div>
+
+<div class="improvement">
+  <span class="improvement-num">4</span>
+  <strong>Establish ML Infrastructure (Experiment Tracking + CI/CD + Serving)</strong>
+  <p style="margin-top:8px">Integrate MLflow (or W&amp;B) for experiment tracking. Add CI/CD with GitHub Actions: every PR runs unit tests + biological regression guards (Pearson r ≥ 0.873, JAK-STAT ≥ 8/15). Containerize with Docker. Deploy model serving via FastAPI + Triton with model registry for versioned deployment. This converts research code into a production platform.</p>
+  <p><strong>Success metric:</strong> Zero manual steps from code change to deployed model. Regression in biological metrics blocks merge. Model A/B testing possible in production.</p>
+</div>
+
+<div class="improvement">
+  <span class="improvement-num">5</span>
+  <strong>Close the Active Learning Loop with Wet Lab Integration</strong>
+  <p style="margin-top:8px">The active learning memory system exists but has no real-world connection. Implement uncertainty quantification (MC Dropout over the fused embedding), connect the experiment recommender to a LIMS/Benchling queue, and build the data-return pipeline (new QuRIE-seq data auto-triggers ingestion → feature computation → incremental fine-tuning). This creates a flywheel: model uncertainty drives experiments, experiments improve the model.</p>
+  <p><strong>Success metric:</strong> Model uncertainty decreases monotonically over active learning iterations. Each wet-lab cycle improves JAK-STAT recovery by ≥1 gene. Recommendation-to-data time under 2 weeks.</p>
+</div>
+
+<hr style="margin-top:48px; border:none; border-top:2px solid var(--border);">
+<p style="color:#888; font-size:0.85rem; text-align:center; margin-top:16px;">
+  AIVC GeneLink Architecture Review v2.0 &nbsp;|&nbsp; QuRIE-Gen Confidential &nbsp;|&nbsp; Prepared 2026-03-23
+</p>
+
+</body>
+</html>

@@ -83,6 +83,23 @@ def _load_edge_index() -> torch.Tensor:
     return edges
 
 
+def _load_registry_checkpoint() -> str:
+    """Load checkpoint_path from registry. Returns '' on any error."""
+    from pathlib import Path
+    reg_path = Path("artifacts/registry/latest_checkpoint.json")
+    if reg_path.exists():
+        try:
+            import json
+            reg = json.loads(reg_path.read_text())
+            ckpt = reg.get("checkpoint_path", "")
+            if ckpt:
+                logger.info(f"Registry checkpoint: {ckpt}")
+            return ckpt
+        except Exception as e:
+            logger.warning(f"Registry load failed: {e}")
+    return ""
+
+
 def _load_model(edge_index: torch.Tensor) -> dict:
     """Load best model checkpoint or instantiate untrained demo model."""
     from perturbation_model import PerturbationPredictor, CellTypeEmbedding
@@ -90,6 +107,7 @@ def _load_model(edge_index: torch.Tensor) -> dict:
 
     checkpoint_paths = [
         os.getenv("AIVC_CHECKPOINT", ""),
+        _load_registry_checkpoint(),
         "models/v1.1/model_v11_best.pt",
         "models/v1.0/aivc_v1.0_best.pt",
         "model_week3_best.pt",
@@ -156,16 +174,39 @@ async def lifespan(app: FastAPI):
     edge_index = _load_edge_index()
     model_info = _load_model(edge_index)
 
-    # SCM engine — use a simple Linear decoder that accepts (batch, n_genes)
-    # The real ResponseDecoder expects 64-dim GNN hidden state, not raw expression.
-    # For the API, SCM engine operates on direct effects in gene space.
+    # SCM engine — wrap the trained model (minus Neumann) as the response decoder.
+    # model.decoder expects 64-dim GNN embeddings, not raw gene expression.
+    # This wrapper runs the full pipeline (expander → pert_embedding → GAT → decoder)
+    # to produce direct effects in gene space, using trained weights throughout.
     from aivc.skills.scm_engine import SCMEngine
-    decoder = nn.Linear(N_GENES, N_GENES)
-    nn.init.xavier_uniform_(decoder.weight)
-    nn.init.zeros_(decoder.bias)
+
+    class _TrainedDirectEffectDecoder(nn.Module):
+        """Wraps PerturbationPredictor pipeline (minus Neumann) for SCM engine."""
+        def __init__(self, model, edge_index):
+            super().__init__()
+            self.model = model
+            self.edge_index = edge_index
+
+        def forward(self, x):
+            # x: (batch, n_genes) — ctrl expression in gene space
+            # Run per-sample through the model pipeline, skipping Neumann
+            results = []
+            pert_id = torch.tensor([1])  # stim
+            for i in range(x.shape[0]):
+                xi = x[i]  # (n_genes,)
+                feat = self.model.feature_expander(xi)
+                feat = self.model.pert_embedding(feat, pert_id)
+                z = self.model.genelink(feat, self.edge_index)
+                pred = self.model.decoder(z)
+                results.append(pred.unsqueeze(0))
+            return torch.cat(results, dim=0)
+
+    direct_effect_decoder = _TrainedDirectEffectDecoder(
+        model_info["model"], edge_index,
+    )
     engine = SCMEngine(
         neumann=model_info["neumann"],
-        response_decoder=decoder,
+        response_decoder=direct_effect_decoder,
         gene_names=gene_names,
     )
 

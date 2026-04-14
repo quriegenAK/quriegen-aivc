@@ -11,7 +11,9 @@ build/
 aivc_env/
 venv/
 .venv/
+.venv311/
 env/
+artifacts/
 
 # Large data files — never commit
 *.h5ad

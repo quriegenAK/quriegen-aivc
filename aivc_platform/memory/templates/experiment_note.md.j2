@@ -1,0 +1,62 @@
+---
+run_id: {{ meta.run_id }}
+date: {{ now | fmt_dt }}
+dataset: {{ meta.dataset }}
+modality: {{ meta.modality.value }}
+status: {{ meta.status.value }}
+wandb_url: {{ meta.wandb_url or wandb_url_default }}
+tags: [experiment, {{ config.project }}, {{ meta.modality.value | lower }}]
+---
+
+# Experiment · {{ meta.run_id }}
+
+**Date:** {{ now | fmt_dt }}
+**W&B:** {{ meta.wandb_url or wandb_url_default }}
+**Checkpoint:** `{{ meta.checkpoint_path or "n/a" }}`
+**AnnData hash:** `{{ anndata_hash }}`
+**MLflow run:** {{ mlflow_run_id }}
+
+## Results
+
+### Kang 2018 (regression guard)
+- Pearson r (raw):             {{ suite.kang.pearson_r | fmt_float }}  (± {{ suite.kang.pearson_r_std | fmt_float }})
+- Pearson r (ctrl-subtracted): {{ suite.kang.pearson_r_ctrl_sub | fmt_float }}
+- Regression guard passed:     {{ suite.kang.regression_guard_passed }}
+- Delta non-zero %:            {{ suite.kang.delta_nonzero_pct | fmt_pct }}
+
+### Norman 2019 (zero-shot)
+{% if suite.norman %}
+- Pearson r (ctrl-subtracted): {{ suite.norman.pearson_r_ctrl_sub | fmt_float }}
+- Delta non-zero %:            {{ suite.norman.delta_nonzero_pct | fmt_pct }}
+- Ctrl memorisation score:     {{ suite.norman.ctrl_memorisation_score | fmt_float }}
+- Top-k gene overlap (k=20):   {{ suite.norman.top_k_overlap | fmt_float }}
+- Passed:                      {{ suite.norman.passed }}
+{% else %}
+- *Norman eval not available (halted at Kang regression guard).*
+{% endif %}
+
+## Configuration
+
+- `frozen_modules`:  {{ meta.frozen_modules | join(", ") }}
+- `w_scale_range`:   [{{ meta.w_scale_range[0] }}, {{ meta.w_scale_range[1] }}]
+- `neumann_k`:       {{ meta.neumann_k }}
+- `lfc_beta`:        {{ meta.lfc_beta }}
+- `lambda_l1`:       {{ meta.lambda_l1 }}
+- `dataset`:         {{ meta.dataset }}
+- `modality`:        {{ meta.modality.value }}
+
+## What changed
+
+<!-- human-fill: describe the single axis of change vs the previous run -->
+
+## What it means biologically
+
+<!-- human-fill: interpret the result in terms of perturbation response, JAK/STAT, etc -->
+
+## Next experiment
+
+<!-- human-fill: one sentence hypothesis + one config change -->
+
+---
+
+**Related:** [[models/v1.x_state]] · [[papers/kang2018]] · [[papers/norman2019]]

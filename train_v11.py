@@ -43,10 +43,42 @@ import random
 import os
 import time
 import shutil
+import argparse as _argparse
 import numpy as np
+
+def _parse_args():
+    p = _argparse.ArgumentParser(description="AIVC GeneLink v1.1 training")
+    p.add_argument("--run-id",  default=None,
+                   help="Unique run identifier. Auto-generated if absent.")
+    p.add_argument("--config",  default=None,
+                   help="Path to YAML config with hyperparameter overrides.")
+    p.add_argument("--output",  default="models/v1.1/",
+                   help="Directory to write checkpoints.")
+    p.add_argument("--w-scale", type=float, default=None,
+                   help="Override w_scale hyperparameter.")
+    p.add_argument("--neumann-k", type=int, default=None,
+                   help="Override neumann_k hyperparameter.")
+    p.add_argument("--lfc-beta", type=float, default=None,
+                   help="Override lfc_beta hyperparameter.")
+    return p.parse_args()
+
+def _load_config_overrides(config_path: str) -> dict:
+    """Load YAML config and return as dict. Returns {} on any error."""
+    try:
+        import yaml
+        with open(config_path) as f:
+            return yaml.safe_load(f) or {}
+    except Exception as e:
+        print(f"[WARN] Could not load config {config_path}: {e}")
+        return {}
+
+_ARGS = _parse_args()
+_CONFIG = _load_config_overrides(_ARGS.config) if _ARGS.config else {}
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.amp import autocast
 import pandas as pd
 import anndata as ad
 
@@ -68,14 +100,18 @@ from aivc.memory.mlflow_backend import MLflowBackend
 # 0. Device
 # =========================================================================
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Device: {device}")
+print(f"[AIVC] Device: {device}")
 
 if device.type == "cuda":
+    print(f"[AIVC] GPU: {torch.cuda.get_device_name(0)}")
+    print(f"[AIVC] VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
     gpu_name = torch.cuda.get_device_name(0)
-    print(f"GPU: {gpu_name}")
     if "H100" in gpu_name or "A100" in gpu_name:
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
+
+autocast_dtype = torch.bfloat16 if device.type == "cuda" else torch.float32
+print(f"[AIVC] Mixed precision dtype: {autocast_dtype}")
 
 # =========================================================================
 # 1. Data loading (same as train_week4.py)
@@ -148,8 +184,8 @@ for _, row in edge_df.iterrows():
         w = row.get("combined_score", 700) if "combined_score" in edge_df.columns else 700
         edge_weights.append(w)
 
-edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous().to(device)
-edge_attr = torch.tensor(edge_weights, dtype=torch.float32).to(device)
+edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous().to(device, non_blocking=True)
+edge_attr = torch.tensor(edge_weights, dtype=torch.float32).to(device, non_blocking=True)
 print(f"  Edges: {edge_index.shape[1]}")
 
 # JAK-STAT genes
@@ -311,6 +347,9 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
     total_params = sum(p.numel() for p in model.parameters())
     print(f"  Parameters: {total_params:,}")
 
+    assert next(model.parameters()).device.type == device.type, \
+        f"Model not on {device} after .to(device) — check all submodules."
+
     # Stage 1: freeze W
     model.neumann.freeze_W()
 
@@ -324,6 +363,26 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
     save_path = f"models/v1.1/sweep_{tag.replace('=', '').replace(' ', '_')}.pt"
 
     t_start = time.time()
+
+    # torch.compile with version guard
+    _compiled = False
+    if device.type == "cuda":
+        _torch_version = tuple(int(x) for x in torch.__version__.split(".")[:2])
+        if _torch_version >= (2, 0):
+            try:
+                _model_eager = model
+                model = torch.compile(model, mode="reduce-overhead")
+                _compiled = True
+                print("[AIVC] torch.compile enabled (mode=reduce-overhead)")
+            except Exception as e:
+                model = _model_eager
+                _compiled = False
+                print(f"[AIVC] torch.compile failed — running eager mode: {e}")
+        else:
+            print(f"[AIVC] torch.compile skipped — requires PyTorch >= 2.0 "
+                  f"(found {torch.__version__})")
+
+    _step_count = 0  # counts total training steps across all epochs
 
     for epoch in range(1, n_epochs + 1):
         # Stage 2: unfreeze W after epoch 10
@@ -351,31 +410,57 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
             X_stim_ep = X_stim_det[train_idx]
             ct_ep = ct_indices[train_idx]
 
-        n_ep = len(X_ctrl_ep)
-        perm = np.random.RandomState(SEED + epoch).permutation(n_ep)
-        X_ctrl_ep = X_ctrl_ep[perm]
-        X_stim_ep = X_stim_ep[perm]
-        ct_ep = ct_ep[perm]
+        # Convert to tensors and move to device
+        X_ctrl_tensor = torch.tensor(X_ctrl_ep, dtype=torch.float32).to(device, non_blocking=True)
+        X_stim_tensor = torch.tensor(X_stim_ep, dtype=torch.float32).to(device, non_blocking=True)
+        ct_tensor = ct_ep.to(device, non_blocking=True)
+
+        # OT pair shuffle — single perm preserves ctrl/stim pairing
+        n_ep = len(X_ctrl_tensor)
+        perm = torch.randperm(n_ep, device=device)
+        X_ctrl_epoch = X_ctrl_tensor[perm]
+        X_stim_epoch = X_stim_tensor[perm]
+        ct_epoch = ct_tensor[perm]
 
         for start in range(0, n_ep, BATCH_SIZE):
+            _step_count += 1
             end = min(start + BATCH_SIZE, n_ep)
-            ctrl_b = torch.tensor(X_ctrl_ep[start:end], dtype=torch.float32).to(device)
-            stim_b = torch.tensor(X_stim_ep[start:end], dtype=torch.float32).to(device)
-            ct_b = ct_ep[start:end].to(device)
+            ctrl_b = X_ctrl_epoch[start:end]
+            stim_b = X_stim_epoch[start:end]
+            ct_b = ct_epoch[start:end]
 
-            pred_delta = model.forward_batch(ctrl_b, edge_index, pert_id_stim, ct_b)
-            predicted = (ctrl_b + pred_delta).clamp(min=0.0)
+            with autocast(device_type=device.type, dtype=autocast_dtype):
+                pred_delta = model.forward_batch(ctrl_b, edge_index, pert_id_stim, ct_b)
+                predicted = (ctrl_b + pred_delta).clamp(min=0.0)
 
-            loss, bd = combined_loss_v11(
-                predicted=predicted, actual_stim=stim_b, actual_ctrl=ctrl_b,
-                neumann_module=model.neumann,
-                alpha=1.0, beta=beta_lfc, gamma=0.1,
-            )
+                loss, bd = combined_loss_v11(
+                    predicted=predicted, actual_stim=stim_b, actual_ctrl=ctrl_b,
+                    neumann_module=model.neumann,
+                    alpha=1.0, beta=beta_lfc, gamma=0.1,
+                )
 
-            optimizer.zero_grad()
+            # NaN/Inf guard — abort immediately on bad values
+            if torch.isnan(loss) or torch.isinf(loss):
+                raise RuntimeError(
+                    f"[AIVC] NaN/Inf detected in loss at epoch {epoch}, step {_step_count}. "
+                    f"Loss breakdown: {bd}. "
+                    "Aborting — do not waste GPU time on a corrupted run."
+                )
+
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
+            optimizer.zero_grad(set_to_none=True)
+
+            # GPU memory assertion after first training step
+            if device.type == "cuda" and _step_count == 1:
+                allocated = torch.cuda.memory_allocated() / 1e9
+                reserved = torch.cuda.memory_reserved() / 1e9
+                print(f"[AIVC] GPU memory — allocated: {allocated:.2f} GB | reserved: {reserved:.2f} GB")
+                assert allocated > 0.1, (
+                    f"GPU memory allocated ({allocated:.3f} GB) < 0.1 GB after first step. "
+                    "Model is not using GPU. Check all .to(device) calls."
+                )
 
             for k in epoch_losses:
                 epoch_losses[k].append(bd[k])
@@ -387,18 +472,20 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
         model.eval()
         val_preds, val_actuals = [], []
         with torch.no_grad():
-            for s in range(0, len(val_idx), BATCH_SIZE):
-                e = min(s + BATCH_SIZE, len(val_idx))
-                bi = val_idx[s:e]
-                ctrl_b = torch.tensor(X_ctrl_det[bi], dtype=torch.float32).to(device)
-                stim_b = torch.tensor(X_stim_det[bi], dtype=torch.float32).to(device)
-                ct_b = ct_indices[bi].to(device)
-                pd_ = model.forward_batch(ctrl_b, edge_index, pert_id_stim, ct_b)
-                pred = (ctrl_b + pd_).clamp(min=0.0)
-                val_preds.append(pred.cpu())
-                val_actuals.append(stim_b.cpu())
+            with autocast(device_type=device.type, dtype=autocast_dtype):
+                for s in range(0, len(val_idx), BATCH_SIZE):
+                    e = min(s + BATCH_SIZE, len(val_idx))
+                    bi = val_idx[s:e]
+                    ctrl_b = torch.tensor(X_ctrl_det[bi], dtype=torch.float32).to(device, non_blocking=True)
+                    stim_b = torch.tensor(X_stim_det[bi], dtype=torch.float32).to(device, non_blocking=True)
+                    ct_b = ct_indices[bi].to(device, non_blocking=True)
+                    pd_ = model.forward_batch(ctrl_b, edge_index, pert_id_stim, ct_b)
+                    pred = (ctrl_b + pd_).clamp(min=0.0)
+                    val_preds.append(pred.detach().cpu().float())
+                    val_actuals.append(stim_b.detach().cpu().float())
 
         val_r, val_std = compute_pearson_r(torch.cat(val_preds), torch.cat(val_actuals))
+        model.train()
 
         if val_r > best_val_r:
             best_val_r = val_r
@@ -458,6 +545,24 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
                 f"pruned={n_pruned}"
             )
 
+        # torch.compile runtime revert check after first epoch
+        if _compiled and epoch == 1:
+            try:
+                import torch._dynamo as dynamo
+                graph_break_counter = dynamo.utils.counters.get("graph_break", {})
+                graph_breaks = sum(graph_break_counter.values()) if isinstance(graph_break_counter, dict) else int(graph_break_counter)
+                if graph_breaks > 10:
+                    model = _model_eager
+                    _compiled = False
+                    print(
+                        f"[AIVC] torch.compile reverted — {graph_breaks} graph breaks "
+                        f"detected in epoch 1. Running eager mode for remaining epochs."
+                    )
+                else:
+                    print(f"[AIVC] torch.compile healthy — {graph_breaks} graph breaks in epoch 1")
+            except Exception:
+                pass
+
         if no_improve >= patience and epoch > 80:
             print(f"  Early stop at epoch {epoch}. Best: {best_val_r:.4f} at {best_epoch}")
             break
@@ -470,17 +575,18 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
 
     test_preds, test_actuals, test_ctrls = [], [], []
     with torch.no_grad():
-        for s in range(0, len(test_idx), BATCH_SIZE):
-            e = min(s + BATCH_SIZE, len(test_idx))
-            bi = test_idx[s:e]
-            ctrl_b = torch.tensor(X_ctrl_det[bi], dtype=torch.float32).to(device)
-            stim_b = torch.tensor(X_stim_det[bi], dtype=torch.float32).to(device)
-            ct_b = ct_indices[bi].to(device)
-            pd_ = model.forward_batch(ctrl_b, edge_index, pert_id_stim, ct_b)
-            pred = (ctrl_b + pd_).clamp(min=0.0)
-            test_preds.append(pred.cpu())
-            test_actuals.append(stim_b.cpu())
-            test_ctrls.append(ctrl_b.cpu())
+        with autocast(device_type=device.type, dtype=autocast_dtype):
+            for s in range(0, len(test_idx), BATCH_SIZE):
+                e = min(s + BATCH_SIZE, len(test_idx))
+                bi = test_idx[s:e]
+                ctrl_b = torch.tensor(X_ctrl_det[bi], dtype=torch.float32).to(device, non_blocking=True)
+                stim_b = torch.tensor(X_stim_det[bi], dtype=torch.float32).to(device, non_blocking=True)
+                ct_b = ct_indices[bi].to(device, non_blocking=True)
+                pd_ = model.forward_batch(ctrl_b, edge_index, pert_id_stim, ct_b)
+                pred = (ctrl_b + pd_).clamp(min=0.0)
+                test_preds.append(pred.detach().cpu().float())
+                test_actuals.append(stim_b.detach().cpu().float())
+                test_ctrls.append(ctrl_b.detach().cpu().float())
 
     test_pred_np = torch.cat(test_preds).numpy()
     test_actual_np = torch.cat(test_actuals).numpy()
@@ -560,6 +666,8 @@ def train_one_config(lfc_beta, neumann_K, lambda_l1, n_epochs=200):
 # =========================================================================
 # 5. Sweep
 # =========================================================================
+_OUTPUT_DIR = _ARGS.output if _ARGS.output else "models/v1.1"
+os.makedirs(_OUTPUT_DIR, exist_ok=True)
 os.makedirs("models/v1.1", exist_ok=True)
 os.makedirs("results", exist_ok=True)
 
@@ -571,6 +679,25 @@ SWEEP = {
     "neumann_Ks": [2, 3, 5],
     "lambda_l1s": [0.0001, 0.001, 0.01],
 }
+
+# CLI / YAML overrides — collapse sweep to single value when specified.
+if _ARGS.lfc_beta is not None:
+    SWEEP["lfc_betas"] = [_ARGS.lfc_beta]
+if "lfc_beta" in _CONFIG:
+    SWEEP["lfc_betas"] = [_CONFIG["lfc_beta"]]
+if _ARGS.neumann_k is not None:
+    SWEEP["neumann_Ks"] = [_ARGS.neumann_k]
+if "neumann_k" in _CONFIG:
+    SWEEP["neumann_Ks"] = [_CONFIG["neumann_k"]]
+if "lambda_l1" in _CONFIG:
+    SWEEP["lambda_l1s"] = [_CONFIG["lambda_l1"]]
+# Note: --w-scale and --run-id accepted but no matching module-level variable
+# exists in this file (w_scale is not used; run_id is managed by MLflow).
+if _ARGS.w_scale is not None or "w_scale" in _CONFIG:
+    print(f"[INFO] --w-scale override accepted but no w_scale variable in train_v11.py")
+if _ARGS.run_id is not None:
+    print(f"[INFO] CLI run_id: {_ARGS.run_id}")
+    os.environ["AIVC_RUN_ID"] = _ARGS.run_id
 
 print(f"\n{'='*70}")
 print("v1.1 NEUMANN PROPAGATION SWEEP")
@@ -697,3 +824,10 @@ mlflow_backend.print_sweep_table()
 print(f"\n{'='*70}")
 print("v1.1 TRAINING COMPLETE")
 print(f"{'='*70}")
+
+# CLI entry point — enables: python train_v11.py --run-id X --output Y
+# Called by cli.py via subprocess. All training logic above runs at
+# module level when this file is executed directly.
+# Do NOT import this module — it executes on import.
+if __name__ == "__main__":
+    pass  # Training already executed above. Guard prevents re-execution on import.
