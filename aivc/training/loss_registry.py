@@ -21,7 +21,32 @@ from typing import Callable, Dict, List, Literal, Tuple
 import torch
 
 
-Stage = Literal["pretrain", "causal", "joint"]
+Stage = Literal["pretrain", "causal", "joint", "joint_safe"]
+
+
+# Terms that MUST NEVER contribute to the pretrain total, even if (through
+# bug or misconfiguration) they are tagged "pretrain"/"joint_safe". These
+# leak gradient into the causal parameter matrix NeumannPropagation.W from
+# observational batches, which would violate the Phase 3 gradient-isolation
+# guarantee. Match is by LossTerm.name.
+_PRETRAIN_FORBIDDEN_NAMES = frozenset({
+    "causal_ordering",  # attention-graph causal ordering penalty
+    "causal",           # legacy alias used in combined_loss_multimodal
+    "mse",              # MSE against stim = interventional target
+    "lfc",              # log-fold-change vs ctrl→stim = interventional target
+})
+
+
+def _is_term_active(term_stage: "Stage", requested_stage: "Stage") -> bool:
+    """Return True if a term tagged `term_stage` runs under `requested_stage`.
+
+    Pretrain is a *safe subset*: only terms tagged "pretrain" or the
+    explicit "joint_safe" allow-list may contribute. Every other stage
+    matches exactly (legacy behavior).
+    """
+    if requested_stage == "pretrain":
+        return term_stage in ("pretrain", "joint_safe")
+    return term_stage == requested_stage
 
 
 @dataclass
@@ -73,7 +98,14 @@ class LossRegistry:
         total: torch.Tensor | None = None
         components: Dict[str, float] = {}
         for term in self._terms:
-            if term.stage != stage:
+            if not _is_term_active(term.stage, stage):
+                continue
+            # Defense-in-depth: interventional-target terms are hard-blocked
+            # from the pretrain total regardless of their stage tag. This
+            # prevents a misregistered "joint_safe" causal/MSE/LFC term from
+            # leaking gradient into NeumannPropagation.W under observational
+            # batches (see Phase 3 gradient-isolation guard).
+            if stage == "pretrain" and term.name in _PRETRAIN_FORBIDDEN_NAMES:
                 continue
             value = term.fn(**batch)
             components[term.name] = (
@@ -82,8 +114,29 @@ class LossRegistry:
             contribution = term.weight * value
             total = contribution if total is None else total + contribution
         if total is None:
-            # No terms matched the stage — return a zero tensor on a best-guess device.
+            # No terms matched. For pretrain this is the expected state in
+            # Phase 3 (no pretrain losses registered yet).
+            #
+            # IMPORTANT — structural W-independence of the placeholder:
+            # We MUST NOT return a scalar whose autograd graph includes
+            # `predicted`. In the current model, `predicted` is the output
+            # of model.forward(...) which passes through NeumannPropagation
+            # (see perturbation_model.PerturbationPredictor.forward_batch
+            # L381-383). A placeholder like `(predicted * 0.0).sum()` would
+            # numerically be zero but would still register a graph edge
+            # into W — backward() would then populate W.grad with a zero
+            # tensor rather than leaving it None. That would make the
+            # gradient-isolation guard pass for the WRONG reason (the
+            # allclose-0 branch instead of the None branch), and would
+            # mask real leaks if a future pretrain term were accidentally
+            # added with a W-touching path.
+            #
+            # Instead we construct a freshly-allocated leaf zero tensor
+            # with requires_grad=True. It has no incoming graph edges at
+            # all, so .backward() is a valid no-op w.r.t. every model
+            # parameter, and W.grad stays None unless a real pretrain
+            # term (registered in a future phase) pulls gradient through W.
             ref = batch.get("predicted")
             device = ref.device if isinstance(ref, torch.Tensor) else "cpu"
-            total = torch.tensor(0.0, device=device)
+            total = torch.zeros((), device=device, requires_grad=True)
         return total, components
