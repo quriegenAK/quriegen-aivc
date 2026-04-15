@@ -29,9 +29,9 @@ H5_URL="${BASE_URL}/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5"
 # Leave the sentinel string intact until then — the verification step
 # below will refuse to proceed while sentinels are present, preventing
 # an un-verified artifact from being consumed by harmonize_peaks.py.
-EXPECTED_FRAG_SHA256="<PENDING: execution on MACS2-equipped host>"
-EXPECTED_TBI_SHA256="<PENDING: execution on MACS2-equipped host>"
-EXPECTED_H5_SHA256="<PENDING: execution on MACS2-equipped host>"
+EXPECTED_FRAG_SHA256="5075e32a0e9c6dded35b060bf90d6144375b150e131ffb0be121a93e3b5e1e38"
+EXPECTED_TBI_SHA256="3a516291d0e6e5ddf9f651f470b6312b83eeb26f153ea12cfa9d082760a5e7f5"
+EXPECTED_H5_SHA256="f6824171378787baab244f559b8b438f79db2eb39f78d17b2196f7ecd2c03549"
 
 # ---- Destination ------------------------------------------------------
 DEST_DIR="${DEST_DIR:-data/raw/pbmc10k_multiome}"
