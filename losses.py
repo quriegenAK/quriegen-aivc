@@ -293,49 +293,80 @@ def combined_loss_multimodal(
     Returns:
         (total_loss, breakdown_dict)
     """
-    base_loss, base_bd = combined_loss_v11(
+    from aivc.training.loss_registry import LossRegistry, LossTerm
+
+    # Term functions — each accepts **kwargs so the registry can pass a
+    # superset of batch fields without breaking signature contracts.
+    def _mse_fn(predicted, actual_stim, **_):
+        return F.mse_loss(predicted, actual_stim)
+
+    def _lfc_fn(predicted, actual_stim, actual_ctrl, **_):
+        return log_fold_change_loss(predicted, actual_stim, actual_ctrl)
+
+    def _cosine_fn(predicted, actual_stim, **_):
+        return cosine_loss(predicted, actual_stim)
+
+    def _l1_fn(predicted, neumann_module=None, **_):
+        if neumann_module is not None:
+            return neumann_module.l1_penalty()
+        return torch.tensor(0.0, device=predicted.device)
+
+    def _contrastive_fn(predicted, emb_pairs=None, contrastive_loss_fn=None, **_):
+        term = torch.tensor(0.0, device=predicted.device)
+        if emb_pairs is not None and contrastive_loss_fn is not None:
+            for emb_a, emb_b in emb_pairs:
+                term = term + contrastive_loss_fn(emb_a, emb_b)
+            if len(emb_pairs) > 0:
+                term = term / len(emb_pairs)
+        return term
+
+    def _cross_modal_fn(predicted, emb_pairs=None, cross_modal_fn=None, **_):
+        term = torch.tensor(0.0, device=predicted.device)
+        if emb_pairs is not None and cross_modal_fn is not None:
+            for emb_a, emb_b in emb_pairs:
+                cm_result = cross_modal_fn(emb_a, emb_b)
+                term = term + cm_result["loss"]
+            if len(emb_pairs) > 0:
+                term = term / len(emb_pairs)
+        return term
+
+    def _causal_fn(predicted, attn_weights=None, **_):
+        if attn_weights is not None:
+            return causal_ordering_loss(attn_weights)
+        return torch.tensor(0.0, device=predicted.device)
+
+    # Registration order mirrors legacy summation order exactly:
+    # α*mse + β*lfc + γ*cos + 1.0*l1 + λ_c*contrast + λ_x*cross + λ_z*causal
+    registry = LossRegistry()
+    registry.register(LossTerm("mse",         _mse_fn,         alpha,           "joint"))
+    registry.register(LossTerm("lfc",         _lfc_fn,         beta,            "joint"))
+    registry.register(LossTerm("cosine",      _cosine_fn,      gamma,           "joint"))
+    registry.register(LossTerm("l1",          _l1_fn,          1.0,             "joint"))
+    registry.register(LossTerm("contrastive", _contrastive_fn, lambda_contrast, "joint"))
+    registry.register(LossTerm("cross_modal", _cross_modal_fn, lambda_cross,    "joint"))
+    registry.register(LossTerm("causal",      _causal_fn,      lambda_causal,   "joint"))
+
+    total, components = registry.compute(
+        stage="joint",
         predicted=predicted,
         actual_stim=actual_stim,
         actual_ctrl=actual_ctrl,
         neumann_module=neumann_module,
-        alpha=alpha,
-        beta=beta,
-        gamma=gamma,
-    )
-
-    contrastive_term = torch.tensor(0.0, device=predicted.device)
-    cross_modal_term = torch.tensor(0.0, device=predicted.device)
-
-    if emb_pairs is not None and contrastive_loss_fn is not None:
-        for emb_a, emb_b in emb_pairs:
-            contrastive_term = contrastive_term + contrastive_loss_fn(emb_a, emb_b)
-        if len(emb_pairs) > 0:
-            contrastive_term = contrastive_term / len(emb_pairs)
-
-    if emb_pairs is not None and cross_modal_fn is not None:
-        for emb_a, emb_b in emb_pairs:
-            cm_result = cross_modal_fn(emb_a, emb_b)
-            cross_modal_term = cross_modal_term + cm_result["loss"]
-        if len(emb_pairs) > 0:
-            cross_modal_term = cross_modal_term / len(emb_pairs)
-
-    causal_term = torch.tensor(0.0, device=predicted.device)
-    if attn_weights is not None:
-        causal_term = causal_ordering_loss(attn_weights)
-
-    total = (
-        base_loss
-        + lambda_contrast * contrastive_term
-        + lambda_cross * cross_modal_term
-        + lambda_causal * causal_term
+        emb_pairs=emb_pairs,
+        contrastive_loss_fn=contrastive_loss_fn,
+        cross_modal_fn=cross_modal_fn,
+        attn_weights=attn_weights,
     )
 
     breakdown = {
-        **base_bd,
-        "contrastive": contrastive_term.item(),
-        "cross_modal": cross_modal_term.item(),
-        "causal": causal_term.item(),
-        "total": total.item(),
+        "mse":         components["mse"],
+        "lfc":         components["lfc"],
+        "cosine":      components["cosine"],
+        "l1":          components["l1"],
+        "contrastive": components["contrastive"],
+        "cross_modal": components["cross_modal"],
+        "causal":      components["causal"],
+        "total":       total.item(),
     }
 
     return total, breakdown
