@@ -598,12 +598,22 @@ class MultiPerturbationLoader:
             "perturbation_id", "dataset_id", "donor_id",
             "in_test_set", "USE_FOR_W_ONLY",
         ]
+        # Map parts (positional) back to their loader name for error messages.
+        _loader_name_by_id = {id(v): k for k, v in self._datasets.items()}
         for part in parts:
             for col in required_cols:
                 if col not in part.obs.columns:
                     part.obs[col] = False if col.startswith(("in_", "USE_")) else 0
+            # Phase 4 hardening: every source dataset must stamp
+            # dataset_kind EXPLICITLY before concat. No silent fallback.
             if "dataset_kind" not in part.obs.columns:
-                part.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
+                loader_name = _loader_name_by_id.get(id(part), "<unknown>")
+                raise ValueError(
+                    f"build_combined_corpus: source dataset {loader_name!r} "
+                    f"is missing the 'dataset_kind' obs column. Every loader "
+                    f"must stamp dataset_kind explicitly (Phase 2 convention) "
+                    f"— no INTERVENTIONAL fallback is applied."
+                )
 
         # Find common genes
         if self.gene_universe:
