@@ -1,0 +1,5 @@
+pearson_r_floor: 0.873
+pearson_r_regression_tolerance: 0.005
+delta_nonzero_pct_floor: 1.0
+delta_nonzero_regression_tolerance: 0.5
+best_checkpoint_promotion_margin: 0.001

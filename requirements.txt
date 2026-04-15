@@ -30,3 +30,6 @@ pyyaml>=6.0
 
 # cli
 typer[all]>=0.12.0
+
+# hardening
+dvc>=3.0

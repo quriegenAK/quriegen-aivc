@@ -58,3 +58,12 @@ Thumbs.db
 # AWS credentials — never commit
 .aws/
 *.pem
+
+# Local git identity reference (not for commit)
+.gitconfig-check
+
+# hardening layer
+experiments/*/quarantine.pt
+experiments/best/best.pt
+.context.lock
+artifacts/

@@ -15,6 +15,8 @@ from pathlib import Path
 
 import typer
 
+from scripts import hooks
+
 app = typer.Typer(name="aivc", help="AIVC GeneLink CLI", no_args_is_help=True)
 
 
@@ -100,6 +102,17 @@ def train(
     from agents.eval_agent import EvalAgent
 
     run_id = run_id or str(uuid.uuid4())[:8]
+
+    # Hardening: pre-train hook
+    os.environ["AIVC_DATASET"] = dataset
+    if config is not None:
+        os.environ["AIVC_CONFIG_PATH"] = str(config)
+    try:
+        hooks.pre_train()
+    except SystemExit:
+        raise
+    except Exception as e:
+        typer.echo(f"[WARN] hooks.pre_train failed: {e}")
 
     # 1. DataAgent gate
     data_result = DataAgent().run(AgentTask(
@@ -205,6 +218,10 @@ def train(
                 _wfn(meta, PostRunDecision.TRIGGER_TRAINING_AGENT, suite, ObsidianConfig())
             except Exception as e:
                 typer.echo(f"[WARN] failure memory write failed: {e}")
+        try:
+            hooks.post_train(meta, suite)
+        except Exception as e:
+            typer.echo(f"[WARN] hooks.post_train failed: {e}")
         raise typer.Exit(2)
 
     if suite.norman is not None and suite.norman.delta_nonzero_pct == 0.0:
@@ -230,6 +247,10 @@ def train(
                 _wfn(meta, PostRunDecision.TRIGGER_TRAINING_AGENT, suite, ObsidianConfig())
             except Exception as e:
                 typer.echo(f"[WARN] failure memory write failed: {e}")
+        try:
+            hooks.post_train(meta, suite)
+        except Exception as e:
+            typer.echo(f"[WARN] hooks.post_train failed: {e}")
         raise typer.Exit(3)
 
     # 6. Success path: memory + registry. ExperimentLogger.finish owns dispatch.
@@ -257,6 +278,11 @@ def train(
     except Exception as e:
         typer.echo(f"[WARN] Registry write failed: {e}")
         raise typer.Exit(4)
+
+    try:
+        hooks.post_train(meta, suite)
+    except Exception as e:
+        typer.echo(f"[WARN] hooks.post_train failed: {e}")
 
     typer.echo(f"SUCCESS: run_id={run_id} pearson_r={meta.pearson_r:.4f}")
     raise typer.Exit(0)
@@ -432,7 +458,19 @@ def agent_run(
         raise typer.Exit(2)
 
     task = AgentTask(agent_name=agent, run_id=run_id, payload=payload_dict)
+    try:
+        hooks.pre_agent(agent, run_id)
+    except SystemExit:
+        raise
+    except Exception as e:
+        typer.echo(f"[WARN] hooks.pre_agent failed: {e}")
     result = instance.run(task)
+    try:
+        hooks.post_agent(agent, run_id, result)
+    except SystemExit:
+        raise
+    except Exception as e:
+        typer.echo(f"[WARN] hooks.post_agent failed: {e}")
     typer.echo(result.model_dump_json(indent=2))
     raise typer.Exit(0 if result.success else 1)
 
@@ -532,6 +570,52 @@ def status() -> None:
     typer.echo(f"W&B URL:           {WANDB_URL}")
     typer.echo(f"GPU available:     {gpu}")
     raise typer.Exit(0 if latest else 1)
+
+
+# ─────────────────────────────────────────────────────────────────────
+# Hardening: validate-run / sync-context / repro
+# ─────────────────────────────────────────────────────────────────────
+
+@app.command("validate-run")
+def validate_run_cmd(run_id: str = typer.Option(..., help="Run ID")) -> None:
+    """Re-classify a past run from its stored signature + eval_suite.json."""
+    from scripts.validate_run import RunStatus, classify_run_from_sig
+    res = classify_run_from_sig(run_id)
+    if res is None:
+        typer.echo(json.dumps({"error": "no signature", "run_id": run_id}))
+        raise typer.Exit(1)
+    typer.echo(res.model_dump_json(indent=2))
+    raise typer.Exit(0 if res.status == RunStatus.SUCCESS else 1)
+
+
+@app.command("sync-context")
+def sync_context_cmd() -> None:
+    """Manually sync context.md → docs/context_snapshot.md."""
+    from scripts.sync_context import sync_context
+    ok = sync_context()
+    typer.echo("sync_context: " + ("OK" if ok else "FAILED"))
+    raise typer.Exit(0 if ok else 1)
+
+
+@app.command("repro")
+def repro_cmd(run_id: str = typer.Option(..., help="Run ID to reproduce")) -> None:
+    """Reproduce a past run: checkout commit, dvc pull, re-train."""
+    from scripts.build_signature import EXPERIMENTS_DIR, load_signature
+    sig = load_signature(run_id)
+    if sig is None:
+        typer.echo(f"No signature for {run_id}")
+        raise typer.Exit(1)
+    if sig.git.commit and sig.git.commit != "unknown":
+        proc = subprocess.run(["git", "checkout", sig.git.commit], capture_output=True, text=True)
+        if proc.returncode != 0:
+            typer.echo(f"git checkout failed: {proc.stderr}")
+    if sig.dataset.dvc_path:
+        subprocess.run(["dvc", "pull", sig.dataset.dvc_path], capture_output=True, text=True)
+    config_path = EXPERIMENTS_DIR / run_id / "config.yaml"
+    cmd = [sys.executable, "cli.py", "train",
+           "--config", str(config_path),
+           "--run-id", f"repro_{run_id}"]
+    os.execvp(cmd[0], cmd)
 
 
 if __name__ == "__main__":

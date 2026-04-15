@@ -1,3 +1,8 @@
+---
+snapshot_sha: bc332a248e06d0571187dba3ba01b160fa146e23ead1ed91165c247ec078c5c6
+snapshot_ts: 2026-04-15T02:45:48.353668+00:00
+synced_from_run: manual
+---
 ### Project: aivc_genelink
 
 Last updated: 2026-04-10
@@ -65,3 +70,9 @@ Benchmarks: Pearson r=0.873 vs CPA r=0.856, scGEN r=0.820 on identical Kang 2018
 Repo path: /Users/ashkhan/Projects/aivc_genelink
 Active branch: [leave blank — Ash to fill]
 Open PRs: [leave blank — Ash to fill]
+
+## Architecture decisions
+- **best pearson_r**: 0.873
+- **latest checkpoint**: models/v1.1/model_v11_best.pt
+- **last W&B run**: https://wandb.ai/quriegen/aivc_genelink
+- **last run date**: 2026-04-10
