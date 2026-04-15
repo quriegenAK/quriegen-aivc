@@ -51,13 +51,12 @@ reused → reject.
      **different** from the mock-data hash recorded above, and the
      new hash is appended to the appendix at the bottom of this file.
 
-## Phase 6.7-exec: execution steps outstanding
+## Phase 6.7-exec: execution log (completed 2026-04-15)
 
-> **This checklist is run ONCE on a MACS2-equipped host. Each step
-> corresponds to a separate commit so the audit trail remains clear.**
-> Execute top-to-bottom; each step's outcome is verifiable from the
-> commit diff, not from operator memory. Prerequisites: MACS2-equipped
-> host with ≥20 GB free in `data/raw/`.
+> This checklist was executed ONCE on 2026-04-15 on Ash Khan's
+> local MacBook Pro. Each step below maps to a distinct commit in
+> the audit trail (`aea7e21`, `bf3c029`). Retained for historical
+> reproducibility; do not re-execute.
 
 ### Step 1 — Install MACS2
 
@@ -137,7 +136,7 @@ Replace every `<PENDING: execution on MACS2-equipped host>` marker:
 - 5 markers in `.github/REAL_DATA_BLOCKERS.md` "Artifacts produced"
   (below).
 - 10 markers in `.github/PR_BODY_phase6_7.md` "Execution
-  outstanding" and "Reproducibility" sections.
+  complete" and "Reproducibility" sections.
 
 Commit: **`Phase 6.7-exec: fill execution artifacts`**
 
@@ -175,19 +174,6 @@ their own deliverables land.
       --output    data/peak_sets/pbmc10k_hg38_20260415.tsv \
       --genome    hg38
   ```
-
-### Command sketch
-
-```
-python scripts/harmonize_peaks.py \
-    --fragments pbmc_multiome_fragments/*.tsv.gz \
-    --out data/peak_sets/pbmc10k_v1.tsv
-
-python scripts/pretrain_multiome.py \
-    --multiome_h5ad data/pbmc_multiome.h5ad \
-    --peak_set data/peak_sets/pbmc10k_v1.tsv \
-    --steps 10000
-```
 
 ## Real-data linear-probe rerun (activates the Phase 6 gate)
 
