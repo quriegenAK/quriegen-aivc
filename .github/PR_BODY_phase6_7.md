@@ -35,26 +35,24 @@ date are mock-data only; this PR is the code foundation for the
 first real-data signal. Execution is intentionally deferred — see
 "Execution outstanding" below.
 
-## Scope of this PR: CODE ONLY
+## Scope
 
-This PR does NOT include a produced peak-set artifact. The host
-where this PR was authored does not have MACS2 installed, and the
-task explicitly forbids (a) Python-only fallback peak callers,
-(b) running `harmonize_peaks.py` against mock data, and
-(c) fabricating hashes / peak counts. A follow-up commit on a
-MACS2-equipped host fills the `<PENDING>` markers with the real
-stdout values from that run.
+This file tracks both the original code-only PR (#8, merged
+2026-04-15) and the subsequent execution on a MACS2-equipped
+host. The peak-set artifact itself is NOT committed
+(gitignored by design); its SHA-256 and metadata are the
+reproducibility contract.
 
-## Execution outstanding (follow-up commit)
+## Execution complete
 
-On a host with MACS2 installed and ≥20 GB free in `data/raw/`:
+Executed on local MacBook Pro with MACS2 2.2.9.1 installed:
 
-- `data/peak_sets/pbmc10k_hg38_20260415.tsv` path: `<PENDING: execution on MACS2-equipped host>`
-- Peak count: `<PENDING: execution on MACS2-equipped host>`
-- Output SHA-256: `<PENDING: execution on MACS2-equipped host>`
-- Input fragments SHA-256: `<PENDING: execution on MACS2-equipped host>`
-- MACS2 version: `<PENDING: execution on MACS2-equipped host>`
-- Exact command line: `<PENDING: execution on MACS2-equipped host>`
+- `data/peak_sets/pbmc10k_hg38_20260415.tsv` path: `data/peak_sets/pbmc10k_hg38_20260415.tsv`
+- Peak count: 115720
+- Output SHA-256: `57b66a257e85287cd6829e38b35bd82aea795d4e96c2b074566981b298a9ef0c`
+- Input fragments SHA-256: `5075e32a0e9c6dded35b060bf90d6144375b150e131ffb0be121a93e3b5e1e38`
+- MACS2 version: 2.2.9.1
+- Exact command line: `python scripts/harmonize_peaks.py --fragments data/raw/pbmc10k_multiome/atac_fragments.tsv.gz --output data/peak_sets/pbmc10k_hg38_20260415.tsv --genome hg38`
 
 Checklist the exec host must satisfy before the follow-up commit:
 1. `macs2 --version` succeeds.
@@ -76,10 +74,11 @@ Checklist the exec host must satisfy before the follow-up commit:
 - All existing tests still pass (static-only changes for Phase 6.7).
 
 ## Reproducibility
-- Input fragments SHA-256: `<PENDING: execution on MACS2-equipped host>`
-- Output peak_set SHA-256: `<PENDING: execution on MACS2-equipped host>`
-- MACS2 version: `<PENDING: execution on MACS2-equipped host>`
-- Command line: `<PENDING: execution on MACS2-equipped host>`
+- Input fragments SHA-256: `5075e32a0e9c6dded35b060bf90d6144375b150e131ffb0be121a93e3b5e1e38`
+- Output peak_set SHA-256: `57b66a257e85287cd6829e38b35bd82aea795d4e96c2b074566981b298a9ef0c`
+- MACS2 version: 2.2.9.1
+- Command line: `python scripts/harmonize_peaks.py --fragments data/raw/pbmc10k_multiome/atac_fragments.tsv.gz --output data/peak_sets/pbmc10k_hg38_20260415.tsv --genome hg38`
+- Produced UTC: 2026-04-15T21:29:36Z
 
 Note: none of these markers is to be replaced locally on a host
 that re-derives the values independently. They must be copied from
