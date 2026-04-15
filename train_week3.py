@@ -439,6 +439,35 @@ for epoch in range(1, NUM_EPOCHS + 1):
 
         optimizer.zero_grad()
         loss.backward()
+
+        # Phase 3 gradient-isolation guard: under pretrain stage (only
+        # reached for OBSERVATIONAL batches), the causal parameter matrix
+        # NeumannPropagation.W must not receive gradient. Default on;
+        # disable by setting AIVC_GRAD_GUARD=0.
+        # Phase 6 tripwire: guard must stay silent at stage="joint" with
+        # pretrained weights. The branch is gated EXPLICITLY on
+        # stage == "pretrain" (not on W.grad state) so it cannot misfire
+        # at stage="joint" where nonzero W.grad is expected and required.
+        if (
+            os.environ.get("AIVC_GRAD_GUARD", "1") == "1"
+            and stage == "pretrain"
+            and hasattr(model, "neumann")
+            and model.neumann is not None
+        ):
+            W_grad = model.neumann.W.grad
+            if W_grad is not None and not torch.allclose(
+                W_grad, torch.zeros_like(W_grad)
+            ):
+                raise RuntimeError(
+                    "AIVC_GRAD_GUARD: NeumannPropagation.W received nonzero "
+                    f"gradient under pretrain stage "
+                    f"(max|grad|={W_grad.abs().max().item():.3e}). "
+                    "Some term is leaking interventional signal into the "
+                    "causal matrix from an observational batch. Investigate "
+                    "before proceeding to Phase 4 (suspect: shared BN state "
+                    "or auxiliary referencing W)."
+                )
+
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
 
