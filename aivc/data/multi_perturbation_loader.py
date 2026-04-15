@@ -37,6 +37,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
+from aivc.data.dataset_kind import DatasetKind
+
 logger = logging.getLogger("aivc.data")
 
 SEED = 42
@@ -126,6 +128,7 @@ class MultiPerturbationLoader:
             {f"kang_{d}" for d in self.kang_test_donors} | self.kang_test_donors
         )
         adata.obs["USE_FOR_W_ONLY"] = False
+        adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
 
         n_test = adata.obs["in_test_set"].sum()
         logger.info(f"  Test cells (locked): {n_test}")
@@ -191,6 +194,7 @@ class MultiPerturbationLoader:
         adata.obs["in_test_set"] = False
         adata.obs["USE_FOR_W_ONLY"] = True
         adata.obs["use_for_response_training"] = False
+        adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
 
         if "cell_type" not in adata.obs.columns:
             adata.obs["cell_type"] = "melanoma"
@@ -257,6 +261,7 @@ class MultiPerturbationLoader:
         adata.obs["in_test_set"] = False
         adata.obs["USE_FOR_W_ONLY"] = True
         adata.obs["condition"] = "ctrl"
+        adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
 
         # Normalise
         sc.pp.normalize_total(adata, target_sum=1e4)
@@ -477,6 +482,7 @@ class MultiPerturbationLoader:
         adata.obs["in_test_set"] = False
         adata.obs["USE_FOR_W_ONLY"] = False
         adata.obs["use_for_response_training"] = True
+        adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
 
         if "donor_id" not in adata.obs.columns:
             donor_col = next(
@@ -537,6 +543,7 @@ class MultiPerturbationLoader:
         adata_synth.obs["USE_FOR_W_ONLY"] = False
         adata_synth.obs["use_for_response_training"] = True
         adata_synth.obs["SYNTHETIC_IFNG"] = True
+        adata_synth.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
         adata_synth.uns["synthetic_ifng"] = True
 
         logger.warning(f"Synthetic IFN-G: {adata_synth.n_obs} cells. OAS1/OAS2 scaled 50%.")
@@ -595,6 +602,8 @@ class MultiPerturbationLoader:
             for col in required_cols:
                 if col not in part.obs.columns:
                     part.obs[col] = False if col.startswith(("in_", "USE_")) else 0
+            if "dataset_kind" not in part.obs.columns:
+                part.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
 
         # Find common genes
         if self.gene_universe:

@@ -41,6 +41,16 @@ from perturbation_model import (
     PerturbationPredictor, CellTypeEmbedding, build_cell_type_index
 )
 from losses import combined_loss
+from aivc.data.dataset_kind import DatasetKind
+
+# Phase 2 dispatch: map dataset kind → loss stage.
+# INTERVENTIONAL → "joint" preserves existing behavior for Kang (and any other
+# paired-perturbation source). OBSERVATIONAL → "pretrain" is wired but not
+# reachable in Phase 2 (no observational datasets are loaded).
+_KIND_TO_STAGE = {
+    DatasetKind.INTERVENTIONAL: "joint",
+    DatasetKind.OBSERVATIONAL: "pretrain",
+}
 
 # =========================================================================
 # 0. Device
@@ -401,6 +411,15 @@ for epoch in range(1, NUM_EPOCHS + 1):
         stim_b = torch.tensor(X_stim_epoch[start:end], dtype=torch.float32).to(device)
         ct_b = ct_epoch[start:end].to(device)
 
+        # Phase 2: dataset-kind dispatch. Kang (and every dataset currently
+        # wired into this trainer) is paired ctrl/stim → INTERVENTIONAL.
+        batch_kind = DatasetKind.INTERVENTIONAL
+        assert batch_kind != DatasetKind.OBSERVATIONAL, (
+            "Observational batch leaked into train_week3 — aborting. "
+            "Phase 2 does not yet support observational datasets."
+        )
+        stage = _KIND_TO_STAGE[batch_kind]
+
         # Residual learning: model predicts perturbation delta, add to ctrl.
         # This leverages the high ctrl-stim correlation (r=0.875 at mini-bulk)
         # so the model only needs to learn the perturbation effect, not
@@ -408,6 +427,9 @@ for epoch in range(1, NUM_EPOCHS + 1):
         predicted_delta = model.forward_batch(ctrl_b, edge_index, pert_id_stim, ct_b)
         predicted = (ctrl_b + predicted_delta).clamp(min=0.0)
 
+        # stage=="joint" is the only reachable branch in Phase 2 and matches
+        # pre-phase behavior bit-exactly; combined_loss is stage-agnostic.
+        assert stage == "joint", f"Unexpected stage in Phase 2: {stage}"
         loss, breakdown = combined_loss(
             predicted=predicted,
             actual_stim=stim_b,
