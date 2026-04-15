@@ -67,3 +67,10 @@ experiments/*/quarantine.pt
 experiments/best/best.pt
 .context.lock
 artifacts/
+
+# Phase 6.7: real-data fragments + peak-set artifacts (never committed;
+# canonical references are SHA-256 hashes in .github/REAL_DATA_BLOCKERS.md)
+data/raw/
+data/peak_sets/*.tsv
+data/peak_sets/*.meta.json
+!data/peak_sets/README.md

@@ -30,10 +30,17 @@ reused → reject.
 
 - **Owner:** Ash Khan
 - **Target date:** 2026-04-29 (two weeks from Phase 6 PR merge)
+- **Status (2026-04-15):** IN PROGRESS — Phase 6.7 code merged
+  (`scripts/harmonize_peaks.py` promoted from stub, download script
+  added, `data/peak_sets/` established). Execution on a MACS2-equipped
+  host is outstanding; see the "Phase 6.7-exec" section below.
 - **Definition of done** (all three):
-  1. Peak-set artifact exists at `data/peak_sets/pbmc10k_v1.tsv`
-     (or equivalent documented path), produced by
+  1. Peak-set artifact exists at `data/peak_sets/pbmc10k_hg38_{date}.tsv`
+     (see `data/peak_sets/README.md` for naming), produced by
      `scripts/harmonize_peaks.py` on 10x PBMC Multiome fragments.
+     Canonical path for Phase 6.7b consumption:
+     `data/peak_sets/pbmc10k_hg38_20260415.tsv` (canonical name; actual
+     artifact not committed — see "Artifacts produced" section).
   2. One successful `scripts/pretrain_multiome.py` run consuming that
      peak-set artifact (not the mock fallback), with loss monotone on
      moving average and `schema_version=1` validated on save.
@@ -41,6 +48,106 @@ reused → reject.
      `checkpoints/pretrain/pretrain_encoders.pt` with a SHA-256
      **different** from the mock-data hash recorded above, and the
      new hash is appended to the appendix at the bottom of this file.
+
+## Phase 6.7-exec: execution steps outstanding
+
+> **This checklist is run ONCE on a MACS2-equipped host. Each step
+> corresponds to a separate commit so the audit trail remains clear.**
+> Execute top-to-bottom; each step's outcome is verifiable from the
+> commit diff, not from operator memory. Prerequisites: MACS2-equipped
+> host with ≥20 GB free in `data/raw/`.
+
+### Step 1 — Install MACS2
+Follow `scripts/INSTALL_MACS2.md`. Verify:
+```
+macs2 --version
+```
+must print a version string and exit 0. No commit produced by this
+step (local-env setup).
+
+### Step 2 — First download attempt (expected to fail)
+Run:
+```
+bash scripts/download_pbmc10k_multiome.sh
+```
+The verify step **will fail** — the `EXPECTED_*_SHA256` constants are
+still `<PENDING:...>` sentinels, and the script refuses to verify
+against a sentinel. This failure is intentional: it forces you to
+record the observed hashes rather than trusting an un-checked download.
+From the error output, copy the three observed SHA-256 values:
+`atac_fragments.tsv.gz`, `atac_fragments.tsv.gz.tbi`,
+`filtered_feature_bc_matrix.h5`.
+
+### Step 3 — Populate the download-script sentinels
+In `scripts/download_pbmc10k_multiome.sh`, replace:
+- `EXPECTED_FRAG_SHA256="<PENDING:...>"`
+- `EXPECTED_TBI_SHA256="<PENDING:...>"`
+- `EXPECTED_H5_SHA256="<PENDING:...>"`
+
+with the three observed values from Step 2.
+
+Commit: **`Phase 6.7-exec: populate download hashes`**
+
+### Step 4 — Re-run the download (must succeed)
+```
+bash scripts/download_pbmc10k_multiome.sh
+```
+Must now exit 0 with all three files verified. No commit from this
+step (files are gitignored by design).
+
+### Step 5 — Produce the peak-set artifact
+```
+python scripts/harmonize_peaks.py \
+    --fragments data/raw/pbmc10k_multiome/atac_fragments.tsv.gz \
+    --output    data/peak_sets/pbmc10k_hg38_20260415.tsv \
+    --genome    hg38 \
+    --min_cells 10
+```
+Capture these values from stdout and the sibling `.meta.json`:
+- `input_sha256=...`
+- `output_sha256=...`
+- `n_peaks=...`
+- `macs2_version` (from `.meta.json`)
+- `timestamp_utc` (from `.meta.json`)
+
+Do **NOT** re-derive these values on a different host — use the
+stdout from this execution run verbatim.
+
+No commit from this step (the artifact is gitignored).
+
+### Step 6 — Fill execution artifacts
+Replace every `<PENDING: execution on MACS2-equipped host>` marker:
+- 5 markers in `.github/REAL_DATA_BLOCKERS.md` "Artifacts produced"
+  (below).
+- 10 markers in `.github/PR_BODY_phase6_7.md` "Execution
+  outstanding" and "Reproducibility" sections.
+
+Commit: **`Phase 6.7-exec: fill execution artifacts`**
+
+### Step 7 — Close the deliverable
+In this file, change the "Status" line in the "Deliverable:
+harmonize_peaks + real-data pretrain" section from
+`IN PROGRESS — ...` to `DONE (YYYY-MM-DD) — ...` with the execution
+date.
+
+Commit: **`Phase 6.7-exec: mark harmonize_peaks DONE`**
+
+After Step 7, Phase 6.7b (pretraining rerun) and Phase 6.5 (linear
+probe) become unblocked. Both remain OPEN items in this file until
+their own deliverables land.
+
+## Artifacts produced
+
+<!-- On execution, append one entry per artifact. Until populated,
+     every value is a PENDING sentinel by design. -->
+
+- **dataset:** 10x PBMC Multiome 10k (hg38)
+- **peak_set_path:** `data/peak_sets/pbmc10k_hg38_20260415.tsv`
+- **input_fragments_sha256:** `<PENDING: execution on MACS2-equipped host>`
+- **output_peak_set_sha256:** `<PENDING: execution on MACS2-equipped host>`
+- **n_peaks:** `<PENDING: execution on MACS2-equipped host>`
+- **macs2_version:** `<PENDING: execution on MACS2-equipped host>`
+- **produced_utc:** `<PENDING: execution on MACS2-equipped host>`
 
 ### Command sketch
 
