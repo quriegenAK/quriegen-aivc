@@ -28,8 +28,9 @@ import hashlib
 import os
 import sys
 import time
+import warnings
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -79,17 +80,23 @@ def _synth_dataset(
 
 def _load_dataset(
     name: str,
-    path: Path | None,
+    path: "Path | None",
     n_genes_fallback: int,
     seed: int,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, str]:
-    """Return (X, Y, pert_labels, provenance_tag).
+) -> "Tuple[np.ndarray, np.ndarray, np.ndarray, str, Optional[List[int]]]":
+    """Return (X, Y, pert_labels, provenance_tag, de_indices_or_None).
 
     ``Y`` is the per-cell perturbation-response target; here we use the
     cell's own expression vector as the target (self-recon probe) when
     a public perturbation target is unavailable, which is valid for
     representation-quality measurement: a better encoder reconstructs
     expression better from its own latents.
+
+    ``de_indices_or_None`` is a list of gene indices (into the aligned
+    36,601-dim vocabulary) representing the union of top-50 DE genes
+    across all perturbations, as precomputed by build_norman2019_aligned.py.
+    When present it is used instead of the variance-based selection in
+    ``_fit_probe_and_score``.  ``None`` triggers variance-based fallback.
     """
     if path is not None and path.exists():
         adata = _load_anndata(path)
@@ -106,10 +113,35 @@ def _load_dataset(
             pert = adata.obs["condition"].astype("category").cat.codes.to_numpy()
         else:
             pert = np.zeros(X.shape[0], dtype=np.int64)
-        return X, Y, pert, f"{name}:{path}"
-    # Synthetic fallback — clearly tagged.
+        # Extract precomputed top-50 DE indices if present in uns.
+        de_indices: Optional[List[int]] = None
+        if "top50_de_per_perturbation" in adata.uns:
+            de_map: dict = adata.uns["top50_de_per_perturbation"]
+            # Build the union of all per-perturbation top-50 indices as a
+            # sorted, deduplicated list so the probe evaluates on genes that
+            # are DE in at least one perturbation.
+            union_idx: set = set()
+            for idx_list in de_map.values():
+                union_idx.update(idx_list)
+            de_indices = sorted(union_idx)
+        else:
+            warnings.warn(
+                f"uns['top50_de_per_perturbation'] not found in {path}. "
+                "Falling back to variance-based DE gene selection. "
+                "Run build_norman2019_aligned.py to add precomputed DE indices.",
+                UserWarning,
+                stacklevel=2,
+            )
+        return X, Y, pert, f"{name}:{path}", de_indices
+    # Synthetic fallback — LOUD warning so silent fallback never hides bad data.
+    warnings.warn(
+        f"SYNTHETIC FALLBACK: {name!r} data not found at {path}. "
+        "Evaluation results are NOT biologically meaningful.",
+        UserWarning,
+        stacklevel=2,
+    )
     X, Y, pert = _synth_dataset(n_cells=512, n_genes=n_genes_fallback, seed=seed)
-    return X, Y, pert, f"{name}:synthetic"
+    return X, Y, pert, f"{name}:synthetic", None
 
 
 # --------------------------------------------------------------------- #
@@ -159,9 +191,15 @@ def _fit_probe_and_score(
     Z_test: np.ndarray,
     Y_test: np.ndarray,
     top_k_de: int = 50,
+    de_indices: "Optional[List[int]]" = None,
 ) -> Dict[str, float]:
     """Fit Ridge on latents → expression; report R² on top-K DE genes
-    and overall Pearson."""
+    and overall Pearson.
+
+    When ``de_indices`` is provided (precomputed from build_norman2019_aligned.py),
+    those gene indices are used directly for the top-50 DE R² metric.
+    Otherwise, top-K genes are selected by train-set variance (fallback).
+    """
     from sklearn.linear_model import Ridge
     from sklearn.metrics import r2_score
     from scipy.stats import pearsonr
@@ -173,11 +211,26 @@ def _fit_probe_and_score(
 
     Y_hat = model.predict(Z_test)
 
-    # Select top-K DE genes by train-set variance (cheap proxy if no
-    # perturbation grouping is available).
-    var = Y_train.var(axis=0)
-    k = min(top_k_de, var.shape[0])
-    top_idx = np.argsort(-var)[:k]
+    # Select top-K DE genes: use precomputed indices when available,
+    # fall back to train-set variance otherwise.
+    if de_indices is not None:
+        # Clip to valid range in case the aligned vocab differs.
+        top_idx = np.array(
+            [i for i in de_indices if i < Y_train.shape[1]], dtype=np.int64
+        )
+        if len(top_idx) == 0:
+            warnings.warn(
+                "Precomputed de_indices are all out of range for current "
+                f"n_genes={Y_train.shape[1]}; falling back to variance selection.",
+                UserWarning,
+                stacklevel=2,
+            )
+            de_indices = None  # trigger fallback below
+    if de_indices is None:
+        # Cheap proxy: top-K by train-set variance.
+        var = Y_train.var(axis=0)
+        k = min(top_k_de, var.shape[0])
+        top_idx = np.argsort(-var)[:k]
 
     r2_top = float(r2_score(Y_test[:, top_idx], Y_hat[:, top_idx]))
     r2_all = float(r2_score(Y_test, Y_hat))
@@ -226,7 +279,7 @@ def run_condition(
             n_genes_fallback = int(_cfg["n_genes"])
         else:
             n_genes_fallback = 512
-    X, Y, _pert, provenance = _load_dataset(
+    X, Y, _pert, provenance, de_indices = _load_dataset(
         name=dataset_name,
         path=dataset_path,
         n_genes_fallback=n_genes_fallback,
@@ -279,7 +332,9 @@ def run_condition(
     Y_tr = (Y[tr] - y_mu) / y_sd
     Y_te = (Y[te] - y_mu) / y_sd
 
-    metrics = _fit_probe_and_score(Z_tr, Y_tr, Z_te, Y_te, top_k_de=50)
+    metrics = _fit_probe_and_score(
+        Z_tr, Y_tr, Z_te, Y_te, top_k_de=50, de_indices=de_indices
+    )
     metrics.update(
         condition=condition,
         dataset=dataset_name,
