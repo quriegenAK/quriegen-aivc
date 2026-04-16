@@ -80,3 +80,10 @@ data/peak_sets/*.meta.json
 # are echoed into the PR body + REAL_DATA_BLOCKERS.md appendix.
 data/pbmc10k_multiome.h5ad
 data/pbmc10k_multiome.h5ad.meta.json
+
+# Local experiment outputs
+experiments/best/
+experiments/test_*/
+experiments/test_run/
+tea_debug.log
+wandb/
