@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -100,6 +101,20 @@ def _sha256_file(path: Path, chunk_size: int = 8 * 1024 * 1024) -> str:
         for chunk in iter(lambda: fh.read(chunk_size), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _git_rev() -> str:
+    """Current repo HEAD commit (short form) for audit trail. Returns
+    ``'unknown'`` if git is unavailable or this is not a repo."""
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=_REPO_ROOT,
+            stderr=subprocess.DEVNULL,
+        )
+        return out.decode("ascii").strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return "unknown"
 
 
 def main(argv=None):
@@ -199,10 +214,18 @@ def main(argv=None):
     register_pretrain_terms(registry)
 
     # ---- W&B ---- #
-    # Log peak_set SHA-256 into the run config so Phase 6.5 can assert that
-    # every pretrain run was conditioned on the harmonized peak set artifact
-    # (Phase 6.7b real-data contract).
-    wandb_config: dict = {"device": str(device)}
+    # Audit trail for Phase 6.5's linear-probe tripwire: log every
+    # provenance field the downstream gate needs to assert the pretrain
+    # checkpoint was produced on the real-data path — peak_set_sha256,
+    # runtime shapes, device, seed, git rev. ``ckpt_sha256`` is logged
+    # post-save below, once the file exists on disk.
+    wandb_config: dict = {
+        "device": str(device),
+        "seed": int(args.seed),
+        "git_rev": _git_rev(),
+        "n_genes_runtime": int(n_genes),
+        "n_peaks_runtime": int(n_peaks),
+    }
     if args.peak_set:
         try:
             wandb_config["peak_set_sha256"] = _sha256_file(Path(args.peak_set))
@@ -317,7 +340,17 @@ def main(argv=None):
     )
     print(f"[ckpt] saved -> {ckpt_path}")
 
+    # Post-save provenance: hash the checkpoint we just wrote and log
+    # it to the W&B run config. Phase 6.5's linear-probe gate will
+    # assert this value matches the ckpt it loads, so the two SHAs
+    # line up in the audit trail.
+    ckpt_sha256 = _sha256_file(ckpt_path)
+    print(f"[ckpt] sha256={ckpt_sha256}")
     if run is not None:
+        try:
+            run.config.update({"ckpt_sha256": ckpt_sha256}, allow_val_change=True)
+        except Exception as e:  # pragma: no cover - W&B network issue fallback
+            print(f"[warn] failed to log ckpt_sha256 to W&B: {e}")
         run.finish()
 
 
