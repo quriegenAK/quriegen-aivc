@@ -200,6 +200,22 @@ stops being a PR-closeout item and becomes a named work item on its
 own branch. Do not open Phase 6.5 work until the definition of done
 above is fully satisfied.
 
+## Phase 6.5 results (real-data gate)
+
+- Date: 2026-04-16
+- Real ckpt SHA: 416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e
+- top-50 DE R²: -0.4617
+- ΔR² vs random: -0.1991 (relative -75.79%)
+- Decision: FAIL
+- Pointer: .github/PHASE6_5_RESULTS.md
+- W&B real-run URL: https://wandb.ai/quriegen/aivc-linear-probe/runs/nbc8telz
+
+Real vs mock: real − mock = -0.0348 (relative -8.15%) — real-data
+pretraining is not contributing signal beyond the regenerated-mock
+architecture prior under the current synthetic-fallback probe.
+Phase 7 blocked until an ablation-infra follow-up re-runs this
+table against a dataset-aligned probe target.
+
 ## Appendix: real-data checkpoint hashes (append on rerun)
 
 <!-- On each real-data rerun, append a line: YYYY-MM-DD <sha256> <notes> -->
