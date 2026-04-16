@@ -204,3 +204,4 @@ above is fully satisfied.
 
 <!-- On each real-data rerun, append a line: YYYY-MM-DD <sha256> <notes> -->
 2026-04-15 416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e pretrain_encoders.pt — PBMC10k real Multiome, peak_set sha 57b66a25..., steps=5000, device=MPS
+2026-04-16 c0d9715dbc76a6ecab260fe09ca5173ee7fdf6eb640538eac0f9024399a90b4e pretrain_encoders_mock.pt — regenerated mock, seed=17, synthetic fallback (n_genes=2000 default, steps=50). Differs from historical 10665544... because pretrain_multiome.py defaults changed since Phase 5 (n_genes 500 → 2000); the original mock checkpoint is no longer reproducible from current code. Used as the Phase 6.5 mock-arm input.
