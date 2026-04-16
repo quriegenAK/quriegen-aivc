@@ -74,3 +74,9 @@ data/raw/
 data/peak_sets/*.tsv
 data/peak_sets/*.meta.json
 !data/peak_sets/README.md
+
+# Phase 6.7b: real-data Multiome AnnData built from 10x + peak_set.
+# Never committed; provenance hashes live in the sibling .meta.json and
+# are echoed into the PR body + REAL_DATA_BLOCKERS.md appendix.
+data/pbmc10k_multiome.h5ad
+data/pbmc10k_multiome.h5ad.meta.json

@@ -17,7 +17,9 @@ mock Multiome batch in memory. See FAILURE HANDLING in the Phase 5 PR.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -76,7 +78,7 @@ def _has_neumann_in_graph(model: nn.Module) -> bool:
     return any(isinstance(m, NeumannPropagation) for m in model.modules())
 
 
-def _setup_wandb(project: str, enabled: bool):
+def _setup_wandb(project: str, enabled: bool, config_extra: dict | None = None):
     if not enabled:
         return None
     try:
@@ -84,14 +86,49 @@ def _setup_wandb(project: str, enabled: bool):
     except ImportError:
         print("[warn] wandb not installed; continuing without logging.")
         return None
-    run = wandb.init(project=project, job_type="pretrain_multiome")
+    run = wandb.init(
+        project=project,
+        job_type="pretrain_multiome",
+        config=config_extra or {},
+    )
     return run
+
+
+def _sha256_file(path: Path, chunk_size: int = 8 * 1024 * 1024) -> str:
+    """SHA-256 of an on-disk artifact; logged into W&B config for provenance."""
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(chunk_size), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _git_rev() -> str:
+    """Current repo HEAD commit (short form) for audit trail. Returns
+    ``'unknown'`` if git is unavailable or this is not a repo."""
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=_REPO_ROOT,
+            stderr=subprocess.DEVNULL,
+        )
+        return out.decode("ascii").strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return "unknown"
 
 
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--multiome_h5ad", default=None, help="Path to multiome .h5ad (optional)")
-    p.add_argument("--peak_set", default=None, help="Path to harmonized peak set")
+    # --peak_set_path is the Phase 6.7b canonical flag name; --peak_set kept as
+    # a back-compat alias so existing automation does not break.
+    p.add_argument(
+        "--peak_set_path",
+        "--peak_set",
+        dest="peak_set",
+        default=None,
+        help="Path to harmonized peak set",
+    )
     p.add_argument("--n_cells", type=int, default=1000)
     p.add_argument("--n_genes", type=int, default=2000)
     p.add_argument("--n_peaks", type=int, default=5000)
@@ -108,7 +145,13 @@ def main(argv=None):
     args = p.parse_args(argv)
 
     torch.manual_seed(args.seed)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    print(f"[device] {device}")
 
     # ---- Data ---- #
     if args.multiome_h5ad and args.peak_set:
@@ -171,7 +214,27 @@ def main(argv=None):
     register_pretrain_terms(registry)
 
     # ---- W&B ---- #
-    run = _setup_wandb(args.wandb_project, enabled=not args.no_wandb)
+    # Audit trail for Phase 6.5's linear-probe tripwire: log every
+    # provenance field the downstream gate needs to assert the pretrain
+    # checkpoint was produced on the real-data path — peak_set_sha256,
+    # runtime shapes, device, seed, git rev. ``ckpt_sha256`` is logged
+    # post-save below, once the file exists on disk.
+    wandb_config: dict = {
+        "device": str(device),
+        "seed": int(args.seed),
+        "git_rev": _git_rev(),
+        "n_genes_runtime": int(n_genes),
+        "n_peaks_runtime": int(n_peaks),
+    }
+    if args.peak_set:
+        try:
+            wandb_config["peak_set_sha256"] = _sha256_file(Path(args.peak_set))
+            wandb_config["peak_set_path"] = str(Path(args.peak_set).resolve())
+        except FileNotFoundError:
+            wandb_config["peak_set_sha256"] = None
+    else:
+        wandb_config["peak_set_sha256"] = None
+    run = _setup_wandb(args.wandb_project, enabled=not args.no_wandb, config_extra=wandb_config)
 
     # ---- Training loop ---- #
     ckpt_dir = Path(args.checkpoint_dir)
@@ -240,6 +303,27 @@ def main(argv=None):
             run.log({"total": loss_val, "loss_ma": loss_ma, **components, "step": step})
 
     # ---- Checkpoint ---- #
+    # Phase 6.7b fix: stamp actual runtime shapes into config so the
+    # ckpt_loader can reconstruct SimpleRNAEncoder correctly. Without this,
+    # argparse defaults (e.g. --n_genes 2000 from the mock fallback path)
+    # would stay in `config` and load_pretrained_simple_rna_encoder would
+    # fail with size-mismatch when instantiating the encoder. Also records
+    # the peak_set SHA-256 into the checkpoint for provenance (mirrors the
+    # W&B config log line added at the start of main()).
+    config_to_save = dict(vars(args))
+    config_to_save["n_genes"] = int(n_genes)
+    config_to_save["n_peaks"] = int(n_peaks)
+    config_to_save["hidden_dim"] = int(rna_enc.hidden_dim)
+    config_to_save["latent_dim"] = int(rna_enc.latent_dim)
+    config_to_save["device"] = str(device)
+    if args.peak_set:
+        try:
+            config_to_save["peak_set_sha256"] = _sha256_file(Path(args.peak_set))
+        except FileNotFoundError:
+            config_to_save["peak_set_sha256"] = None
+    else:
+        config_to_save["peak_set_sha256"] = None
+
     ckpt_path = ckpt_dir / "pretrain_encoders.pt"
     torch.save(
         {
@@ -250,13 +334,23 @@ def main(argv=None):
             "rna_encoder_class": "aivc.skills.rna_encoder.SimpleRNAEncoder",
             "atac_encoder_class": "aivc.skills.atac_peak_encoder.PeakLevelATACEncoder",
             "pretrain_head_class": "aivc.training.pretrain_heads.MultiomePretrainHead",
-            "config": vars(args),
+            "config": config_to_save,
         },
         ckpt_path,
     )
     print(f"[ckpt] saved -> {ckpt_path}")
 
+    # Post-save provenance: hash the checkpoint we just wrote and log
+    # it to the W&B run config. Phase 6.5's linear-probe gate will
+    # assert this value matches the ckpt it loads, so the two SHAs
+    # line up in the audit trail.
+    ckpt_sha256 = _sha256_file(ckpt_path)
+    print(f"[ckpt] sha256={ckpt_sha256}")
     if run is not None:
+        try:
+            run.config.update({"ckpt_sha256": ckpt_sha256}, allow_val_change=True)
+        except Exception as e:  # pragma: no cover - W&B network issue fallback
+            print(f"[warn] failed to log ckpt_sha256 to W&B: {e}")
         run.finish()
 
 
