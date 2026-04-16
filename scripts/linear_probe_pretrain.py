@@ -104,9 +104,25 @@ def _load_dataset(
         if hasattr(X, "toarray"):
             X = X.toarray()
         X = np.asarray(X, dtype=np.float32)
-        # Probe target = expression itself (common for linear probing
-        # of representation quality); DE-gene subsetting happens later.
-        Y = X.copy()
+        # For aligned datasets (e.g. Norman→PBMC10k), ~40% of genes may
+        # be structural zeros from non-overlapping vocabularies.  The
+        # encoder needs the full n_genes-dim input, but the Ridge probe
+        # targets should exclude structural zeros: including them inflates
+        # R² (predicting zeros is trivial) and causes numerical instability
+        # in Ridge at large cell counts (ill-conditioned Gram matrix).
+        nonzero_mask = (X != 0).any(axis=0)
+        n_nonzero = int(nonzero_mask.sum())
+        n_total = X.shape[1]
+        if n_nonzero < n_total:
+            _log_msg = (
+                f"Filtering Ridge targets to {n_nonzero:,}/{n_total:,} "
+                f"genes with nonzero expression ({n_total - n_nonzero:,} "
+                f"structural zeros removed). Encoder input unchanged."
+            )
+            warnings.warn(_log_msg, UserWarning, stacklevel=2)
+            Y = X[:, nonzero_mask].copy()
+        else:
+            Y = X.copy()
         if "perturbation" in adata.obs.columns:
             pert = adata.obs["perturbation"].astype("category").cat.codes.to_numpy()
         elif "condition" in adata.obs.columns:
@@ -114,6 +130,8 @@ def _load_dataset(
         else:
             pert = np.zeros(X.shape[0], dtype=np.int64)
         # Extract precomputed top-50 DE indices if present in uns.
+        # These are indices into the original 36,601-dim aligned vocabulary.
+        # If we filtered to nonzero genes, remap them to the filtered space.
         de_indices: Optional[List[int]] = None
         if "top50_de_per_perturbation" in adata.uns:
             de_map: dict = adata.uns["top50_de_per_perturbation"]
@@ -123,7 +141,27 @@ def _load_dataset(
             union_idx: set = set()
             for idx_list in de_map.values():
                 union_idx.update(idx_list)
-            de_indices = sorted(union_idx)
+            orig_de_indices = sorted(union_idx)
+            # Remap to filtered gene space if structural zeros were removed
+            if n_nonzero < n_total:
+                # Build old→new index map for nonzero genes
+                old_to_new = {}
+                new_idx = 0
+                for old_idx in range(n_total):
+                    if nonzero_mask[old_idx]:
+                        old_to_new[old_idx] = new_idx
+                        new_idx += 1
+                de_indices = [old_to_new[i] for i in orig_de_indices
+                              if i in old_to_new]
+                n_dropped = len(orig_de_indices) - len(de_indices)
+                if n_dropped > 0:
+                    warnings.warn(
+                        f"{n_dropped} DE gene indices fell in structural-zero "
+                        f"columns and were dropped from evaluation.",
+                        UserWarning, stacklevel=2,
+                    )
+            else:
+                de_indices = orig_de_indices
         else:
             warnings.warn(
                 f"uns['top50_de_per_perturbation'] not found in {path}. "
@@ -205,7 +243,9 @@ def _fit_probe_and_score(
     from scipy.stats import pearsonr
 
     t0 = time.time()
-    model = Ridge(alpha=1.0)
+    # solver='svd' avoids Cholesky decomposition failures on
+    # ill-conditioned Gram matrices (common at >100K cells).
+    model = Ridge(alpha=1.0, solver="svd")
     model.fit(Z_train, Y_train)
     fit_seconds = time.time() - t0
 
