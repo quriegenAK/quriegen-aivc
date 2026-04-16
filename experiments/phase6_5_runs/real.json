@@ -1,0 +1,23 @@
+{
+  "pretrained": {
+    "r2_top50_de": -0.4617469906806946,
+    "r2_overall": -0.4445444345474243,
+    "pearson_overall": 0.003774633529159491,
+    "probe_fit_seconds": 0.24059009552001953,
+    "condition": "pretrained",
+    "dataset": "norman2019",
+    "provenance": "norman2019:synthetic",
+    "n_cells_train": 409,
+    "n_cells_test": 103,
+    "n_genes": 36601,
+    "hidden_dim": 256,
+    "latent_dim": 128,
+    "seed": 17
+  },
+  "scratch": null,
+  "ckpt_sha256": "416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e",
+  "dataset": "norman2019",
+  "seed": 17,
+  "condition": "pretrained",
+  "random_init": false
+}
