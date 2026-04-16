@@ -17,6 +17,7 @@ mock Multiome batch in memory. See FAILURE HANDLING in the Phase 5 PR.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import sys
 from pathlib import Path
@@ -76,7 +77,7 @@ def _has_neumann_in_graph(model: nn.Module) -> bool:
     return any(isinstance(m, NeumannPropagation) for m in model.modules())
 
 
-def _setup_wandb(project: str, enabled: bool):
+def _setup_wandb(project: str, enabled: bool, config_extra: dict | None = None):
     if not enabled:
         return None
     try:
@@ -84,14 +85,35 @@ def _setup_wandb(project: str, enabled: bool):
     except ImportError:
         print("[warn] wandb not installed; continuing without logging.")
         return None
-    run = wandb.init(project=project, job_type="pretrain_multiome")
+    run = wandb.init(
+        project=project,
+        job_type="pretrain_multiome",
+        config=config_extra or {},
+    )
     return run
+
+
+def _sha256_file(path: Path, chunk_size: int = 8 * 1024 * 1024) -> str:
+    """SHA-256 of an on-disk artifact; logged into W&B config for provenance."""
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(chunk_size), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--multiome_h5ad", default=None, help="Path to multiome .h5ad (optional)")
-    p.add_argument("--peak_set", default=None, help="Path to harmonized peak set")
+    # --peak_set_path is the Phase 6.7b canonical flag name; --peak_set kept as
+    # a back-compat alias so existing automation does not break.
+    p.add_argument(
+        "--peak_set_path",
+        "--peak_set",
+        dest="peak_set",
+        default=None,
+        help="Path to harmonized peak set",
+    )
     p.add_argument("--n_cells", type=int, default=1000)
     p.add_argument("--n_genes", type=int, default=2000)
     p.add_argument("--n_peaks", type=int, default=5000)
@@ -108,7 +130,13 @@ def main(argv=None):
     args = p.parse_args(argv)
 
     torch.manual_seed(args.seed)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    print(f"[device] {device}")
 
     # ---- Data ---- #
     if args.multiome_h5ad and args.peak_set:
@@ -171,7 +199,19 @@ def main(argv=None):
     register_pretrain_terms(registry)
 
     # ---- W&B ---- #
-    run = _setup_wandb(args.wandb_project, enabled=not args.no_wandb)
+    # Log peak_set SHA-256 into the run config so Phase 6.5 can assert that
+    # every pretrain run was conditioned on the harmonized peak set artifact
+    # (Phase 6.7b real-data contract).
+    wandb_config: dict = {"device": str(device)}
+    if args.peak_set:
+        try:
+            wandb_config["peak_set_sha256"] = _sha256_file(Path(args.peak_set))
+            wandb_config["peak_set_path"] = str(Path(args.peak_set).resolve())
+        except FileNotFoundError:
+            wandb_config["peak_set_sha256"] = None
+    else:
+        wandb_config["peak_set_sha256"] = None
+    run = _setup_wandb(args.wandb_project, enabled=not args.no_wandb, config_extra=wandb_config)
 
     # ---- Training loop ---- #
     ckpt_dir = Path(args.checkpoint_dir)
@@ -240,6 +280,27 @@ def main(argv=None):
             run.log({"total": loss_val, "loss_ma": loss_ma, **components, "step": step})
 
     # ---- Checkpoint ---- #
+    # Phase 6.7b fix: stamp actual runtime shapes into config so the
+    # ckpt_loader can reconstruct SimpleRNAEncoder correctly. Without this,
+    # argparse defaults (e.g. --n_genes 2000 from the mock fallback path)
+    # would stay in `config` and load_pretrained_simple_rna_encoder would
+    # fail with size-mismatch when instantiating the encoder. Also records
+    # the peak_set SHA-256 into the checkpoint for provenance (mirrors the
+    # W&B config log line added at the start of main()).
+    config_to_save = dict(vars(args))
+    config_to_save["n_genes"] = int(n_genes)
+    config_to_save["n_peaks"] = int(n_peaks)
+    config_to_save["hidden_dim"] = int(rna_enc.hidden_dim)
+    config_to_save["latent_dim"] = int(rna_enc.latent_dim)
+    config_to_save["device"] = str(device)
+    if args.peak_set:
+        try:
+            config_to_save["peak_set_sha256"] = _sha256_file(Path(args.peak_set))
+        except FileNotFoundError:
+            config_to_save["peak_set_sha256"] = None
+    else:
+        config_to_save["peak_set_sha256"] = None
+
     ckpt_path = ckpt_dir / "pretrain_encoders.pt"
     torch.save(
         {
@@ -250,7 +311,7 @@ def main(argv=None):
             "rna_encoder_class": "aivc.skills.rna_encoder.SimpleRNAEncoder",
             "atac_encoder_class": "aivc.skills.atac_peak_encoder.PeakLevelATACEncoder",
             "pretrain_head_class": "aivc.training.pretrain_heads.MultiomePretrainHead",
-            "config": vars(args),
+            "config": config_to_save,
         },
         ckpt_path,
     )

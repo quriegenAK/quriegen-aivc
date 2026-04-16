@@ -200,3 +200,4 @@ above is fully satisfied.
 ## Appendix: real-data checkpoint hashes (append on rerun)
 
 <!-- On each real-data rerun, append a line: YYYY-MM-DD <sha256> <notes> -->
+2026-04-15 416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e pretrain_encoders.pt — PBMC10k real Multiome, peak_set sha 57b66a25..., steps=5000, device=MPS
