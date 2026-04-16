@@ -43,6 +43,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
@@ -322,18 +323,27 @@ def main(argv: list[str] | None = None) -> None:
         )
     _log(f"Loading PBMC10k gene vocabulary from: {args.pbmc_path}")
     pbmc = ad.read_h5ad(args.pbmc_path, backed="r")
-    pbmc_var_names = list(pbmc.var_names)
+    pbmc_var_ids = list(pbmc.var_names)  # Ensembl IDs (index)
+    # Use gene symbols for matching — Cell Ranger stores these in var['gene_name']
+    if "gene_name" in pbmc.var.columns:
+        pbmc_var_symbols = list(pbmc.var["gene_name"])
+        _log("Using PBMC10k var['gene_name'] (HGNC symbols) for matching")
+    else:
+        pbmc_var_symbols = pbmc_var_ids
+        _log("WARNING: no 'gene_name' column in PBMC10k var — falling back to var_names")
     pbmc.file.close()
-    _log(f"PBMC10k vocabulary: {len(pbmc_var_names):,} genes")
-    assert len(pbmc_var_names) == 36_601, (
-        f"Expected 36601 PBMC10k genes, got {len(pbmc_var_names)}. "
+    _log(f"PBMC10k vocabulary: {len(pbmc_var_ids):,} genes")
+    assert len(pbmc_var_ids) == 36_601, (
+        f"Expected 36601 PBMC10k genes, got {len(pbmc_var_ids)}. "
         "Wrong file?"
     )
 
     # ---- Step 2 (cont.): align gene vocab --------------------------------
     _log("Aligning gene vocabularies ...")
+    # Match on HGNC symbols but preserve Ensembl IDs as the output index
+    # (encoder expects var_names = Ensembl IDs matching its weight matrix)
     X_aligned, intersection_genes, unmatched_genes = _align_to_pbmc_vocab(
-        norman, pbmc_var_names
+        norman, pbmc_var_symbols
     )
     n_intersect = len(intersection_genes)
 
@@ -354,7 +364,10 @@ def main(argv: list[str] | None = None) -> None:
     aligned = ad.AnnData(
         X=X_aligned,
         obs=obs_df,
-        var=ad.pd.DataFrame(index=pbmc_var_names),
+        var=pd.DataFrame(
+            {"gene_name": pbmc_var_symbols},
+            index=pbmc_var_ids,
+        ),
     )
     assert aligned.shape == (norman.shape[0], 36_601), (
         f"Aligned shape {aligned.shape} unexpected."
@@ -366,7 +379,7 @@ def main(argv: list[str] | None = None) -> None:
     top50_de = _compute_top50_de(
         X_aligned,
         aligned.obs["perturbation"].to_numpy(),
-        pbmc_var_names,
+        pbmc_var_symbols,
         top_k=TOP_K_DE,
     )
     aligned.uns["top50_de_per_perturbation"] = top50_de

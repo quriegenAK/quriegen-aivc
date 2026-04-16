@@ -26,7 +26,7 @@ DEST_FILE="${DEST_DIR}/NormanWeissman2019_filtered.h5ad"
 # ---- Expected SHA-256 (populate after first verified download) ------------
 # Leave the sentinel string intact until then — the verify step below will
 # refuse to proceed while sentinels are present.
-EXPECTED_SHA256="${EXPECTED_SHA256:-<PENDING:fill_after_first_verified_download>}"
+EXPECTED_SHA256="${EXPECTED_SHA256:-efde6f5301fe256725dce1d980f37bd96a13481a9a16135515897368e631affc}"
 
 # ---- Source URLs ----------------------------------------------------------
 # scperturb zenodo record 7041849 — direct file download
@@ -72,7 +72,7 @@ fetch_zenodo() {
 
 fetch_pertpy() {
   log "Attempting source 2: pertpy datasets API ..."
-  python - <<'PYEOF'
+  python3 - <<'PYEOF'
 import sys, pathlib, shutil
 
 try:
@@ -98,7 +98,7 @@ PYEOF
 
 report_h5ad_info() {
   log "Reading h5ad metadata ..."
-  python - "${DEST_FILE}" <<'PYEOF'
+  python3 - "${DEST_FILE}" <<'PYEOF'
 import sys, anndata as ad, scipy.sparse as sp
 
 path = sys.argv[1]
