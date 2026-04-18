@@ -327,6 +327,13 @@ def run_condition(
     )
     n_genes = X.shape[1]
 
+    # CONTRACT: X stays raw (encoder was trained on raw counts).
+    # Y target moves to log1p space — variance-stabilizing transform for
+    # the Ridge target. Y_hat will be un-standardized back to this space
+    # for metric computation. NO train-expressed filter (variance_weighted
+    # handles rare-column robustness without a heuristic cutoff).
+    Y_log1p = np.log1p(Y).astype(np.float32, copy=False)
+
     if condition == "pretrained":
         if ckpt_path is None:
             raise ValueError("pretrained condition requires --ckpt_path")
@@ -353,39 +360,120 @@ def run_condition(
     else:
         raise ValueError(f"unknown condition {condition!r}")
 
-    # Deterministic held-out split via a seed-local RNG.
+    # Train/test split
     rng = np.random.default_rng(seed)
-    n = X.shape[0]
-    idx = rng.permutation(n)
-    split = int(0.8 * n)
+    idx = rng.permutation(X.shape[0])
+    split = int(0.8 * X.shape[0])
     tr, te = idx[:split], idx[split:]
 
+    # Encoder forward pass (X raw)
     Z_tr = _extract_latents(copy.deepcopy(encoder), X[tr])
     Z_te = _extract_latents(copy.deepcopy(encoder), X[te])
 
-    # Standardize latents and targets (train-set only) to prevent the
-    # probe from trivially fitting feature scale.
+    # Train-split statistics for BOTH standardizations
     z_mu, z_sd = Z_tr.mean(0), Z_tr.std(0) + 1e-8
-    y_mu, y_sd = Y[tr].mean(0), Y[tr].std(0) + 1e-8
-    Z_tr = (Z_tr - z_mu) / z_sd
-    Z_te = (Z_te - z_mu) / z_sd
-    Y_tr = (Y[tr] - y_mu) / y_sd
-    Y_te = (Y[te] - y_mu) / y_sd
+    y_mu, y_sd = Y_log1p[tr].mean(0), Y_log1p[tr].std(0) + 1e-8
 
-    metrics = _fit_probe_and_score(
-        Z_tr, Y_tr, Z_te, Y_te, top_k_de=50, de_indices=de_indices
+    # Locked-contract tripwires — fire BEFORE Ridge fit to save compute
+    assert float(z_sd.min()) > 1e-6, (
+        f"z_sd floor violated: min={float(z_sd.min()):.3e}. "
+        f"Encoder produced collapsed latent dims — distribution mismatch "
+        f"with pretrain. X must stay raw counts."
     )
+    assert float(y_sd.min()) > 1e-6, (
+        f"y_sd floor violated on log1p-space targets: "
+        f"min={float(y_sd.min()):.3e}. Unexpected — variance-weighted "
+        f"should tolerate any y_sd, but this indicates a degenerate dataset."
+    )
+
+    # Standardize for Ridge conditioning only
+    Z_tr_std = (Z_tr - z_mu) / z_sd
+    Z_te_std = (Z_te - z_mu) / z_sd
+    Y_tr_std = (Y_log1p[tr] - y_mu) / y_sd
+
+    # Ridge fit
+    from sklearn.linear_model import Ridge
+    t0 = time.time()
+    model = Ridge(alpha=1.0, solver='svd').fit(Z_tr_std, Y_tr_std)
+    fit_seconds = time.time() - t0
+
+    # Predict in standardized space, then UN-STANDARDIZE to log1p space
+    Y_hat_std_te = model.predict(Z_te_std)
+    Y_hat_log1p_te = Y_hat_std_te * y_sd + y_mu
+    Y_log1p_te = Y_log1p[te]
+
+    # Metric computation on UN-STANDARDIZED log1p Y
+    from sklearn.metrics import r2_score
+    from scipy.stats import pearsonr
+
+    if de_indices is not None:
+        de_idx = np.array(
+            [i for i in de_indices if i < Y_log1p_te.shape[1]], dtype=np.int64
+        )
+        if de_idx.size < 5:
+            raise RuntimeError(
+                f"Too few valid DE indices ({de_idx.size}) — dataset misconfigured."
+            )
+    else:
+        # Variance-based fallback — top genes by train variance
+        var_tr = Y_log1p[tr].var(0)
+        de_idx = np.argsort(-var_tr)[: min(3217, len(var_tr))]
+
+    Y_log1p_te_de = Y_log1p_te[:, de_idx]
+    Y_hat_log1p_te_de = Y_hat_log1p_te[:, de_idx]
+
+    # Primary gate metric
+    r2_top50_de_vw = float(
+        r2_score(Y_log1p_te_de, Y_hat_log1p_te_de,
+                 multioutput='variance_weighted')
+    )
+
+    # Secondary diagnostics
+    r2_overall_vw = float(
+        r2_score(Y_log1p_te, Y_hat_log1p_te, multioutput='variance_weighted')
+    )
+    r2_per_col_de = np.array(
+        [r2_score(Y_log1p_te_de[:, j], Y_hat_log1p_te_de[:, j])
+         for j in range(de_idx.size)]
+    )
+    r2_top50_de_median = float(np.median(r2_per_col_de))
+    r2_top50_de_p01 = float(np.percentile(r2_per_col_de, 1))
+    r2_top50_de_p99 = float(np.percentile(r2_per_col_de, 99))
+
+    # Pearson overall (for audit; used in prior phases)
+    yf = Y_log1p_te.ravel()
+    yh = Y_hat_log1p_te.ravel()
+    pearson_overall = float(pearsonr(yf, yh)[0])
+
+    # Final tripwire
+    assert abs(r2_top50_de_vw) < 2.0, (
+        f"r2_top50_de_vw={r2_top50_de_vw:.3e} violates |r²|<2 cap. "
+        f"Metric contract violated. Do not write results."
+    )
+
+    metrics = {
+        "r2_top50_de_vw": r2_top50_de_vw,
+        "r2_overall_vw": r2_overall_vw,
+        "r2_top50_de_median": r2_top50_de_median,
+        "r2_top50_de_p01": r2_top50_de_p01,
+        "r2_top50_de_p99": r2_top50_de_p99,
+        "pearson_overall": pearson_overall,
+        "probe_fit_seconds": fit_seconds,
+        "n_de_genes_evaluated": int(de_idx.size),
+        "z_sd_min": float(z_sd.min()),
+        "y_sd_min": float(y_sd.min()),
+    }
     metrics.update(
-        condition=condition,
-        dataset=dataset_name,
-        provenance=provenance,
-        n_cells_train=int(tr.size),
-        n_cells_test=int(te.size),
-        n_genes=int(n_genes),
-        hidden_dim=int(effective_hidden),
-        latent_dim=int(effective_latent),
-        seed=int(seed),
+        condition=condition, dataset=dataset_name, provenance=provenance,
+        n_cells_train=int(tr.size), n_cells_test=int(te.size),
+        n_genes=int(n_genes), hidden_dim=int(effective_hidden),
+        latent_dim=int(effective_latent), seed=int(seed),
     )
+    # Legacy-key aliases for the exp1 driver (forbidden to edit). Point
+    # the old names at the locked variance_weighted values so existing
+    # print/log plumbing in exp1_linear_probe_ablation.py keeps working.
+    metrics["r2_top50_de"] = r2_top50_de_vw
+    metrics["r2_overall"] = r2_overall_vw
     return metrics
 
 
