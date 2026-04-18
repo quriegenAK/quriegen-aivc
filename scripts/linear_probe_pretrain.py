@@ -49,6 +49,23 @@ from aivc.training.ckpt_loader import (
 LINEAR_PROBE_CKPT_SCHEMA_VERSION = 1
 
 
+def _scatter_back(Y_masked: np.ndarray, mask: np.ndarray, n_full: int) -> np.ndarray:
+    """Place masked-space predictions back into full gene space, NaN elsewhere."""
+    out = np.full((Y_masked.shape[0], n_full), np.nan, dtype=np.float32)
+    out[:, mask] = Y_masked
+    return out
+
+
+def _arm_label_from_ckpt(condition: str, ckpt_path: "Path | None") -> str:
+    """Map (condition, ckpt_path) → {real, mock, random} arm label used by
+    the phase-6.5c 9-run matrix and intersection-gate post-processing."""
+    if condition == "scratch":
+        return "random"
+    if condition == "pretrained" and ckpt_path is not None:
+        return "mock" if "mock" in Path(ckpt_path).stem.lower() else "real"
+    return condition
+
+
 # --------------------------------------------------------------------- #
 # Dataset loading.
 # --------------------------------------------------------------------- #
@@ -370,110 +387,142 @@ def run_condition(
     Z_tr = _extract_latents(copy.deepcopy(encoder), X[tr])
     Z_te = _extract_latents(copy.deepcopy(encoder), X[te])
 
-    # Train-split statistics for BOTH standardizations
+    # Train-split statistics for Z (BOTH standardizations use train stats)
     z_mu, z_sd = Z_tr.mean(0), Z_tr.std(0) + 1e-8
-    y_mu, y_sd = Y_log1p[tr].mean(0), Y_log1p[tr].std(0) + 1e-8
 
-    # Locked-contract tripwires — fire BEFORE Ridge fit to save compute
+    # ------- Option B mask: train-split variance filter -------
+    # Deterministic floor — replaces the v1 y_sd tripwire. Structural zero
+    # filtering is dataset-global (in _load_dataset); the mask below is
+    # TRAIN-LOCAL so the Ridge fit and its scoring invariants agree.
+    y_sd_tr_raw = Y_log1p[tr].std(0)
+    mask_tr = y_sd_tr_raw > 1e-7                     # bool [n_genes]
+    n_kept = int(mask_tr.sum())
+    n_dropped = int((~mask_tr).sum())
+    pct_dropped = n_dropped / len(mask_tr)
+    print(f"[mask] n_kept={n_kept} n_dropped={n_dropped} "
+          f"pct_dropped={pct_dropped:.4f}")
+    assert n_kept > 0, "All columns filtered — dataset is degenerate."
+
+    # Subset Y to kept columns for fit + score (symmetric)
+    Y_log1p_k = Y_log1p[:, mask_tr]
+    y_mu = Y_log1p_k[tr].mean(0)
+    y_sd = Y_log1p_k[tr].std(0) + 1e-8               # safe: all > 1e-7
+
+    # z_sd tripwire stays — real pathology if it trips
     assert float(z_sd.min()) > 1e-6, (
         f"z_sd floor violated: min={float(z_sd.min()):.3e}. "
-        f"Encoder produced collapsed latent dims — distribution mismatch "
-        f"with pretrain. X must stay raw counts."
-    )
-    assert float(y_sd.min()) > 1e-6, (
-        f"y_sd floor violated on log1p-space targets: "
-        f"min={float(y_sd.min()):.3e}. Unexpected — variance-weighted "
-        f"should tolerate any y_sd, but this indicates a degenerate dataset."
+        f"Encoder latent collapse — distribution mismatch with pretrain."
     )
 
-    # Standardize for Ridge conditioning only
-    Z_tr_std = (Z_tr - z_mu) / z_sd
-    Z_te_std = (Z_te - z_mu) / z_sd
-    Y_tr_std = (Y_log1p[tr] - y_mu) / y_sd
-
-    # Ridge fit
+    # Ridge fit on masked Y
     from sklearn.linear_model import Ridge
     t0 = time.time()
+    Z_tr_std = (Z_tr - z_mu) / z_sd
+    Z_te_std = (Z_te - z_mu) / z_sd
+    Y_tr_std = (Y_log1p_k[tr] - y_mu) / y_sd
     model = Ridge(alpha=1.0, solver='svd').fit(Z_tr_std, Y_tr_std)
     fit_seconds = time.time() - t0
-
-    # Predict in standardized space, then UN-STANDARDIZE to log1p space
     Y_hat_std_te = model.predict(Z_te_std)
-    Y_hat_log1p_te = Y_hat_std_te * y_sd + y_mu
-    Y_log1p_te = Y_log1p[te]
+    Y_hat_log1p_te_k = Y_hat_std_te * y_sd + y_mu
+    Y_log1p_te_k = Y_log1p_k[te]
 
-    # Metric computation on UN-STANDARDIZED log1p Y
+    # Map DE indices (original gene space) into masked gene space
     from sklearn.metrics import r2_score
     from scipy.stats import pearsonr
 
     if de_indices is not None:
-        de_idx = np.array(
-            [i for i in de_indices if i < Y_log1p_te.shape[1]], dtype=np.int64
+        de_idx_orig = np.array(
+            [i for i in de_indices if i < Y_log1p.shape[1]], dtype=np.int64
         )
-        if de_idx.size < 5:
+        if de_idx_orig.size < 5:
             raise RuntimeError(
-                f"Too few valid DE indices ({de_idx.size}) — dataset misconfigured."
+                f"Too few valid DE indices ({de_idx_orig.size}) — dataset misconfigured."
             )
     else:
-        # Variance-based fallback — top genes by train variance
+        # Variance-based fallback — top genes by train variance (pre-mask)
         var_tr = Y_log1p[tr].var(0)
-        de_idx = np.argsort(-var_tr)[: min(3217, len(var_tr))]
+        de_idx_orig = np.argsort(-var_tr)[: min(3217, len(var_tr))].astype(np.int64)
 
-    Y_log1p_te_de = Y_log1p_te[:, de_idx]
-    Y_hat_log1p_te_de = Y_hat_log1p_te[:, de_idx]
+    de_idx_orig = np.asarray(de_idx_orig, dtype=np.int64)
+    de_kept = mask_tr[de_idx_orig]
+    n_de_total = int(len(de_idx_orig))
+    n_de_kept = int(de_kept.sum())
+    orig_to_masked = -np.ones(len(mask_tr), dtype=np.int64)
+    orig_to_masked[mask_tr] = np.arange(n_kept)
+    de_idx_in_k = orig_to_masked[de_idx_orig[de_kept]]
+    assert (de_idx_in_k >= 0).all()
+    if n_de_kept < 5:
+        raise RuntimeError(
+            f"Only {n_de_kept}/{n_de_total} DE genes survived mask — "
+            f"dataset / filter misconfigured."
+        )
 
-    # Primary gate metric
-    r2_top50_de_vw = float(
-        r2_score(Y_log1p_te_de, Y_hat_log1p_te_de,
-                 multioutput='variance_weighted')
+    # Per-run metrics on per-run mask
+    r2_top50_de_vw = float(r2_score(
+        Y_log1p_te_k[:, de_idx_in_k],
+        Y_hat_log1p_te_k[:, de_idx_in_k],
+        multioutput='variance_weighted',
+    ))
+    r2_overall_vw = float(r2_score(
+        Y_log1p_te_k, Y_hat_log1p_te_k,
+        multioutput='variance_weighted',
+    ))
+
+    # Final tripwire — |r²| < 2.0
+    assert abs(r2_top50_de_vw) < 2.0, (
+        f"Tripwire: |r²_top50_de_vw|={abs(r2_top50_de_vw):.3e} >= 2.0. "
+        f"Halt per LOCKED contract."
     )
 
-    # Secondary diagnostics
-    r2_overall_vw = float(
-        r2_score(Y_log1p_te, Y_hat_log1p_te, multioutput='variance_weighted')
-    )
-    r2_per_col_de = np.array(
-        [r2_score(Y_log1p_te_de[:, j], Y_hat_log1p_te_de[:, j])
-         for j in range(de_idx.size)]
-    )
-    r2_top50_de_median = float(np.median(r2_per_col_de))
-    r2_top50_de_p01 = float(np.percentile(r2_per_col_de, 1))
-    r2_top50_de_p99 = float(np.percentile(r2_per_col_de, 99))
-
-    # Pearson overall (for audit; used in prior phases)
-    yf = Y_log1p_te.ravel()
-    yh = Y_hat_log1p_te.ravel()
+    # Pearson on un-standardized log1p Y (audit; consumed by exp1 driver)
+    yf = Y_log1p_te_k.ravel()
+    yh = Y_hat_log1p_te_k.ravel()
     pearson_overall = float(pearsonr(yf, yh)[0])
 
-    # Final tripwire
-    assert abs(r2_top50_de_vw) < 2.0, (
-        f"r2_top50_de_vw={r2_top50_de_vw:.3e} violates |r²|<2 cap. "
-        f"Metric contract violated. Do not write results."
+    # Persist per-run artifacts for intersection post-processing
+    arm_label = _arm_label_from_ckpt(condition, ckpt_path)
+    art_dir = Path(__file__).resolve().parents[1] / "experiments/phase6_5c/artifacts"
+    art_dir.mkdir(parents=True, exist_ok=True)
+    run_tag = f"{arm_label}_seed{seed}"
+    np.savez_compressed(
+        art_dir / f"run_{run_tag}.npz",
+        mask_tr=mask_tr,
+        te_idx=np.asarray(te, dtype=np.int64),
+        Y_hat_log1p_te_full=_scatter_back(
+            Y_hat_log1p_te_k.astype(np.float32), mask_tr, len(mask_tr)
+        ),
+        de_idx_orig=de_idx_orig,
+        seed=np.int32(seed),
+        arm=np.array(arm_label),
     )
 
     metrics = {
-        "r2_top50_de_vw": r2_top50_de_vw,
-        "r2_overall_vw": r2_overall_vw,
-        "r2_top50_de_median": r2_top50_de_median,
-        "r2_top50_de_p01": r2_top50_de_p01,
-        "r2_top50_de_p99": r2_top50_de_p99,
+        "r2_top50_de_vw": float(r2_top50_de_vw),
+        "r2_overall_vw":  float(r2_overall_vw),
+        "n_kept":         n_kept,
+        "n_dropped":      n_dropped,
+        "pct_dropped":    float(pct_dropped),
+        "n_de_total":     n_de_total,
+        "n_de_kept":      n_de_kept,
+        # Aliases for downstream compatibility (exp1_linear_probe_ablation.py)
+        "r2_top50_de":    float(r2_top50_de_vw),
+        "r2_overall":     float(r2_overall_vw),
+        # Backward-compat fields required by exp1_linear_probe_ablation.py
+        # print/log plumbing (forbidden to edit). Minimal surface kept stable.
         "pearson_overall": pearson_overall,
         "probe_fit_seconds": fit_seconds,
-        "n_de_genes_evaluated": int(de_idx.size),
-        "z_sd_min": float(z_sd.min()),
-        "y_sd_min": float(y_sd.min()),
+        "condition":       condition,
+        "arm":             arm_label,
+        "dataset":         dataset_name,
+        "provenance":      provenance,
+        "n_cells_train":   int(tr.size),
+        "n_cells_test":    int(te.size),
+        "n_genes":         int(n_genes),
+        "hidden_dim":      int(effective_hidden),
+        "latent_dim":      int(effective_latent),
+        "seed":            int(seed),
+        "z_sd_min":        float(z_sd.min()),
     }
-    metrics.update(
-        condition=condition, dataset=dataset_name, provenance=provenance,
-        n_cells_train=int(tr.size), n_cells_test=int(te.size),
-        n_genes=int(n_genes), hidden_dim=int(effective_hidden),
-        latent_dim=int(effective_latent), seed=int(seed),
-    )
-    # Legacy-key aliases for the exp1 driver (forbidden to edit). Point
-    # the old names at the locked variance_weighted values so existing
-    # print/log plumbing in exp1_linear_probe_ablation.py keeps working.
-    metrics["r2_top50_de"] = r2_top50_de_vw
-    metrics["r2_overall"] = r2_overall_vw
     return metrics
 
 

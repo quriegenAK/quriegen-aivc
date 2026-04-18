@@ -1,151 +1,254 @@
-"""Regression test for the Phase 6.5c LOCKED evaluation contract.
+"""Regression tests for the Phase 6.5c LOCKED v2 contract.
 
 Contract under test (see prompts/phase6_5c_fix.md):
 
-* X stays in raw-counts space; encoder forward pass is unchanged.
-* Ridge target is ``log1p(X_filtered)`` — variance-stabilized.
-* Ridge fits in a standardized (Z, Y_log1p) space for numerical
-  conditioning of the SVD solver, then predictions are un-standardized
-  back to log1p space.
-* Primary gate metric is
-  ``r2_score(Y_log1p_te_de, Y_hat_log1p_te_de, multioutput='variance_weighted')``.
-* No ``MIN_TRAIN_NONZERO`` filter is applied — variance_weighted is
-  expected to tolerate rare (low-variance) columns without a heuristic.
-
-This test builds a small synthetic Poisson(λ=0.3) fixture with three
-forced single-nonzero-train-cell columns and asserts that
-``run_condition`` returns finite metrics inside a sane range with both
-tripwires (``z_sd_min``, ``y_sd_min``) respected.
+* Per-run train-split variance filter: ``mask_tr = Y_log1p[tr].std(0) > 1e-7``.
+* Mask applied symmetrically to Ridge fit and to scoring.
+* DE indices are remapped from original gene space into masked space.
+* ``z_sd`` floor assertion (encoder-collapse tripwire) preserved.
+* ``|r²_top50_de_vw| < 2.0`` tripwire preserved.
+* ``y_sd`` assertion and ``MIN_TRAIN_NONZERO`` filter REMOVED.
+* Per-run artifacts persisted to ``experiments/phase6_5c/artifacts``.
 """
 from __future__ import annotations
 
-import warnings
+from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 
 
-def _make_poisson_fixture(n_cells: int = 512, n_genes: int = 128,
-                          seed: int = 17):
-    """Build a Poisson(λ=0.3) count matrix with 3 columns forced to
-    have exactly one nonzero count in the TRAIN split under the
-    ``run_condition`` seed-local RNG. Placement is computed from the
-    same permutation logic (``np.random.default_rng(seed).permutation``)
-    so the forced cells are guaranteed train-side.
-    """
-    rng = np.random.default_rng(seed)
-    X = rng.poisson(lam=0.3, size=(n_cells, n_genes)).astype(np.float32)
-    # Zero out the first three columns entirely, then drop exactly one
-    # nonzero count in the train split for each.
-    X[:, 0:3] = 0.0
-    # Replicate the run_condition split logic so we can place the
-    # forced nonzeros at indices that are guaranteed train-side.
-    split_rng = np.random.default_rng(seed)
-    idx = split_rng.permutation(n_cells)
-    split = int(0.8 * n_cells)
-    train_cells = idx[:split]
-    # Use the first three cells of the train split for columns 0-2.
-    X[train_cells[0], 0] = 1
-    X[train_cells[1], 1] = 1
-    X[train_cells[2], 2] = 1
-    return X
+_SEED = 17
+_N_CELLS = 512
+_N_GENES = 128
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
 
 
 class _StubAnnData:
-    """Minimal AnnData stand-in that satisfies ``_load_dataset``'s
-    interface (``.X``, ``.obs``, ``.uns``).
-    """
-    def __init__(self, X: np.ndarray):
+    """Minimal AnnData shim that satisfies ``_load_dataset``'s interface."""
+
+    def __init__(self, X: np.ndarray, uns: dict | None = None):
         self.X = X
-        import pandas as pd
         self.obs = pd.DataFrame({})  # no 'perturbation' column → zeros
-        self.uns = {}  # no precomputed DE → variance fallback triggers
+        self.uns = uns or {}
 
 
-def test_locked_contract_returns_finite_metrics(monkeypatch):
-    """End-to-end: run_condition under locked contract on a 512x128
-    Poisson fixture with 3 forced rare columns; tripwires + ranges."""
+def _make_train_split(n_cells: int = _N_CELLS, seed: int = _SEED):
+    """Exact replica of run_condition's train/test split (seed-local RNG)."""
+    rng = np.random.default_rng(seed)
+    idx = rng.permutation(n_cells)
+    split = int(0.8 * n_cells)
+    return idx[:split], idx[split:]
+
+
+def _make_fixture_with_train_zero_cols(
+    n_cells: int = _N_CELLS,
+    n_genes: int = _N_GENES,
+    seed: int = _SEED,
+    forced_cols=(0, 1, 2),
+):
+    """Build a Poisson(λ=0.3) count matrix with ``forced_cols`` zeroed
+    in the train split. A single test-side nonzero is placed in each so
+    the upstream structural-zero filter in ``_load_dataset`` keeps them
+    — the per-run train-variance mask is what must drop them.
+    """
+    rng = np.random.default_rng(seed)
+    X = rng.poisson(lam=0.3, size=(n_cells, n_genes)).astype(np.float32)
+    tr, te = _make_train_split(n_cells=n_cells, seed=seed)
+    for i, col in enumerate(forced_cols):
+        X[tr, col] = 0.0
+        X[te[i], col] = 1.0
+    return X, tr, te, list(forced_cols)
+
+
+# --------------------------------------------------------------------- #
+# (a) mask drops all-train-zero columns symmetrically (fit + score)
+# --------------------------------------------------------------------- #
+def test_mask_drops_train_zero_columns(monkeypatch):
     import scripts.linear_probe_pretrain as lpp
 
-    n_cells, n_genes = 512, 128
-    X = _make_poisson_fixture(n_cells=n_cells, n_genes=n_genes, seed=17)
+    X, _tr, _te, forced_cols = _make_fixture_with_train_zero_cols()
+    monkeypatch.setattr(lpp, "_load_anndata", lambda p: _StubAnnData(X))
 
-    # Patch _load_anndata so _load_dataset pulls our synthetic fixture
-    # via the real-file branch (so the structural-zero filter + log1p
-    # path are exercised, not the synthetic fallback branch).
-    def _fake_load_anndata(path):
-        return _StubAnnData(X)
-    monkeypatch.setattr(lpp, "_load_anndata", _fake_load_anndata)
-
-    # Make the "path exists" branch fire by pointing at any existing file.
-    from pathlib import Path
-    fake_path = Path(__file__)  # this test file definitely exists
-
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        m = lpp.run_condition(
-            condition="scratch",
-            ckpt_path=None,
-            dataset_name="poisson_synth",
-            dataset_path=fake_path,
-            seed=17,
-            hidden_dim=32,
-            latent_dim=16,
-            n_genes_fallback=n_genes,
-        )
-
-    # Primary tripwires (contract assertions)
-    assert np.isfinite(m["r2_top50_de_vw"]), (
-        f"r2_top50_de_vw not finite: {m['r2_top50_de_vw']}")
-    assert -1.5 <= m["r2_top50_de_vw"] <= 1.01, (
-        f"r2_top50_de_vw out of sane range: {m['r2_top50_de_vw']}")
-
-    # Secondary diagnostics are finite
-    assert np.isfinite(m["r2_overall_vw"]), m["r2_overall_vw"]
-    assert np.isfinite(m["r2_top50_de_median"]), m["r2_top50_de_median"]
-
-    # Per-spec tripwire floors
-    assert m["z_sd_min"] > 1e-6, f"z_sd_min={m['z_sd_min']}"
-    assert m["y_sd_min"] > 1e-6, f"y_sd_min={m['y_sd_min']}"
-
-    # No RuntimeWarning from numpy during the call
-    rt_warnings = [w for w in caught if issubclass(w.category, RuntimeWarning)]
-    assert not rt_warnings, (
-        f"Unexpected RuntimeWarning(s): {[str(w.message) for w in rt_warnings]}"
+    m = lpp.run_condition(
+        condition="scratch",
+        ckpt_path=None,
+        dataset_name="test_mask",
+        dataset_path=Path(__file__),
+        seed=_SEED,
+        hidden_dim=32,
+        latent_dim=16,
+        n_genes_fallback=_N_GENES,
     )
 
+    # forced_cols must be dropped; natural all-train-zero in Poisson(0.3)×409
+    # is astronomically rare, so the lower-bound assertion is tight.
+    assert m["n_dropped"] >= len(forced_cols), (
+        f"n_dropped={m['n_dropped']} < forced={len(forced_cols)}"
+    )
+    assert m["n_kept"] + m["n_dropped"] == _N_GENES
+    assert 0.0 <= m["pct_dropped"] < 1.0
 
-def test_forced_rare_columns_do_not_inflate_vw():
-    """Sanity: with 3 columns that have ≤3 train nonzeros, the locked
-    contract's variance_weighted metric stays inside the ±1 sanity
-    range — the old uniform_average pathology was negative infinity-
-    like values when near-constant columns dominated."""
-    import scripts.linear_probe_pretrain as lpp
-
-    n_cells, n_genes = 512, 128
-    X = _make_poisson_fixture(n_cells=n_cells, n_genes=n_genes, seed=17)
-
-    class _Stub:
-        def __init__(self, X):
-            self.X = X
-            import pandas as pd
-            self.obs = pd.DataFrame({})
-            self.uns = {}
-
-    import pytest as _pytest
-    with _pytest.MonkeyPatch.context() as mp:
-        mp.setattr(lpp, "_load_anndata", lambda p: _Stub(X))
-        from pathlib import Path
-        m = lpp.run_condition(
-            condition="scratch",
-            ckpt_path=None,
-            dataset_name="poisson_rare",
-            dataset_path=Path(__file__),
-            seed=17,
-            hidden_dim=32,
-            latent_dim=16,
-            n_genes_fallback=n_genes,
+    # Cross-check via the persisted artifact: forced cols must be False
+    # in mask_tr at their original gene-space indices.
+    art = np.load(
+        _repo_root() / "experiments/phase6_5c/artifacts"
+                     / f"run_random_seed{_SEED}.npz",
+        allow_pickle=True,
+    )
+    mask = art["mask_tr"]
+    for col in forced_cols:
+        assert not mask[col], (
+            f"forced-train-zero col {col} survived mask_tr"
         )
 
-    # The tripwire that halts a run on the real contract:
-    assert abs(m["r2_top50_de_vw"]) < 2.0, m["r2_top50_de_vw"]
+
+# --------------------------------------------------------------------- #
+# (b) DE index remapping into masked space
+# --------------------------------------------------------------------- #
+def test_de_index_remapping_respects_mask(monkeypatch):
+    import scripts.linear_probe_pretrain as lpp
+
+    X, _tr, _te, forced_cols = _make_fixture_with_train_zero_cols()
+    # Include all 3 forced-train-zero indices (must be dropped) and 6
+    # regular indices (must survive). n_de_kept >= 5 required by the
+    # LOCKED v2 tripwire in run_condition.
+    uns = {
+        "top50_de_per_perturbation": {
+            "A": [0, 1, 10, 20, 50],
+            "B": [2, 30, 40, 60, 70],
+        }
+    }
+    monkeypatch.setattr(lpp, "_load_anndata",
+                        lambda p: _StubAnnData(X, uns=uns))
+    m = lpp.run_condition(
+        condition="scratch",
+        ckpt_path=None,
+        dataset_name="test_deremap",
+        dataset_path=Path(__file__),
+        seed=_SEED,
+        hidden_dim=32,
+        latent_dim=16,
+        n_genes_fallback=_N_GENES,
+    )
+
+    union = sorted({0, 1, 2, 10, 20, 30, 40, 50, 60, 70})
+    assert m["n_de_total"] == len(union)
+    # Exactly the 3 forced-train-zero DE genes must be excluded.
+    assert m["n_de_kept"] == len(union) - len(forced_cols)
+    assert np.isfinite(m["r2_top50_de_vw"])
+    assert abs(m["r2_top50_de_vw"]) < 2.0
+
+
+# --------------------------------------------------------------------- #
+# (c) z_sd assertion still fires on collapsed encoder latents
+# --------------------------------------------------------------------- #
+def test_z_sd_assertion_fires_on_collapsed_latents(monkeypatch):
+    import scripts.linear_probe_pretrain as lpp
+
+    X, *_ = _make_fixture_with_train_zero_cols()
+    monkeypatch.setattr(lpp, "_load_anndata", lambda p: _StubAnnData(X))
+
+    # Collapsed latents: std is 1e-8 (floor), below the 1e-6 tripwire.
+    def _collapsed_latents(encoder, X_in, device="cpu"):
+        return np.zeros((X_in.shape[0], 16), dtype=np.float32)
+
+    monkeypatch.setattr(lpp, "_extract_latents", _collapsed_latents)
+
+    with pytest.raises(AssertionError, match="z_sd floor violated"):
+        lpp.run_condition(
+            condition="scratch",
+            ckpt_path=None,
+            dataset_name="test_zsd_trip",
+            dataset_path=Path(__file__),
+            seed=_SEED,
+            hidden_dim=32,
+            latent_dim=16,
+            n_genes_fallback=_N_GENES,
+        )
+
+
+# --------------------------------------------------------------------- #
+# (d) |r²| < 2.0 tripwire fires on pathological r²
+# --------------------------------------------------------------------- #
+def test_r2_tripwire_fires_on_pathological_value(monkeypatch):
+    import sklearn.metrics as skm
+    import scripts.linear_probe_pretrain as lpp
+
+    X, *_ = _make_fixture_with_train_zero_cols()
+    monkeypatch.setattr(lpp, "_load_anndata", lambda p: _StubAnnData(X))
+
+    original_r2 = skm.r2_score
+    calls = {"n": 0}
+
+    def _bad_r2(y_true, y_pred, **kwargs):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            # First call is r2_top50_de_vw — force pathological value.
+            return 10.0
+        return original_r2(y_true, y_pred, **kwargs)
+
+    monkeypatch.setattr(skm, "r2_score", _bad_r2)
+
+    with pytest.raises(AssertionError, match=r"r²_top50_de_vw"):
+        lpp.run_condition(
+            condition="scratch",
+            ckpt_path=None,
+            dataset_name="test_r2_trip",
+            dataset_path=Path(__file__),
+            seed=_SEED,
+            hidden_dim=32,
+            latent_dim=16,
+            n_genes_fallback=_N_GENES,
+        )
+
+
+# --------------------------------------------------------------------- #
+# (e) per-run artifact written with expected keys + dtypes
+# --------------------------------------------------------------------- #
+def test_artifact_file_written_with_expected_keys(monkeypatch):
+    import scripts.linear_probe_pretrain as lpp
+
+    X, *_ = _make_fixture_with_train_zero_cols()
+    monkeypatch.setattr(lpp, "_load_anndata", lambda p: _StubAnnData(X))
+
+    m = lpp.run_condition(
+        condition="scratch",
+        ckpt_path=None,
+        dataset_name="test_artifact",
+        dataset_path=Path(__file__),
+        seed=_SEED,
+        hidden_dim=32,
+        latent_dim=16,
+        n_genes_fallback=_N_GENES,
+    )
+
+    art_path = (
+        _repo_root() / "experiments/phase6_5c/artifacts"
+                      / f"run_random_seed{_SEED}.npz"
+    )
+    assert art_path.exists(), f"artifact not written: {art_path}"
+
+    arr = np.load(art_path, allow_pickle=True)
+    expected = {
+        "mask_tr", "te_idx", "Y_hat_log1p_te_full",
+        "de_idx_orig", "seed", "arm",
+    }
+    assert set(arr.files) == expected, (
+        f"artifact keys mismatch: {set(arr.files) ^ expected}"
+    )
+    assert int(arr["seed"]) == _SEED
+    assert str(arr["arm"]) == "random"
+    assert arr["mask_tr"].dtype == bool
+    assert arr["Y_hat_log1p_te_full"].shape[1] == _N_GENES
+    # Un-masked positions must be NaN (the _scatter_back invariant).
+    pred = arr["Y_hat_log1p_te_full"]
+    assert np.isnan(pred[:, ~arr["mask_tr"]]).all()
+    assert np.isfinite(pred[:, arr["mask_tr"]]).all()
+    # Return-value/metric plumbing sanity.
+    assert m["arm"] == "random"
+    assert m["seed"] == _SEED
