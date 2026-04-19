@@ -139,3 +139,114 @@ Next step: open `phase-6.5c` branch with the two-line fix in
 table. Gate decision (PASS / SOFT / FAIL) deferred to Phase 6.5c.
 
 Phase 7 remains blocked.
+
+---
+
+## Phase 6.5c — LOCKED v2 (Option B + intersection mask)
+
+- **Date:** 2026-04-19
+- **Branch:** `phase-6.5c`
+- **Commit 3 SHA:** `60624a0b8d219b03d08f03413fc4442be9fd7e9f` (code + test + intersection-gate script)
+- **Commit 4 SHA:** _this commit_ (results + docs)
+- **Spec:** [prompts/phase6_5c_fix.md](../prompts/phase6_5c_fix.md) (LOCKED v2)
+
+### Evaluation contract (summary)
+
+- Per-run train-split filter `mask_tr = Y_log1p[tr].std(0) > 1e-7`, applied
+  symmetrically to Ridge fit and scoring (replaces the v1 `y_sd` assertion).
+- Metric: `variance_weighted` R² on **un-standardized** `log1p(Y)`; primary
+  gate is DE top-50 on the intersection of per-run masks across successful
+  runs.
+- Seeds `{3, 17, 42}` × arms `{real, mock, random}` = 9 runs planned.
+
+### Run outcome (9 planned, 6 succeeded, 3 blocked)
+
+| seed | arm    | status     | r²_top50_de_vw | r²_overall_vw | n_kept / 17956 | n_de_kept / 3217 | W&B URL |
+|------|--------|------------|----------------|----------------|----------------|-------------------|---------|
+| 3    | real   | ✅          | +0.010889      | +0.163044      | 17796          | 3214              | https://wandb.ai/quriegen/aivc-linear-probe/runs/rcvocklj |
+| 3    | mock   | ❌ BLOCKED  | —              | —              | —              | —                 | https://wandb.ai/quriegen/aivc-linear-probe/runs/ounzfenn |
+| 3    | random | ✅          | +0.014190      | +0.181075      | 17796          | 3214              | https://wandb.ai/quriegen/aivc-linear-probe/runs/jaxexby4 |
+| 17   | real   | ✅          | +0.010938      | +0.162853      | 17792          | 3215              | https://wandb.ai/quriegen/aivc-linear-probe/runs/w88jxg03 |
+| 17   | mock   | ❌ BLOCKED  | —              | —              | —              | —                 | https://wandb.ai/quriegen/aivc-linear-probe/runs/qmdhjerz |
+| 17   | random | ✅          | +0.014133      | +0.180500      | 17792          | 3215              | https://wandb.ai/quriegen/aivc-linear-probe/runs/0riulwgo |
+| 42   | real   | ✅          | +0.010689      | +0.162759      | 17762          | 3212              | https://wandb.ai/quriegen/aivc-linear-probe/runs/on93w3ls |
+| 42   | mock   | ❌ BLOCKED  | —              | —              | —              | —                 | https://wandb.ai/quriegen/aivc-linear-probe/runs/dtwl6ey5 |
+| 42   | random | ✅          | +0.014098      | +0.180833      | 17762          | 3212              | https://wandb.ai/quriegen/aivc-linear-probe/runs/ql2qryyz |
+
+Runtime tripwires on every successful run: `z_sd_min > 0.81` (floor 1e-6),
+`|r²_top50_de_vw| < 0.02` (cap 2.0). Both pass.
+
+### Mock arm — BLOCKED (pre-existing ckpt / dataset feature-space mismatch)
+
+```
+RuntimeError: Pretrained encoder n_genes=2000 does not match dataset n_genes=36601.
+```
+
+- Ckpt: `checkpoints/pretrain/pretrain_encoders_mock.pt`
+- SHA: `c0d9715dbc76a6ecab260fe09ca5173ee7fdf6eb640538eac0f9024399a90b4e`
+- The mock ckpt was regenerated at `n_genes=2000` in Phase 6.5a (synthetic
+  fallback on the pretrain script's defaults). Norman 2019 aligned is
+  `n_genes=36601`. The failure is at the feature-space compatibility check
+  in `scripts/linear_probe_pretrain.py:361`, **before** the LOCKED v2 code
+  path — so this is not a LOCKED v2 tripwire trip and was not retried per
+  the no-patching HARD RULE.
+- See [REAL_DATA_BLOCKERS.md §Phase 6.5c](REAL_DATA_BLOCKERS.md) for the
+  resolution plan (re-pretrain mock baseline at `n_genes=36601`).
+
+### Intersection gate (2 arms: real, random — mock missing)
+
+Run via `scripts/compute_intersection_gate.py`, relaxed to accept
+`N ≥ 6` artifacts. Writes
+`experiments/phase6_5c/intersection_gate.json`.
+
+- `n_runs_used`: **6** (3 real + 3 random)
+- `runs_skipped`: `mock × {3, 17, 42}`
+- `intersection_mask_size`: **17530** / 17956 (97.6%)
+- `n_de_kept_intersection`: **3208** / 3217 (99.7%)
+
+| arm    | G_top50_de_intersection | G_overall_intersection | n_seeds |
+|--------|-------------------------|------------------------|---------|
+| real   | **+0.010839**           | +0.162885              | 3       |
+| mock   | BLOCKED                 | BLOCKED                | 0       |
+| random | **+0.014140**           | +0.180802              | 3       |
+
+Deltas (primary gate on real vs random):
+
+- `Delta_real_vs_random_de`      = **−0.003302**
+- `Delta_real_vs_random_overall` = −0.017917
+- PASS threshold (`|G_random|=0.01414 > 0.01` → `0.05·|G_random|`) = +0.000707
+
+### Checkpoints used
+
+| arm    | ckpt path                                       | SHA-256 (8) | status                         |
+|--------|-------------------------------------------------|-------------|--------------------------------|
+| real   | `checkpoints/pretrain/pretrain_encoders.pt`     | `416e8b1a`  | ✅ loaded, tripwire passed     |
+| mock   | `checkpoints/pretrain/pretrain_encoders_mock.pt`| `c0d9715d`  | ❌ n_genes=2000 ≠ 36601        |
+| random | n/a                                             | n/a         | ✅ fresh `SimpleRNAEncoder` init |
+
+### Decision — **FAIL**
+
+`Delta_real_vs_random_de = −0.003302 ≤ 0` → **FAIL** per the LOCKED v2 gate
+(see [prompts/phase6_5c_fix.md](../prompts/phase6_5c_fix.md) §Gate decision).
+
+### Interpretation
+
+- **G_real < G_random by 0.0033 absolute on DE top-50.** The pretrained
+  encoder does not transfer to Norman 2019 perturbation prediction — it
+  sits below the untrained-init floor on the primary metric.
+- **Both arms are near the noise floor (~1% variance explained on top-50
+  DE).** The overall-gene R² is 16–18%; DE top-50 is where perturbation
+  signal should concentrate, and it does not.
+- **FAIL signal is consistent with one or more of:** (i) lineage mismatch
+  (PBMC10k pretrain → K562 Norman transfer), (ii) objective mismatch
+  (masked-recon pretrain vs perturbation-response target), (iii) encoder
+  architecture ceiling. Disambiguation is Phase 6.5d scope.
+
+### Residual uncertainty
+
+`variance_weighted` on pooled DE genes does not distinguish
+perturbation-specific signal from cross-perturbation shared variance.
+Per-perturbation evaluation is deferred to Phase 6.5d regardless of this
+gate outcome.
+
+Phase 7 remains blocked. Phase 6.5d queued.

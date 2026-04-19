@@ -234,6 +234,47 @@ above is fully satisfied.
 
 Phase 7 blocked until Phase 6.5c produces a valid gate decision.
 
+### Phase 6.5c — 2026-04-19 (LOCKED v2, FAIL on real-vs-random — two blockers)
+
+LOCKED v2 contract (per-run `mask_tr > 1e-7`, `variance_weighted` R² on
+un-standardized `log1p(Y)`, seeds `{3, 17, 42}`) executed successfully on
+6 of 9 planned runs. Primary gate on real-vs-random: **FAIL**
+(`Delta_real_vs_random_de = −0.003302`; see `PHASE6_5_RESULTS.md`
+§Phase 6.5c). Two unresolved blockers:
+
+1. **Mock checkpoint feature-space mismatch (DATA blocker).**
+   - File: `checkpoints/pretrain/pretrain_encoders_mock.pt`
+   - SHA: `c0d9715dbc76a6ecab260fe09ca5173ee7fdf6eb640538eac0f9024399a90b4e`
+   - Built at `n_genes=2000` (Phase 6.5a synthetic-fallback defaults),
+     incompatible with the Norman-aligned `n_genes=36601` feature space.
+     All 3 mock arm runs fail at the compatibility check in
+     `scripts/linear_probe_pretrain.py:361`, before the LOCKED v2 code
+     path. Blocks the mock column of the linear-probe ablation matrix.
+   - Resolution required in 6.5d: re-pretrain the mock baseline at
+     `n_genes=36601` against the committed peak set
+     (`data/peak_sets/pbmc10k_hg38_20260415.tsv`), then rerun the
+     mock arm only (`seed ∈ {3, 17, 42}`) and recompute the intersection
+     gate at `N = 9`.
+   - Owner: TBD.
+
+2. **Real encoder transfer gap (CAPABILITY blocker).**
+   - Pretrained encoder at `checkpoints/pretrain/pretrain_encoders.pt`
+     (SHA `416e8b1a`) fails the LOCKED v2 gate on Norman 2019:
+     `G_real = +0.010839` vs `G_random = +0.014140`
+     (`Delta = −0.003302`; threshold `+0.000707`).
+   - Not a data blocker — a capability blocker. The real arm produced
+     finite, well-conditioned metrics (`z_sd_min > 0.81`,
+     `|r²_top50_de_vw| < 0.02`); it simply does not beat the
+     untrained-init floor on top-50 DE variance_weighted R².
+   - Phase 6.5d scope: disambiguate between (i) lineage mismatch
+     (PBMC10k → K562), (ii) objective mismatch (masked-recon pretrain
+     vs perturbation-response target), (iii) encoder architecture
+     ceiling. Consider per-perturbation evaluation instead of pooled
+     DE top-50.
+   - Owner: TBD.
+
+Phase 7 blocked. Phase 6.5d queued to address both.
+
 ## Appendix: real-data checkpoint hashes (append on rerun)
 
 <!-- On each real-data rerun, append a line: YYYY-MM-DD <sha256> <notes> -->

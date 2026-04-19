@@ -87,24 +87,27 @@ def _r2_vw(Y_true: np.ndarray, Y_pred: np.ndarray) -> float:
 def main(argv: list[str] | None = None) -> dict:
     args = _parse_args(argv)
 
-    # -------- Load 9 artifacts --------
+    # -------- Load available artifacts (accept N ≥ 6 per 6.5c finalization) --------
     runs: List[dict] = []
-    missing: List[str] = []
+    runs_skipped: List[dict] = []
     for seed in SEEDS:
         for arm in ARMS:
             path = args.artifacts_dir / f"run_{arm}_seed{seed}.npz"
             if not path.exists():
-                missing.append(path.name)
+                runs_skipped.append({"arm": arm, "seed": int(seed)})
                 continue
             runs.append(_load_artifact(path))
-    if missing:
-        raise FileNotFoundError(
-            f"Missing {len(missing)} artifact(s): {missing}. "
-            f"Run the 9-run matrix to completion before computing the gate."
-        )
-    if len(runs) != 9:
+    if len(runs) < 6:
         raise RuntimeError(
-            f"Expected 9 artifacts, found {len(runs)}. Aborting."
+            f"Too few artifacts ({len(runs)}) — need at least 6 "
+            f"(≥2 arms × 3 seeds) to compute a meaningful gate. "
+            f"Skipped: {runs_skipped}"
+        )
+    if runs_skipped:
+        print(
+            f"[warn] {len(runs_skipped)} run(s) skipped (missing artifact): "
+            f"{runs_skipped}. Intersection gate computed across the "
+            f"{len(runs)} available runs."
         )
 
     # -------- Shape + de_idx_orig sanity across runs --------
@@ -223,17 +226,65 @@ def main(argv: list[str] | None = None) -> dict:
               f"| {n_de_kept_inter:>22} |")
     print()
 
+    # -------- Decision (gate on primary arm pair: real vs random) --------
+    per_arm_gate: Dict[str, Dict[str, float]] = {}
+    for arm, a in arm_agg.items():
+        per_arm_gate[arm] = {
+            "G_top50_de_intersection": a["G_top50_de_intersection"],
+            "G_overall_intersection":  a["G_overall_intersection"],
+            "n_seeds":                 a["n_seeds"],
+            "seeds":                   a["seeds"],
+        }
+
+    decision = "UNEVALUATED"
+    delta_de = float("nan")
+    delta_overall = float("nan")
+    if "real" in arm_agg and "random" in arm_agg:
+        g_real_de  = arm_agg["real"]["G_top50_de_intersection"]
+        g_rand_de  = arm_agg["random"]["G_top50_de_intersection"]
+        g_real_ov  = arm_agg["real"]["G_overall_intersection"]
+        g_rand_ov  = arm_agg["random"]["G_overall_intersection"]
+        delta_de       = float(g_real_de - g_rand_de)
+        delta_overall  = float(g_real_ov - g_rand_ov)
+
+        abs_rand = abs(g_rand_de)
+        if abs_rand > 0.01:
+            pass_threshold = 0.05 * abs_rand
+        else:
+            pass_threshold = 0.005
+        if delta_de <= 0:
+            decision = "FAIL"
+        elif delta_de >= pass_threshold:
+            decision = "PASS"
+        else:
+            decision = "SOFT"
+        print(
+            f"[gate] Delta_real_vs_random_de={delta_de:+.6f} "
+            f"(threshold={pass_threshold:+.6f}) → **{decision}**"
+        )
+    else:
+        print(
+            "[gate] real and/or random arm missing — decision UNEVALUATED."
+        )
+
     # -------- Write JSON --------
     payload = {
         "artifacts_dir": str(args.artifacts_dir),
         "dataset_path": str(args.dataset_path),
+        "n_runs_used": len(runs),
+        "runs_skipped": runs_skipped,
         "n_full_genes": n_full,
+        "intersection_mask_size": n_kept_inter,
         "n_kept_intersection": n_kept_inter,
         "pct_kept_intersection": n_kept_inter / n_full,
         "n_de_total": n_de_total,
         "n_de_kept_intersection": n_de_kept_inter,
         "per_run": per_run,
         "per_arm": arm_agg,
+        "per_arm_gate": per_arm_gate,
+        "delta_real_vs_random_de": delta_de,
+        "delta_real_vs_random_overall": delta_overall,
+        "decision": decision,
     }
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out_json, "w") as fh:
