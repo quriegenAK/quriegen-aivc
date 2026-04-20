@@ -250,3 +250,110 @@ Per-perturbation evaluation is deferred to Phase 6.5d regardless of this
 gate outcome.
 
 Phase 7 remains blocked. Phase 6.5d queued.
+
+## Phase 6.5d — RSA (LOCKED), dated 2026-04-19
+
+### Why RSA
+
+Phase 6.5c linear probe FAILed on Norman 2019 (`Δ_real − random_de
+= −0.003302`, pretrained below untrained-init floor on top-50 DE,
+variance-weighted R²). Three non-mutually-exclusive hypotheses for
+the FAIL: (1) objective mismatch, (2) lineage mismatch, (3) architecture
+ceiling. RSA tests (1) and (2) directly without training: it asks
+whether the pretrained latent geometry agrees with the perturbation
+response geometry on the *same* perturbation set, independent of any
+probe head.
+
+### Locked contract recap
+
+- Aggregation: per-perturbation centroid (Option A). Latent centroid
+  `z_p` = mean of pretrained encoder forward pass over cells with
+  perturbation `p`. Response centroid `r_p` = mean of
+  `log1p(X_filtered)` over the same cells, minus the NTC centroid in
+  the same space. Structural-zero filter retained 17,956 / 36,601 genes
+  for response space; encoder still sees the full 36,601 raw counts.
+- Metric: pairwise cosine distance matrices over non-NTC perturbations,
+  flatten upper triangles, Spearman correlation = RSA.
+- Bootstrap: 1000 pair-resamples for real arm; 5 random inits (seeds
+  0..4) with 1000 resamples each (5,000 aggregated) for random arm;
+  paired pair-bootstrap of Δ with 1000 resamples (Δ_i = real_i −
+  mean(random_i across 5 inits)). 95% CIs are 2.5/97.5 percentiles.
+- Interpretation: pre-registered six-branch rule
+  ({A, B, C, C_WEAK, D, INCONCLUSIVE}); thresholds locked before any
+  number was observed.
+
+### Results
+
+| Quantity        | Point | 95% CI | Width |
+|-----------------|-------|--------|-------|
+| RSA_real        | **−0.0584** | [−0.0702, −0.0467] | 0.024 |
+| RSA_random      | **+0.0193** | [−0.0076, +0.0529] | 0.061 |
+| Δ = real − rand | **−0.0777** | [−0.0832, −0.0725] | 0.011 |
+
+Per-seed RSA_random: seed 0 = +0.0002, seed 1 = +0.0179, seed 2 =
++0.0264, seed 3 = +0.0053, seed 4 = +0.0467.
+
+- `n_perturbations_included = 236` (non-NTC, all passing
+  MIN_CELLS_PER_PERT = 20). `n_perturbations_dropped = 0`.
+- `n_pairs = 27,730`.
+- `n_boot = 1000` per arm.
+- `ckpt_real_sha = 416e8b1a…`. `data_sha = d4bedb53…`.
+- Pre-flight observed `n_perturbations_total = 237` vs the spec-noted
+  `105`. Column (`perturbation`), NTC label (`control`), and SHA all
+  match; the count is a spec-documentation artifact, not a data
+  provenance regression. Documented in
+  `.github/phase6_5d_rsa.json::schema_count_warning`.
+
+### Outcome
+
+**D — Active distractor bias**, dated 2026-04-19.
+
+Δ = −0.0777 < −0.05 with `0 ∉ CI_Δ = [−0.0832, −0.0725]` (CI excludes
+zero with margin) and `CI_width_real = 0.024 < 0.30` (no
+sampling-noise override). The pretrained encoder's latent geometry is
+*anti-correlated* with the Norman 2019 perturbation-response
+geometry, while the random-init baseline sits weakly positive
+(≈ +0.019). PBMC10k pretraining is not merely failing to capture
+K562 perturbation structure (that would be outcome C); it is
+actively re-organising the latent space along axes that contradict
+the perturbation geometry.
+
+This rules out the "objective mismatch but harmless" reading of the
+6.5c FAIL. It is consistent with both lineage mismatch (PBMC primary
+immune vs K562 erythroleukemia) and objective mismatch (cell-identity
+pretraining task is anti-aligned with perturbation-response geometry
+on this dataset). RSA cannot disentangle those two — that is a 6.5e
+design question.
+
+### What this rules in / rules out for 6.5e
+
+- **Architecture ceiling (hypothesis 3) — DEMOTED.** With dim-128
+  latents the random-init baseline already sits at ≈0; capacity is not
+  what is preventing pretrained features from agreeing with
+  perturbation geometry. Scaling latent width is unlikely to flip Δ
+  positive on its own.
+- **Probe redesign on the existing checkpoint — RULED OUT.** A negative
+  Δ in a training-free analysis means no linear head (Ridge, logistic,
+  MLP probe) operating on the *current* latents can recover
+  perturbation structure better than a random init operating on the
+  same cells. 6.5e must change the latents, not the head.
+- **Lineage-matched pretraining — VIABLE.** K562 / Perturb-Seq corpus
+  pretraining would test whether the negative-Δ signal is lineage-
+  driven.
+- **Perturbation-aware objective — VIABLE.** Contrastive (perturbation
+  vs control), supervised perturbation prediction, or response-space
+  reconstruction objectives would test whether the negative-Δ signal
+  is objective-driven.
+
+### What this PR does NOT do
+
+- No retraining, no fine-tuning, no checkpoint modification.
+- No probe of any kind on the latents (RSA is a training-free
+  similarity test, not a regression).
+- No change to `SimpleRNAEncoder` or any encoder code.
+- No 6.5e implementation. The outcome scopes 6.5e; 6.5e is a separate
+  PR.
+
+Full machine-readable result: `.github/phase6_5d_rsa.json`. Bootstrap
+distributions and per-seed centroids: `experiments/phase6_5d/artifacts/`
+(gitignored).

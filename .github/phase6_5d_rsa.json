@@ -1,0 +1,48 @@
+{
+  "rsa_real_mean": -0.05842228916260816,
+  "rsa_real_ci95": [
+    -0.07020851717338833,
+    -0.046695331990073634
+  ],
+  "rsa_random_mean": 0.019293147970669087,
+  "rsa_random_ci95": [
+    -0.007637748478548987,
+    0.052878038261636416
+  ],
+  "rsa_random_per_seed": {
+    "0": 0.00015351400790708197,
+    "1": 0.017872466374746415,
+    "2": 0.02643318437462703,
+    "3": 0.0053153150206351335,
+    "4": 0.04669126007542977
+  },
+  "delta": -0.07771543713327725,
+  "delta_ci95": [
+    -0.08315174001021185,
+    -0.07246940992593691
+  ],
+  "outcome": "D",
+  "interpretation_notes": "\u0394=-0.0777 < -0.05. Active distractor bias; PBMC-pretrain erodes K562-relevant axes.",
+  "n_pert_included": 236,
+  "n_pert_dropped": 0,
+  "dropped_perturbations": [],
+  "perturbation_col": "perturbation",
+  "ntc_label": "control",
+  "n_boot": 1000,
+  "random_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "ckpt_real_sha": "416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e",
+  "data_sha": "d4bedb53082735735993ced3cf30864b349d62f21078523b8b93137f55b333c9",
+  "n_cells_total": 111445,
+  "n_genes_total": 36601,
+  "n_genes_filtered": 17956,
+  "ci_width_real": 0.023513185183314696,
+  "ci_width_random": 0.0605157867401854,
+  "elapsed_seconds": 661.677206993103,
+  "schema_count_warning": "OBSERVED n_perturbations_total=237 (non-NTC=236) differs from spec-noted 105. Column + NTC label confirmed; RSA contract unaffected (more pairs improves estimate)."
+}
