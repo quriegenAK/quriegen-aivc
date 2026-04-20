@@ -1,0 +1,146 @@
+{
+  "rsa_real_mean": -0.062079189678334507,
+  "rsa_real_ci95": [
+    -0.07385323118867206,
+    -0.05031984043606941
+  ],
+  "rsa_random_mean": 0.019293147970669087,
+  "rsa_random_ci95": [
+    -0.007637748478548987,
+    0.052878038261636416
+  ],
+  "rsa_random_per_seed": {
+    "0": 0.00015351400790708197,
+    "1": 0.017872466374746415,
+    "2": 0.02643318437462703,
+    "3": 0.0053153150206351335,
+    "4": 0.04669126007542977
+  },
+  "delta": -0.08137233764900359,
+  "delta_ci95": [
+    -0.08689792490388926,
+    -0.07613266718367488
+  ],
+  "outcome": "D",
+  "interpretation_notes": "\u0394=-0.0814 < -0.05. Active distractor bias; PBMC-pretrain erodes K562-relevant axes.",
+  "n_pert_included": 236,
+  "n_pert_dropped": 0,
+  "dropped_perturbations": [],
+  "perturbation_col": "perturbation",
+  "ntc_label": "control",
+  "n_boot": 1000,
+  "random_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "ckpt_real_sha": "6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee",
+  "data_sha": "d4bedb53082735735993ced3cf30864b349d62f21078523b8b93137f55b333c9",
+  "n_cells_total": 111445,
+  "n_genes_total": 36601,
+  "n_genes_filtered": 17956,
+  "ci_width_real": 0.023533390752602648,
+  "ci_width_random": 0.0605157867401854,
+  "elapsed_seconds": 689.400691986084,
+  "schema_count_warning": "OBSERVED n_perturbations_total=237 (non-NTC=236) differs from spec-noted 105. Column + NTC label confirmed; RSA contract unaffected (more pairs improves estimate).",
+  "phase": "6.5e",
+  "stage": "joint_contrastive_only_e1",
+  "parent_ckpt_sha": "416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e",
+  "contrastive_ckpt_sha": "6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee",
+  "rsa_real_reconstruction": -0.05842228916260816,
+  "rsa_random_frozen_6_5d": 0.019293147970669087,
+  "delta_contrastive_vs_reconstruction": -0.003656900515726348,
+  "delta_contrastive_vs_reconstruction_ci95": [
+    -0.01543094202606389,
+    0.008102448726538751
+  ],
+  "delta_contrastive_vs_random": -0.08137233764900359,
+  "delta_contrastive_vs_random_ci95": [
+    -0.09314637915934114,
+    -0.06961298840673849
+  ],
+  "outcome_e1": "E1-NULL",
+  "interpretation_e1": "|\u0394|=0.004 < 0.05 and 0 \u2208 CI_\u0394 \u2014 objective is not the primary issue; lineage dominates.",
+  "tripwires": {
+    "T1_parent_ckpt_sha": {
+      "pass": true,
+      "observed": "416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e",
+      "expected": "416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e"
+    },
+    "T2_probe_batch": {
+      "pass": true,
+      "cache_path": "experiments/phase6_5e/probe_batch.npz",
+      "n_cells": 256,
+      "seed": 3,
+      "rna_shape": [
+        256,
+        36601
+      ],
+      "atac_shape": [
+        256,
+        115720
+      ],
+      "indices_sha256": "27a906d07cd3c47e294ab06bcc974351d269f97039d7dd43b94a9d6d8f215f64"
+    },
+    "T6_weight_mask": {
+      "pass": true,
+      "observed": {
+        "masked_rna_recon": 0.0,
+        "masked_atac_recon": 0.0,
+        "cross_modal_infonce": 1.0,
+        "peak_to_gene_aux": 0.0
+      },
+      "expected": {
+        "masked_rna_recon": 0.0,
+        "masked_atac_recon": 0.0,
+        "cross_modal_infonce": 1.0,
+        "peak_to_gene_aux": 0.0
+      },
+      "stage": "joint_contrastive_only_e1"
+    },
+    "T5_online_nan_abort": {
+      "pass": true,
+      "n_batches": 47
+    },
+    "T3_probe_drift": {
+      "pass": true,
+      "mean_abs_delta_z_rna": 0.151454895734787,
+      "mean_abs_delta_z_atac": 0.06796133518218994,
+      "threshold": 0.0001
+    },
+    "T4_collapse": {
+      "pass": true,
+      "finite": true,
+      "per_dim_std_min_rna": 0.5986950993537903,
+      "per_dim_std_min_atac": 0.7506888508796692,
+      "cross_dim_std_mean_rna": 3.783597469329834,
+      "cross_dim_std_mean_atac": 1.6694519519805908,
+      "threshold": 1e-06
+    },
+    "T7_drift_ratio": {
+      "pass": true,
+      "rna_encoder": 0.005639598222637289,
+      "atac_encoder": 0.01367298949206933,
+      "rna_proj": 0.015023260891649865,
+      "atac_proj": 0.01604529479998705
+    },
+    "out_ckpt_sha256": {
+      "pass": true,
+      "observed": "6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee",
+      "parent": "416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e"
+    },
+    "meta": {
+      "pass": true,
+      "projection_init_path": "parent",
+      "loss_first": 0.5877241492271423,
+      "loss_last": 0.27353453636169434,
+      "loss_decreased": true,
+      "loss_curve_len": 47,
+      "batch_size": 256,
+      "wall_clock_seconds": 83.54268407821655
+    }
+  },
+  "training_deviations": []
+}
