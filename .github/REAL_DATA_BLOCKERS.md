@@ -293,3 +293,20 @@ Phase 7 blocked. Phase 6.5d queued to address both.
   `27a906d07cd3c47e294ab06bcc974351d269f97039d7dd43b94a9d6d8f215f64`
 - Probe batch cache: `experiments/phase6_5e/probe_batch.npz`
 - 6.5f-disambig reuses these anchors for single-variable-test invariance.
+
+### Phase 6.5f-disambig — frozen-projection fine-tune
+- PBMC10k Multiome h5ad SHA-256:
+  `0e1e7689f4d9227ab7260c1c6be584e9dbbabef1c2ef834291cb9cc054363ca2` — T2 ✓ (unchanged from 6.5e)
+- Parent pretrain ckpt SHA-256:
+  `416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e` — T1 ✓
+- 6.5e contrastive-only ckpt SHA-256 (baseline for F-outcome):
+  `6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee`
+- 6.5f frozen-projection ckpt SHA-256:
+  `936dfa44071322f7d62c3e698e4395e875fd02a201d171647ad8734dccfa54d7`
+- Probe batch: reused 6.5e cache (`experiments/phase6_5e/probe_batch.npz`),
+  index SHA `27a906d07cd3c47e294ab06bcc974351d269f97039d7dd43b94a9d6d8f215f64` — T2 ✓
+- Single-variable change vs 6.5e: `rna_proj` + `atac_proj` frozen
+  (`requires_grad=False`, excluded from AdamW param groups).
+  T8-a (optimizer exclusion) + T8-b (max|ΔW|=0.0 exact) both PASS.
+- RSA outcome: F-NULL, Δ_{frozen−contrastive} = −5.39e-05, CI95 ≈ 0.023.
+- RSA JSON: `.github/phase6_5f_rsa.json`

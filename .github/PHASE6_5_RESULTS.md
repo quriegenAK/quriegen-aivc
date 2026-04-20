@@ -443,3 +443,143 @@ Full machine-readable result: `.github/phase6_5e_rsa.json`.
 Tripwire record: `experiments/phase6_5e/tripwires.json`.
 Bootstrap distributions + probe batch:
 `experiments/phase6_5e/artifacts/` (gitignored).
+
+## Phase 6.5f-disambig — frozen-projection disambiguation
+
+**Outcome: F-NULL** (pre-registered). Single-variable disambiguation of
+6.5e's E1-NULL outcome returned F-NULL — projection absorption was
+**not** the cause. Under frozen projections (all gradient routed into
+the encoders), RSA on Norman 2019 remains indistinguishable from the
+6.5e contrastive-only baseline.
+
+### Decision chain leading to 6.5f
+
+Phase 6.5e (`joint_contrastive_only_e1`, weight mask
+`{recon:0, recon:0, contrastive:1.0, aux:0}`) returned E1-NULL:
+`R_c = −0.0621`, `Δ_{c−r} = −0.0037`, `0 ∈ CI_Δ`. The T7 drift-ratio
+diagnostic (pre-registered follow-up rule) fired —
+`drift_ratio_rna = rna_enc/rna_proj = 0.005640/0.015023 = 0.376 ≪ 1`,
+indicating RNA encoder absorbed ~3× less gradient mass than `rna_proj`
+during 6.5e.
+
+| 6.5e T7 (reference) | Relative weight drift |
+|---|---|
+| `rna_encoder` | 0.56% |
+| `atac_encoder` | 1.37% |
+| `rna_proj` | 1.50% (absorbed ~3× more than encoder) |
+| `atac_proj` | 1.60% (near-parity with encoder) |
+
+Two competing interpretations of 6.5e that 6.5e alone cannot separate:
+**(1) lineage interpretation** — PBMC10k manifold lacks axes aligning
+with K562 perturbation response, and no objective manipulation on PBMC
+can fix this (scope-in E2); **(2) projection-absorption
+interpretation** — encoder direction never shifted meaningfully because
+projection heads absorbed gradient, which is discarded at ckpt save
+time (a cheap freeze-projections recipe could still move RSA).
+
+6.5f is the minimal single-variable test: freeze `rna_proj` /
+`atac_proj` (`requires_grad=False`, excluded from AdamW), keep
+everything else bit-identical to 6.5e.
+
+### Result
+
+| Quantity | Point | 95% CI | Width |
+|---|---|---|---|
+| R_b = RSA_real frozen-proj | **−0.0621** | [−0.0738, −0.0504] | 0.0234 |
+| R_c_e1 = RSA_real contrastive-only (frozen 6.5e) | −0.0621 | [−0.0739, −0.0503] | 0.0235 |
+| R_r = RSA_real reconstruction-dominant (frozen 6.5d) | −0.0584 | [−0.0702, −0.0467] | 0.0236 |
+| RSA_random (frozen 6.5d) | +0.0193 | [−0.0076, +0.0529] | 0.061 |
+| **Δ_{b−c_e1} (primary gate)** | **−0.00005** | [−0.0117, +0.0117] | 0.023 |
+| Δ_{b−r} | −0.0037 | [−0.0154, +0.0080] | 0.023 |
+| Δ_{b−random} | −0.0814 | [−0.0931, −0.0697] | 0.023 |
+
+The primary gate (`Δ_{b−c_e1}`) has a point estimate of `−5.4e-05`
+(essentially zero) and a CI that straddles zero symmetrically. `|Δ|
+= 0.00005 ≪ 0.05` and `0 ∈ CI_Δ` — Gate 2 row 3 (F-NULL) fires cleanly.
+
+### Encoder drift comparison — 6.5e vs 6.5f
+
+| Modality | 6.5e drift% | 6.5f drift% | Δ |
+|---|---|---|---|
+| `rna_encoder` | 0.5640% | 0.5729% | +0.0089% |
+| `atac_encoder` | 1.3673% | 1.3948% | +0.0275% |
+| `rna_proj` | 1.5023% | 0.0000% (frozen) | — |
+| `atac_proj` | 1.6045% | 0.0000% (frozen) | — |
+
+Freezing projections routed all gradient into the encoders as designed
+(T8-a/b both pass; T3 probe drift on the encoders went **up**:
+`mean|Δz_rna|` 0.151 → 0.247, `mean|Δz_atac|` 0.068 → 0.086). But the
+additional encoder motion is tiny in *relative weight* terms
+(~0.01–0.03 pp) and produces no detectable RSA shift. The encoder
+direction is stable under contrastive pressure on PBMC regardless of
+gradient routing.
+
+### Setup
+
+- Parent ckpt SHA: `416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e` (T1 ✓)
+- 6.5e baseline ckpt SHA (reference): `6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee`
+- 6.5f frozen-proj ckpt SHA: `936dfa44071322f7d62c3e698e4395e875fd02a201d171647ad8734dccfa54d7`
+  (distinct from parent and 6.5e)
+- Data: `data/pbmc10k_multiome.h5ad` SHA `0e1e7689…` (T2 ✓)
+- Probe batch: reused 6.5e cache; index SHA `27a906d0…` (T2 ✓)
+- Eval: Norman 2019 aligned (SHA `d4bedb53…`), 236 non-NTC perturbations, 27,730 pairs
+- Stage: `joint_contrastive_only_e1` (reused from 6.5e; no new stage)
+- Seed: 3 (full scope)
+- Projection init: `parent` (byte-identical to 6.5e's; verified at runtime)
+- Trainable params: 19,925,677 (encoders only under freeze)
+- Optimizer: AdamW, LR 1e-4, WD 1e-4, grad clip 1.0 global
+- Wall clock: 54.5s fine-tune + 479.8s RSA on MPS
+- Loss: 0.588 → 0.283 (decreased across 47 batches)
+- W&B run: https://wandb.ai/quriegen/aivc-pretrain/runs/5a5wspol
+
+### Tripwires (all passed)
+
+| # | Observed | Pass |
+|---|---|---|
+| T1 parent SHA | `416e8b1a…` == expected | ✓ |
+| T2 probe batch | data SHA `0e1e7689…` ✓; index SHA `27a906d0…` ✓ | ✓ |
+| T3 probe drift | mean\|Δz_rna\|=0.247, mean\|Δz_atac\|=0.086 (≫ 1e-4) | ✓ |
+| T4 collapse | per-dim std min ≥ 0.57; cross-dim std mean ≥ 1.66; finite | ✓ |
+| T5 online NaN/Inf | 47/47 batches clean | ✓ |
+| T6 weight mask | `{recon:0, recon:0, contrastive:1.0, aux:0}` | ✓ |
+| T7 drift ratios | rna_enc=0.573%, atac_enc=1.395%, rna_proj=0.0, atac_proj=0.0; drift_ratio_*="inf" | ✓ |
+| **T8-a** optimizer exclusion | no proj param id in optimizer; no proj `requires_grad=True` | ✓ |
+| **T8-b** max\|ΔW\|=0 exact | `max\|ΔW\|_rna=0.0`, `max\|ΔW\|_atac=0.0` | ✓ |
+
+### Interpretation
+
+Freezing the projection heads — which eliminates gradient absorption
+by construction, as T7 and T8 both confirm — produces **no change in
+RSA** on K562 Norman 2019. The 6.5e T7 diagnostic (projection drift ≫
+encoder drift) was a real optimizer-dynamics observation, but it is
+not load-bearing on the cross-cell-type geometry measurement. The
+PBMC10k manifold does not contain axes that align with K562
+perturbation response, and swapping which parameters absorb the
+contrastive gradient does not create such axes.
+
+Interpretation **(2)** (projection absorption) is falsified as a
+sufficient explanation. Interpretation **(1)** (lineage mismatch)
+stands — with higher confidence than after 6.5e alone, because the
+projection-absorption alternative has now been explicitly excluded
+by a direct-intervention test.
+
+### 6.5g / E2 scope implication
+
+- **Committed to:** E2 (K562 / Perturb-Seq lineage pretraining). With
+  both within-objective (6.5e) and within-optimizer-routing (6.5f)
+  manipulations on PBMC returning NULL, lineage is the dominant
+  remaining hypothesis. Gate-2 outcome F-NULL triggers the
+  "commit to E2 with higher confidence" branch.
+- **Deprioritized:** PBMC-recipe optimization (encoder-LR sweeps,
+  τ sweeps, alternative projection heads, longer training on
+  PBMC10k). F-WIN or F-PARTIAL would have pivoted here; F-NULL
+  does not.
+- **Not ruled out:** cell-type-aware contrastive objectives that
+  introduce pseudo-labels / perturbation-aware negatives. Outside
+  6.5f's scope and the spec explicitly forbids new experiments
+  "while we're here."
+
+Full machine-readable result: `.github/phase6_5f_rsa.json`.
+Tripwire record: `experiments/phase6_5f/tripwires.json`.
+Bootstrap distributions + probe batch:
+`experiments/phase6_5f/artifacts/` (gitignored).
