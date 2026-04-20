@@ -39,10 +39,11 @@ must be independently mergeable while 6.5c PR #16 is in draft).
   SHA `d4bedb53…` (verified in 6.5c).
 - `checkpoints/pretrain/pretrain_encoders.pt` — SHA
   `416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e`.
-- `adata.obs` schema (CONFIRMED via pre-flight 2026-04-19):
-  - Perturbation column: **`perturbation`** (105 distinct values).
+- `adata.obs` schema (CONFIRMED via 6.5d run 2026-04-19):
+  - Perturbation column: **`perturbation`** (237 distinct values; earlier
+    pre-flight of 105 was truncated view from `value_counts().head(10)`).
   - Control label: literal string **`control`** (11,855 cells, ~10.6% of dataset).
-  - Non-control perturbations: 104 total. Mix of single-gene (e.g. `KLF1`,
+  - Non-control perturbations: 236 total. Mix of single-gene (e.g. `KLF1`,
     `BAK1`) and gene-pair combinatorial (e.g. `CEBPE_RUNX1T1`, `TBX3_TBX2`).
   - No `NT` / `non-targeting` / `scramble` variants present; do not scan for them.
 - `SimpleRNAEncoder` import path: `aivc.skills.rna_encoder.SimpleRNAEncoder`.
@@ -152,8 +153,10 @@ git log --oneline -1  # must show main tip, not 6.5c tip
 - Schema (pre-resolved — do NOT rediscover): perturbation column =
   `perturbation`, control label = literal `control`. Assert both present
   in `adata.obs`. If either is missing, STOP (data provenance regression).
-- Log: n_perturbations_total=105, n_control_cells expected ≈11,855,
-  n_non_control_perturbations=104. Assert counts match (±1% tolerance).
+- Log: n_perturbations_total=237, n_control_cells expected ≈11,855,
+  n_non_control_perturbations=236. Assert counts match (±1% tolerance).
+  (Earlier spec noted 105 / 104; this was a truncated view from
+  `value_counts().head(10)`. Corrected post-6.5d run on 2026-04-19.)
 
 ### Step 3 — Implement `scripts/phase6_5d_rsa.py`
 
