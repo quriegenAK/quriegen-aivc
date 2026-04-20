@@ -1,0 +1,116 @@
+{
+  "artifacts_dir": "/Users/ashkhan/Projects/aivc_genelink/experiments/phase6_5c/artifacts",
+  "dataset_path": "/Users/ashkhan/Projects/aivc_genelink/data/norman2019_aligned.h5ad",
+  "n_runs_used": 6,
+  "runs_skipped": [
+    {
+      "arm": "mock",
+      "seed": 3
+    },
+    {
+      "arm": "mock",
+      "seed": 17
+    },
+    {
+      "arm": "mock",
+      "seed": 42
+    }
+  ],
+  "n_full_genes": 17956,
+  "intersection_mask_size": 17530,
+  "n_kept_intersection": 17530,
+  "pct_kept_intersection": 0.9762753397193139,
+  "n_de_total": 3217,
+  "n_de_kept_intersection": 3208,
+  "per_run": [
+    {
+      "arm": "real",
+      "seed": 3,
+      "artifact": "run_real_seed3.npz",
+      "r2_top50_de_is": 0.010888971388339996,
+      "r2_overall_is": 0.16304299235343933
+    },
+    {
+      "arm": "random",
+      "seed": 3,
+      "artifact": "run_random_seed3.npz",
+      "r2_top50_de_is": 0.014189740642905235,
+      "r2_overall_is": 0.18107393383979797
+    },
+    {
+      "arm": "real",
+      "seed": 17,
+      "artifact": "run_real_seed17.npz",
+      "r2_top50_de_is": 0.01093788631260395,
+      "r2_overall_is": 0.16285324096679688
+    },
+    {
+      "arm": "random",
+      "seed": 17,
+      "artifact": "run_random_seed17.npz",
+      "r2_top50_de_is": 0.014132772572338581,
+      "r2_overall_is": 0.18049953877925873
+    },
+    {
+      "arm": "real",
+      "seed": 42,
+      "artifact": "run_real_seed42.npz",
+      "r2_top50_de_is": 0.010689388029277325,
+      "r2_overall_is": 0.16275855898857117
+    },
+    {
+      "arm": "random",
+      "seed": 42,
+      "artifact": "run_random_seed42.npz",
+      "r2_top50_de_is": 0.014098437502980232,
+      "r2_overall_is": 0.18083271384239197
+    }
+  ],
+  "per_arm": {
+    "real": {
+      "G_top50_de_intersection": 0.010838748576740423,
+      "G_overall_intersection": 0.16288493076960245,
+      "n_seeds": 3,
+      "seeds": [
+        3,
+        17,
+        42
+      ]
+    },
+    "random": {
+      "G_top50_de_intersection": 0.014140316906074682,
+      "G_overall_intersection": 0.18080206215381622,
+      "n_seeds": 3,
+      "seeds": [
+        3,
+        17,
+        42
+      ]
+    }
+  },
+  "per_arm_gate": {
+    "real": {
+      "G_top50_de_intersection": 0.010838748576740423,
+      "G_overall_intersection": 0.16288493076960245,
+      "n_seeds": 3,
+      "seeds": [
+        3,
+        17,
+        42
+      ]
+    },
+    "random": {
+      "G_top50_de_intersection": 0.014140316906074682,
+      "G_overall_intersection": 0.18080206215381622,
+      "n_seeds": 3,
+      "seeds": [
+        3,
+        17,
+        42
+      ]
+    }
+  },
+  "delta_real_vs_random_de": -0.003301568329334259,
+  "delta_real_vs_random_overall": -0.017917131384213775,
+  "decision": "FAIL"
+}

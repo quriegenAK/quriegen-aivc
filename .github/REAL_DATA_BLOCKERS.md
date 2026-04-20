@@ -202,19 +202,78 @@ above is fully satisfied.
 
 ## Phase 6.5 results (real-data gate)
 
-- Date: 2026-04-16
-- Real ckpt SHA: 416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e
-- top-50 DE R²: -0.4617
-- ΔR² vs random: -0.1991 (relative -75.79%)
-- Decision: FAIL
-- Pointer: .github/PHASE6_5_RESULTS.md
-- W&B real-run URL: https://wandb.ai/quriegen/aivc-linear-probe/runs/nbc8telz
+**Prior synthetic result invalidated — see PHASE6_5_RESULTS.md**
 
-Real vs mock: real − mock = -0.0348 (relative -8.15%) — real-data
-pretraining is not contributing signal beyond the regenerated-mock
-architecture prior under the current synthetic-fallback probe.
-Phase 7 blocked until an ablation-infra follow-up re-runs this
-table against a dataset-aligned probe target.
+### Phase 6.5a run (synthetic fallback — invalidated)
+
+- Date: 2026-04-16
+- Decision: FAIL (on synthetic fallback data, not biologically meaningful)
+- Prior synthetic R² values: real=-0.4617, mock=-0.4269, random=-0.2627
+- W&B URLs: real=https://wandb.ai/quriegen/aivc-linear-probe/runs/nbc8telz
+             mock=https://wandb.ai/quriegen/aivc-linear-probe/runs/5ppw0qr2
+             random=https://wandb.ai/quriegen/aivc-linear-probe/runs/bhukayvo
+- All three arms ran on synthetic fallback data with mismatched n_genes.
+  Result is not biologically interpretable. Retained for audit trail only.
+
+### Phase 6.5b run (real Norman 2019 — BLOCKED, numerical instability)
+
+- Date: 2026-04-16
+- Real ckpt SHA: 416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e ✓ (tripwire passed)
+- SYNTHETIC FALLBACK warning: not triggered ✓
+- Run 1 (real ckpt, pretrained arm) r2_top50_de: -24,496,977,215,488 (INVALID — numerical blow-up)
+- Run 1 W&B URL: https://wandb.ai/quriegen/aivc-linear-probe/runs/ralbtr6u
+- Runs 2 (mock) and 3 (random): NOT executed — same bug would affect all three
+- Decision: BLOCKED. No gate decision issued.
+- Root cause: 164 genes have zero expression in the 89K-cell train split but
+  nonzero values in test; per-gene train-only standardization amplifies those
+  values by 1e8, dominating the multioutput R² average. Raw counts (0–3718,
+  not log-normalized) exacerbate the outlier problem.
+- Fix required: add log1p normalization + filter Y to train-expressed genes
+  in scripts/linear_probe_pretrain.py. Deferred to phase-6.5c branch.
+- Full diagnosis: .github/PHASE6_5_RESULTS.md
+
+Phase 7 blocked until Phase 6.5c produces a valid gate decision.
+
+### Phase 6.5c — 2026-04-19 (LOCKED v2, FAIL on real-vs-random — two blockers)
+
+LOCKED v2 contract (per-run `mask_tr > 1e-7`, `variance_weighted` R² on
+un-standardized `log1p(Y)`, seeds `{3, 17, 42}`) executed successfully on
+6 of 9 planned runs. Primary gate on real-vs-random: **FAIL**
+(`Delta_real_vs_random_de = −0.003302`; see `PHASE6_5_RESULTS.md`
+§Phase 6.5c). Two unresolved blockers:
+
+1. **Mock checkpoint feature-space mismatch (DATA blocker).**
+   - File: `checkpoints/pretrain/pretrain_encoders_mock.pt`
+   - SHA: `c0d9715dbc76a6ecab260fe09ca5173ee7fdf6eb640538eac0f9024399a90b4e`
+   - Built at `n_genes=2000` (Phase 6.5a synthetic-fallback defaults),
+     incompatible with the Norman-aligned `n_genes=36601` feature space.
+     All 3 mock arm runs fail at the compatibility check in
+     `scripts/linear_probe_pretrain.py:361`, before the LOCKED v2 code
+     path. Blocks the mock column of the linear-probe ablation matrix.
+   - Resolution required in 6.5d: re-pretrain the mock baseline at
+     `n_genes=36601` against the committed peak set
+     (`data/peak_sets/pbmc10k_hg38_20260415.tsv`), then rerun the
+     mock arm only (`seed ∈ {3, 17, 42}`) and recompute the intersection
+     gate at `N = 9`.
+   - Owner: TBD.
+
+2. **Real encoder transfer gap (CAPABILITY blocker).**
+   - Pretrained encoder at `checkpoints/pretrain/pretrain_encoders.pt`
+     (SHA `416e8b1a`) fails the LOCKED v2 gate on Norman 2019:
+     `G_real = +0.010839` vs `G_random = +0.014140`
+     (`Delta = −0.003302`; threshold `+0.000707`).
+   - Not a data blocker — a capability blocker. The real arm produced
+     finite, well-conditioned metrics (`z_sd_min > 0.81`,
+     `|r²_top50_de_vw| < 0.02`); it simply does not beat the
+     untrained-init floor on top-50 DE variance_weighted R².
+   - Phase 6.5d scope: disambiguate between (i) lineage mismatch
+     (PBMC10k → K562), (ii) objective mismatch (masked-recon pretrain
+     vs perturbation-response target), (iii) encoder architecture
+     ceiling. Consider per-perturbation evaluation instead of pooled
+     DE top-50.
+   - Owner: TBD.
+
+Phase 7 blocked. Phase 6.5d queued to address both.
 
 ## Appendix: real-data checkpoint hashes (append on rerun)
 
