@@ -280,3 +280,16 @@ Phase 7 blocked. Phase 6.5d queued to address both.
 <!-- On each real-data rerun, append a line: YYYY-MM-DD <sha256> <notes> -->
 2026-04-15 416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e pretrain_encoders.pt — PBMC10k real Multiome, peak_set sha 57b66a25..., steps=5000, device=MPS
 2026-04-16 c0d9715dbc76a6ecab260fe09ca5173ee7fdf6eb640538eac0f9024399a90b4e pretrain_encoders_mock.pt — regenerated mock, seed=17, synthetic fallback (n_genes=2000 default, steps=50). Differs from historical 10665544... because pretrain_multiome.py defaults changed since Phase 5 (n_genes 500 → 2000); the original mock checkpoint is no longer reproducible from current code. Used as the Phase 6.5 mock-arm input.
+
+### Phase 6.5e — contrastive re-weighting fine-tune
+
+- PBMC10k Multiome h5ad SHA-256:
+  `0e1e7689f4d9227ab7260c1c6be584e9dbbabef1c2ef834291cb9cc054363ca2`
+- Parent ckpt SHA-256:
+  `416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e`
+- 6.5e output ckpt SHA-256:
+  `6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee`
+- Probe batch index SHA-256 (seed=3, 256 cells, sorted int64, little-endian):
+  `27a906d07cd3c47e294ab06bcc974351d269f97039d7dd43b94a9d6d8f215f64`
+- Probe batch cache: `experiments/phase6_5e/probe_batch.npz`
+- 6.5f-disambig reuses these anchors for single-variable-test invariance.

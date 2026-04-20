@@ -159,3 +159,59 @@ def register_pretrain_terms(registry: LossRegistry) -> None:
         registry.register(
             LossTerm(name=name, fn=fn, weight=weight, stage="pretrain")
         )
+
+
+# ----------------------------------------------------------------------
+# Phase 6.5e — joint_contrastive_only_e1 stage (weight-mask dispatch).
+#
+# E1-rev1 is a *weight-change* study over the parent pretrain objective,
+# not a new loss. It fine-tunes the existing pretrain ckpt under a
+# weight mask {masked_rna_recon: 0, masked_atac_recon: 0,
+# cross_modal_infonce: 1.0, peak_to_gene_aux: 0} — i.e. isolates the
+# contrastive signal that was previously co-weighted at 0.5 alongside
+# two reconstruction terms (1.0 each) and one aux term (0.1).
+#
+# Design invariants:
+#   - Reuses the SAME ``_cross_modal_infonce`` loss defined above. No
+#     new loss module, so algebraic parity with the parent objective's
+#     contrastive term is byte-identical.
+#   - Does NOT remove or rewrite ``register_pretrain_terms``. The
+#     existing four pretrain registrations remain intact and unchanged.
+#   - The new stage ``joint_contrastive_only_e1`` has exactly ONE
+#     active term (the contrastive term with weight 1.0). The other
+#     three terms in the weight mask are implicitly zero — they are
+#     NOT registered under this stage, so registry.compute() does not
+#     invoke their fns. This avoids computing RNA/ATAC reconstructions
+#     (and materializing the decoder graph) during a pure-contrastive
+#     fine-tune.
+#   - The conceptual weight mask {recon:0, recon:0, contrastive:1.0,
+#     aux:0} is exposed via ``E1_WEIGHT_MASK`` for tripwire T6.
+# ----------------------------------------------------------------------
+E1_STAGE = "joint_contrastive_only_e1"
+
+# Conceptual 4-term weight mask for the E1 stage. Terms not registered
+# under E1_STAGE have implicit weight 0.0. Exposed for T6 assertion.
+E1_WEIGHT_MASK: Dict[str, float] = {
+    "masked_rna_recon": 0.0,
+    "masked_atac_recon": 0.0,
+    "cross_modal_infonce": 1.0,
+    "peak_to_gene_aux": 0.0,
+}
+
+
+def register_joint_contrastive_only_e1_terms(registry: LossRegistry) -> None:
+    """Register the single active term for the E1-rev1 weight-mask stage.
+
+    Only ``cross_modal_infonce`` (weight 1.0) is registered under
+    ``stage="joint_contrastive_only_e1"``. The other three terms in
+    E1_WEIGHT_MASK have implicit weight 0.0 and are intentionally NOT
+    registered here — their pretrain-stage registrations are untouched.
+    """
+    registry.register(
+        LossTerm(
+            name="cross_modal_infonce",
+            fn=_cross_modal_infonce,
+            weight=E1_WEIGHT_MASK["cross_modal_infonce"],
+            stage=E1_STAGE,
+        )
+    )

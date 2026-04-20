@@ -357,3 +357,89 @@ design question.
 Full machine-readable result: `.github/phase6_5d_rsa.json`. Bootstrap
 distributions and per-seed centroids: `experiments/phase6_5d/artifacts/`
 (gitignored).
+
+---
+
+## Phase 6.5e — contrastive fine-tune (E1-rev1)
+
+### Outcome: E1-NULL
+
+Weight-change fine-tune of the existing `416e8b1a…` pretrain ckpt
+under a pure cross-modal contrastive objective (mask
+`{recon:0, recon:0, contrastive:1.0, aux:0}`, τ=0.1, B=256, 1 epoch,
+LR=1e-4). Pre-registered outcome rule (Gate 2, row 3) fires on
+`|R_c − R_r| < 0.05 ∧ 0 ∈ CI_Δ`.
+
+| Quantity | Point | 95% CI | Width |
+|---|---|---|---|
+| R_c = RSA_real contrastive | **−0.0621** | [−0.0739, −0.0503] | 0.024 |
+| R_r = RSA_real reconstruction (frozen 6.5d) | −0.0584 | [−0.0702, −0.0467] | 0.024 |
+| RSA_random (frozen 6.5d) | +0.0193 | [−0.0076, +0.0529] | 0.061 |
+| Δ = R_c − R_r | **−0.0037** | [−0.0154, +0.0081] | 0.024 |
+| Δ = R_c − RSA_random | −0.0814 | [−0.0931, −0.0696] | 0.024 |
+
+R_c CI excludes zero (still anti-correlated). Δ_{c−r} CI includes
+zero (no meaningful shift vs reconstruction baseline). Parallel 6.5d
+classifier on R_c alone still returns "D — active distractor bias"
+(Δ vs random is significantly negative) — the contrastive fine-tune
+did not flip the sign.
+
+### Setup
+
+- Parent ckpt SHA: `416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e` (T1 ✓)
+- Contrastive ckpt SHA: `6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee`
+- Data: `data/pbmc10k_multiome.h5ad` (11,898 cells, 36,601 genes, 115,720 peaks)
+- Eval: Norman 2019 aligned (SHA `d4bedb53…`), 236 non-NTC perturbations, 27,730 pairs
+- Stage: `joint_contrastive_only_e1`
+- Seed: 3 (full scope: torch + numpy + random + cudnn + DataLoader)
+- Projection init: `parent` (reused parent `MultiomePretrainHead.rna_proj`/`atac_proj` via deep copy)
+- Optimizer: AdamW, LR 1e-4, WD 1e-4, grad clip 1.0 global
+- Wall clock: 83.5s fine-tune + 689.4s RSA on MPS
+- Loss: 0.588 → 0.274 (monotonically decreasing across 47 batches)
+- W&B run: https://wandb.ai/quriegen/aivc-pretrain/runs/5qaltcx9
+
+### Tripwires (all passed)
+
+| Tripwire | Result |
+|---|---|
+| T1 parent SHA | pass (observed = expected) |
+| T2 probe batch | pass (256 cells, seed=3, cached) |
+| T3 probe drift | pass (mean\|Δz_rna\|=0.151, mean\|Δz_atac\|=0.068 ≫ 1e-4) |
+| T4 collapse | pass (per-dim std min ≥ 0.60; cross-dim std mean ≥ 1.67) |
+| T5 online NaN/Inf | pass (47/47 batches) |
+| T6 weight mask | pass ({recon:0, recon:0, contrastive:1.0, aux:0}) |
+| T7 drift ratios | rna_enc=0.56%, atac_enc=1.37%, rna_proj=1.50%, atac_proj=1.60% |
+
+### Interpretation
+
+The pure-contrastive weight mask on PBMC10k leaves the
+cross-geometry relationship to K562 Norman 2019 essentially
+unchanged: R_c is indistinguishable from R_r at the 0.05 threshold,
+and Δ_{c−r}'s 95% CI straddles zero. Put differently — once the
+parent was *already* trained with cross_modal_infonce (weight 0.5
+of four terms), ablating the reconstruction and peak-aux terms on
+top of the parent does not add a new alignment signal. The
+encoders drift (T7 0.5–1.6 % parameter change) but the drift is
+into neighboring, similarly anti-correlated geometry.
+
+This is the specific hypothesis the E1-rev1 weight-change study
+was designed to test — and it returned NULL.
+
+### 6.5f scope implication
+
+- **Scoped in.** Lineage-matched pretraining (E2 direction: K562 /
+  Perturb-Seq corpus). With the E1 re-weighting falsified, lineage
+  mismatch is the dominant remaining hypothesis for 6.5d's outcome D.
+- **Demoted (but not dead).** Other objective-only manipulations on
+  PBMC (different τ, projection head, perturbation-aware contrastive
+  if we obtain pseudo-labels). E1-rev1 specifically tested the
+  weight-mask variant; narrow-scope objective work is still
+  technically available but strictly deprioritized vs E2.
+- **Ruled out (for E1-rev1 specifically).** Weight-mask re-weighting
+  of the parent's existing contrastive term as a sufficient fix —
+  the pre-registered NULL outcome fired cleanly.
+
+Full machine-readable result: `.github/phase6_5e_rsa.json`.
+Tripwire record: `experiments/phase6_5e/tripwires.json`.
+Bootstrap distributions + probe batch:
+`experiments/phase6_5e/artifacts/` (gitignored).
