@@ -76,7 +76,7 @@ Branch: `phase-6.5g-e2` (matches phase convention from 6.5c/d/e/f).
 
 ## PREREQUISITES
 
-- `main` branch at tag `phase-6.5-closed` (`git rev-parse phase-6.5-closed` == `8e3a52744b07a45a14b2307a6714c184e84313bd`)
+- `main` branch at tag `phase-6.5-closed` (`git rev-parse 'phase-6.5-closed^{commit}'` == `8e3a52744b07a45a14b2307a6714c184e84313bd`)
 - 6.5e probe batch cache on main: `experiments/phase6_5e/probe_batch.npz` (seed=3, Norman 2019 test split indices, SHA anchored in `.github/REAL_DATA_BLOCKERS.md`)
 - 6.5e RSA baseline on main: `.github/phase6_5e_rsa.json` (R_c_e1 = −0.0621)
 - All 6.5 tripwire patterns (T1 parent SHA, T2 data provenance SHA, T3 vocab discipline, T7 no prior-pipeline edits, T8 weight-motion) carry forward verbatim unless explicitly overridden here.
