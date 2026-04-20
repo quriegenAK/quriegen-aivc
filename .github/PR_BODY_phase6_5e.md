@@ -112,6 +112,17 @@ measured value regardless of pass/fail, per the rev1 brief.
 - **Deterministic probe batch:** `experiments/phase6_5e/probe_batch.npz`
   (gitignored, cached on first run).
 
+### Reproducibility anchors (PBMC10k + probe batch)
+
+- `pbmc10k_h5ad_sha256        = 0e1e7689f4d9227ab7260c1c6be584e9dbbabef1c2ef834291cb9cc054363ca2`
+- `parent_ckpt_sha256         = 416e8b1a5fe73c1beff18ec0e5034331e5ada40bd13731f6f90f366f1f58e29e`
+- `output_ckpt_sha256         = 6084d5186cbd3dc942497d60926cda7a545931c7da5d7735ba32f555b73349ee`
+- `probe_batch_index_sha256   = 27a906d07cd3c47e294ab06bcc974351d269f97039d7dd43b94a9d6d8f215f64` (seed=3, 256 cells, sorted int64, little-endian)
+
+6.5f-disambig will regenerate the probe batch under seed=3 from the
+same h5ad and assert both the h5ad SHA and the probe-index SHA match
+before proceeding. Any drift = STOP in 6.5f.
+
 ## Interpretation (one line)
 
 Pure-contrastive re-weighting on PBMC10k does not move RSA against
