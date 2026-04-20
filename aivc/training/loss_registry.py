@@ -21,7 +21,13 @@ from typing import Callable, Dict, List, Literal, Tuple
 import torch
 
 
-Stage = Literal["pretrain", "causal", "joint", "joint_safe"]
+Stage = Literal[
+    "pretrain",
+    "causal",
+    "joint",
+    "joint_safe",
+    "joint_contrastive_only_e1",
+]
 
 
 # Terms that MUST NEVER contribute to the pretrain total, even if (through

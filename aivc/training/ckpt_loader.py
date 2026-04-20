@@ -16,11 +16,13 @@ the pretraining ablation.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Union
+from typing import Tuple, Union
 
 import torch
 
+from aivc.skills.atac_peak_encoder import PeakLevelATACEncoder
 from aivc.skills.rna_encoder import SimpleRNAEncoder
+from aivc.training.pretrain_heads import MultiomePretrainHead
 
 
 EXPECTED_TOP_LEVEL_KEYS = (
@@ -181,3 +183,85 @@ def load_pretrained_simple_rna_encoder(
         )
 
     return encoder
+
+
+def load_full_pretrain_checkpoint(
+    ckpt_path: Union[str, Path],
+    expected_schema_version: int = 1,
+) -> Tuple[SimpleRNAEncoder, PeakLevelATACEncoder, MultiomePretrainHead, dict]:
+    """Load the complete Phase 5 pretrain checkpoint for fine-tuning.
+
+    Returns ``(rna_encoder, atac_encoder, pretrain_head, config)`` with
+    every state_dict loaded via ``strict=True``. Phase 6.5e's
+    contrastive fine-tune entrypoint is the first consumer. Existing
+    callers (linear probe, RSA) only need the RNA encoder and stay on
+    ``load_pretrained_simple_rna_encoder``.
+
+    Intentionally additive: extending the loader here rather than
+    re-introducing a bare ``torch.load`` in the fine-tune script keeps
+    the ``tests/test_no_bare_torch_load.py`` CI invariant intact.
+    """
+    ckpt_path = Path(ckpt_path)
+    ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    if not isinstance(ckpt, dict):
+        raise CheckpointSchemaError(
+            f"Pretrained checkpoint at {ckpt_path} is not a dict "
+            f"(got {type(ckpt).__name__})."
+        )
+    _validate_top_level(ckpt, expected_schema_version)
+
+    rna_state = ckpt["rna_encoder"]
+    if not isinstance(rna_state, dict):
+        raise CheckpointSchemaError(
+            f"ckpt['rna_encoder'] is not a state_dict mapping "
+            f"(got {type(rna_state).__name__})."
+        )
+    _validate_rna_state_dict(rna_state)
+
+    config = dict(ckpt.get("config") or {})
+    n_genes = int(config.get("n_genes") or rna_state["net.0.weight"].shape[1])
+    hidden_dim = int(config.get("hidden_dim") or rna_state["net.0.weight"].shape[0])
+    latent_dim = int(config.get("latent_dim") or rna_state["net.2.weight"].shape[0])
+
+    rna_encoder = SimpleRNAEncoder(
+        n_genes=n_genes, hidden_dim=hidden_dim, latent_dim=latent_dim
+    )
+    rna_encoder.load_state_dict(rna_state, strict=True)
+
+    atac_state = ckpt["atac_encoder"]
+    # Recover ATAC encoder constructor args from state_dict shapes so
+    # we do not depend on the saved config dict having every field.
+    n_peaks = int(atac_state["lsi.weight"].shape[1])
+    svd_dim = int(atac_state["lsi.weight"].shape[0])
+    # mlp.1 is the first Linear after the opening GroupNorm (index 0
+    # is GroupNorm). mlp.5 is the final Linear (after GroupNorm-GELU-Dropout).
+    hidden_dim_atac = int(atac_state["mlp.1.weight"].shape[0])
+    attn_dim = int(atac_state["mlp.5.weight"].shape[0])
+    atac_encoder = PeakLevelATACEncoder(
+        n_peaks=n_peaks,
+        svd_dim=svd_dim,
+        hidden_dim=hidden_dim_atac,
+        attn_dim=attn_dim,
+    )
+    atac_encoder.load_state_dict(atac_state, strict=True)
+
+    head_state = ckpt["pretrain_head"]
+    proj_dim = int(head_state["rna_proj.2.weight"].shape[0])
+    head_hidden = int(head_state["rna_proj.0.weight"].shape[0])
+    n_genes_head = int(head_state["peak_to_gene.weight"].shape[0])
+    pretrain_head = MultiomePretrainHead(
+        rna_dim=latent_dim,
+        atac_dim=attn_dim,
+        proj_dim=proj_dim,
+        n_genes=n_genes_head,
+        hidden_dim=head_hidden,
+    )
+    pretrain_head.load_state_dict(head_state, strict=True)
+
+    config.setdefault("n_genes", n_genes)
+    config.setdefault("hidden_dim", hidden_dim)
+    config.setdefault("latent_dim", latent_dim)
+    config.setdefault("n_peaks", n_peaks)
+    config.setdefault("atac_attn_dim", attn_dim)
+    config.setdefault("proj_dim", proj_dim)
+    return rna_encoder, atac_encoder, pretrain_head, config
