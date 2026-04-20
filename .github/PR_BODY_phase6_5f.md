@@ -147,6 +147,54 @@ the projection-absorption interpretation.
 
 ---
 
+## Combined 6.5e + 6.5f conclusion
+
+Weight motion is nearly identical between 6.5e and 6.5f, but probe
+latent motion `mean|Δz_rna|` grew from 0.151 to 0.247 (**+64%**).
+Despite the encoder moving substantially further in latent space in
+the direction the contrastive loss prefers, RSA against Norman 2019
+K562 perturbation geometry is bit-identical to 6.5e at the second
+decimal (`R_b = −0.0621` vs `R_c_e1 = −0.0621`, `Δ = −5.4e-05`).
+
+Two orthogonal PBMC-side manipulations — **objective re-weighting**
+in 6.5e (recon→0, contrastive→1.0) and **gradient routing** in 6.5f
+(freeze projections, force encoder-only updates) — both return NULL.
+Between them, they exhaust the "keep the PBMC data and recipe, change
+only one lever" hypothesis class. The PBMC data manifold does not
+contain axes that align with K562 perturbation response, regardless
+of objective weighting or optimizer routing.
+
+The corollary for experimental design: further single-variable PBMC
+interventions that hold the data fixed have low prior probability of
+moving RSA. The remaining productive levers are **data-side** (change
+the pretraining corpus — E2) or **label-side** (introduce
+perturbation-aware supervision — not tested by 6.5e/6.5f; see
+section below).
+
+---
+
+## 6.5g / E2 implication
+
+- **Committed to:** E2 (K562 / Perturb-Seq lineage pretraining). Gate-2
+  outcome F-NULL, combined with 6.5e E1-NULL, triggers the
+  "commit to E2 with higher confidence" branch. Lineage mismatch is
+  the dominant remaining hypothesis for 6.5d's outcome D.
+- **Deprioritized:** PBMC-recipe optimization on the existing corpus
+  (encoder-LR sweeps, τ sweeps, alternative projection heads, longer
+  training on PBMC10k). Both single-variable manipulations on PBMC
+  returned NULL, so further PBMC-only recipe tuning has low expected
+  value for K562 alignment.
+- **Not tested, remains available:** cell-type-aware contrastive
+  objectives that introduce pseudo-labels or perturbation-aware
+  negatives. This is a structurally different lever than 6.5e
+  (objective re-weighting) or 6.5f (gradient routing) — it changes
+  *what* the contrastive loss discriminates, not just *how* its
+  gradient is applied. 6.5e/6.5f do **not** speak to this
+  direction. It remains deprioritized given the combined NULL
+  signal but is not ruled out by the current evidence.
+
+---
+
 ## Checkpoint artifact
 
 - Path: `checkpoints/pretrain/pretrain_encoders_frozen_proj.pt` (gitignored)
