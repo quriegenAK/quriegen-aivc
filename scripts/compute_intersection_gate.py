@@ -10,7 +10,7 @@ diagnostic; the gate is over the shared column subset).
 
 Outputs:
   - Markdown table on stdout (per-run table + per-arm aggregation).
-  - ``experiments/phase6_5c/intersection_gate.json`` with all numerics.
+  - ``.github/phase6_5c_gate.json`` with all numerics (committed).
 
 DOES NOT touch ``train_week3.py``, ``linear_probe_pretrain.py``, or any
 Phase 1–6 training code — only reads artifacts and the source
@@ -36,7 +36,8 @@ from scripts.linear_probe_pretrain import _load_dataset
 
 ART_DIR = _REPO_ROOT / "experiments/phase6_5c/artifacts"
 DEFAULT_DATASET_PATH = _REPO_ROOT / "data/norman2019_aligned.h5ad"
-DEFAULT_OUT_JSON = _REPO_ROOT / "experiments/phase6_5c/intersection_gate.json"
+# Single source of truth for the gate JSON: committed under .github/.
+DEFAULT_OUT_JSON = _REPO_ROOT / ".github/phase6_5c_gate.json"
 ARMS = ("real", "mock", "random")
 SEEDS = (3, 17, 42)
 

@@ -196,8 +196,8 @@ RuntimeError: Pretrained encoder n_genes=2000 does not match dataset n_genes=366
 ### Intersection gate (2 arms: real, random — mock missing)
 
 Run via `scripts/compute_intersection_gate.py`, relaxed to accept
-`N ≥ 6` artifacts. Writes
-`experiments/phase6_5c/intersection_gate.json`.
+`N ≥ 6` artifacts. Writes [`.github/phase6_5c_gate.json`](phase6_5c_gate.json)
+(committed — single source of truth for the gate numerics).
 
 - `n_runs_used`: **6** (3 real + 3 random)
 - `runs_skipped`: `mock × {3, 17, 42}`

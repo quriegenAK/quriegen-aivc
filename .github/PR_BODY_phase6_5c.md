@@ -38,9 +38,14 @@ checkpoint / dataset feature-space mismatch (unrelated to LOCKED v2).
 
 - `Delta_real_vs_random_de`      = **−0.003302**
 - `Delta_real_vs_random_overall` = −0.017917
-- PASS threshold (`|G_random|=0.01414 > 0.01` → `0.05·|G_random|`) = +0.000707
 
-`Delta_real_vs_random_de ≤ 0` → **FAIL**.
+**Primary gate:** `Delta_real_vs_random_de > 0` (pretrained encoder must
+beat the untrained-init floor on DE top-50 `variance_weighted` R²).
+Observed: **−0.003302** → **FAIL**.
+
+**Secondary cushion** (irrelevant given `Delta ≤ 0`): had `Delta` been
+positive, PASS would have additionally required
+`Delta ≥ 0.05·|G_random| = +0.000707`.
 
 ### Per-run table (successful runs only)
 
@@ -94,8 +99,7 @@ for two unresolved blockers:
   `PHASE6_5_RESULTS.md` §Phase 6.5c.
 - **Checkpoints used:** real (`416e8b1a…`) — passes; mock (`c0d9715d…`)
   — blocked; random — no checkpoint, fresh `SimpleRNAEncoder` init.
-- **Gate JSON:** `experiments/phase6_5c/intersection_gate.json`
-  (gitignored).
+- **Gate JSON:** `.github/phase6_5c_gate.json` (committed).
 
 ## What this PR does NOT do
 
