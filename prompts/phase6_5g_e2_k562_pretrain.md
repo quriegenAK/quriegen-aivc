@@ -1,3 +1,9 @@
+> **STATUS 2026-04-22:** Spec under external review. Thiago (wet-lab) confirmed
+> K562 multiome absent; PBMC-adjacent cell lines (THP1/BJAB/Jurkat) also absent
+> at useful scale. 4 PBMC/BMMC candidate datasets identified (GSE158013,
+> GSE194028, GSE194122, GSE156478). Thursday call (2026-04-23) to lock next
+> direction. **Do not execute until dataset + modality scope locks.**
+
 # Phase 6.5g / E2 — K562 lineage pretraining: domain-invariance test
 
 ## STATUS
