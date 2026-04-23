@@ -1,0 +1,9 @@
+probe_id	catalog	query_url	n_hits	top_hits
+C1	GEO (GDS)	https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&term=K562[All+Fields]+AND+(multiome[All+Fields]+OR+%22scRNA+ATAC%22[All+Fields])&retmode=json&retmax=20	26	200291229,200288996,200285811,200285809,200285233,200285232,200285230,200285812,200253407,200178707
+C2	ArrayExpress/BioStudies	https://www.ebi.ac.uk/biostudies/api/v1/search?query=K562%20multiome&pageSize=20	1118	S-EPMC11053119,E-GEOD-34740,S-EPMC10081206,S-EPMC7144330,S-EPMC8623398,E-GEOD-3312,S-EPMC11742047,S-EPMC9483609,S-EPMC6255900,S-EPMC10827560
+C3	Zenodo	https://zenodo.org/api/records?q=K562+multiome&size=20	318	10120360,7563729,8063670,8065371,8068425,8065108,8065100,8064684,8065104,8065116
+C4	CellxGene Census	MANUAL: cellxgene-census SOMA query obs.cell_type=='K562' AND has_atac	-1	manual_audit_flag
+C5	HCA	https://service.azul.data.humancellatlas.org/index/projects?catalog=dcp58&size=75&filters=%7B%22genusSpecies%22%3A%20%7B%22is%22%3A%20%5B%22Homo%20sapiens%22%5D%7D%2C%20%22sampleEntityType%22%3A%20%7B%22is%22%3A%20%5B%22cellLines%22%5D%7D%7D	0	0_k562_multiome_in_cellLines_subset
+C6	ENCODE	https://www.encodeproject.org/search/?type=Experiment&biosample_ontology.term_name=K562&searchTerm=multiome&format=json&limit=50	0	0_hits
+C7	4DN	https://data.4dnucleome.org/search/?type=ExperimentSetReplicate&searchTerm=K562+multiome&format=json&limit=50	0	0_hits
+C8	NeMO	MANUAL: https://assets.nemoarchive.org/ — search K562 multiome	-1	manual_audit_flag

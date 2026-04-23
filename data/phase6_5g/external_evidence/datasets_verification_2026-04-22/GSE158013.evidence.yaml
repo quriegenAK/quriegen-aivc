@@ -1,0 +1,23 @@
+# GEO evidence — GSE158013
+accession: GSE158013
+title: |
+  Simultaneous trimodal single cell measurement of transcripts, epitopes, and chromatin accessibility using TEA-seq
+pubmed_ids: ['33835024']
+platforms: []
+n_samples_geo: 34
+overall_design: |
+  PBMCs were profiled using a variety of multi-modal sequencing assays. We processed PBMCs through a number of single-cell and single-nuclei ATAC-seq protocols during development and identification of an optimized scATAC-seq assay. We processed PBMCs through our ICICLE-seq assay: a novel method for simultaneous profiling of chromatin accessibility and surface epitopes. We processed PBMCs through TEA-seq: a novel method for simulaneous single-cell profling of transcripts, epitopes, and chromatin accessiblity. As part of TEA-seq testing we prepared CITE-seq, scATAC-seq, single-cell and single-nuclei 10x Multiome ATAC + Gene Expression, and TEA-seq libraries from the same PBMC sample in parallel.
+
+**The submitter declares that the raw data are being deposited in dbGaP due to patient privacy concerns. dbGap: phs002316**
+heuristic:
+  modalities_detected: ['RNA', 'ATAC', 'Protein']
+  genome_build_detected: unknown
+  sample_source_detected: PBMC
+  stim_detected: []
+supplementary_files_seen: []
+verification_status: PARTIAL  # manual review required for n_cells_post_qc, license
+manual_review_required:
+  - n_cells_post_qc (GEO MINiML does not expose; check paper/supp)
+  - license (check GEO page + associated repository)
+  - FASTQ gating (SRA dbGaP vs open)
+fetched_at: 2026-04-22

@@ -1,0 +1,3 @@
+ee2291069005390d374ce73986be6750954e939b6d1ae40e562007921f6a01b6  data/phase6_5g/external_evidence/thiago_reply_2026-04-22.md
+48f846b1957e9e1c07b90e66a59425a404474cc281f6906f828fab1326cbfbf8  data/phase6_5g/scan/scoping_ledger.tsv
+5ee3b49740599ebdbfec64f51a2dd7254a9b98162d0e7f99bdaec387e7b84d9a  data/phase6_5g/scan/outcome_empty.yaml

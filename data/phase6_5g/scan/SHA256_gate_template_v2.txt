@@ -1,0 +1,2 @@
+c74a42a5eaaa3bcae021c9d4a939e3422524b446d691972b70962cd1c82a799d  data/phase6_5g/scan/diagnostics/gate_template_v2.sh
+e5b10be65417c669229fab31d99dedeee314fb28e1c908b221b70b79c43e1f8d  data/phase6_5g/scan/outcome_empty.yaml

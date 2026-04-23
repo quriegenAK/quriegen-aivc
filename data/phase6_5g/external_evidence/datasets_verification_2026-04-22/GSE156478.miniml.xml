@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<MINiML
+   xmlns="http://www.ncbi.nlm.nih.gov/geo/info/MINiML"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.ncbi.nlm.nih.gov/geo/info/MINiML http://www.ncbi.nlm.nih.gov/geo/info/MINiML.xsd"
+   version="0.5.0" >
+
+  <Contributor iid="contrib1">
+    <Person><First>Caleb</First><Last>Lareau</Last></Person>
+    <Email>lareauc@mskcc.org</Email>
+    <Organization>Memorial Sloan Kettering</Organization>
+    <Address>
+      <Line>417 E 68th St, Zuckerman - ZRC 1132</Line>
+      <City>New York</City>
+      <State>New York</State>
+      <Zip-Code>10065</Zip-Code>
+      <Country>USA</Country>
+    </Address>
+  </Contributor>
+
+  <Database iid="GEO">
+    <Name>Gene Expression Omnibus (GEO)</Name>
+    <Public-ID>GEO</Public-ID>
+    <Organization>NCBI NLM NIH</Organization>
+    <Web-Link>http://www.ncbi.nlm.nih.gov/geo</Web-Link>
+    <Email>geo@ncbi.nlm.nih.gov</Email>
+  </Database>
+
+  <Sample iid="GSM4732109">
+    <Accession database="GEO">GSM4732109</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732110">
+    <Accession database="GEO">GSM4732110</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732111">
+    <Accession database="GEO">GSM4732111</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732112">
+    <Accession database="GEO">GSM4732112</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732113">
+    <Accession database="GEO">GSM4732113</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732114">
+    <Accession database="GEO">GSM4732114</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732115">
+    <Accession database="GEO">GSM4732115</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732116">
+    <Accession database="GEO">GSM4732116</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732117">
+    <Accession database="GEO">GSM4732117</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732118">
+    <Accession database="GEO">GSM4732118</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732119">
+    <Accession database="GEO">GSM4732119</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732120">
+    <Accession database="GEO">GSM4732120</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732121">
+    <Accession database="GEO">GSM4732121</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732122">
+    <Accession database="GEO">GSM4732122</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732123">
+    <Accession database="GEO">GSM4732123</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732124">
+    <Accession database="GEO">GSM4732124</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732125">
+    <Accession database="GEO">GSM4732125</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732126">
+    <Accession database="GEO">GSM4732126</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732127">
+    <Accession database="GEO">GSM4732127</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732128">
+    <Accession database="GEO">GSM4732128</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732129">
+    <Accession database="GEO">GSM4732129</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732130">
+    <Accession database="GEO">GSM4732130</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732131">
+    <Accession database="GEO">GSM4732131</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732132">
+    <Accession database="GEO">GSM4732132</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732133">
+    <Accession database="GEO">GSM4732133</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732134">
+    <Accession database="GEO">GSM4732134</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732135">
+    <Accession database="GEO">GSM4732135</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732136">
+    <Accession database="GEO">GSM4732136</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732137">
+    <Accession database="GEO">GSM4732137</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732138">
+    <Accession database="GEO">GSM4732138</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732139">
+    <Accession database="GEO">GSM4732139</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732140">
+    <Accession database="GEO">GSM4732140</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732141">
+    <Accession database="GEO">GSM4732141</Accession>
+  </Sample>
+
+  <Sample iid="GSM4732142">
+    <Accession database="GEO">GSM4732142</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065524">
+    <Accession database="GEO">GSM5065524</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065525">
+    <Accession database="GEO">GSM5065525</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065526">
+    <Accession database="GEO">GSM5065526</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065527">
+    <Accession database="GEO">GSM5065527</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065528">
+    <Accession database="GEO">GSM5065528</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065529">
+    <Accession database="GEO">GSM5065529</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065530">
+    <Accession database="GEO">GSM5065530</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065531">
+    <Accession database="GEO">GSM5065531</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065532">
+    <Accession database="GEO">GSM5065532</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065533">
+    <Accession database="GEO">GSM5065533</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065534">
+    <Accession database="GEO">GSM5065534</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065535">
+    <Accession database="GEO">GSM5065535</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065640">
+    <Accession database="GEO">GSM5065640</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065641">
+    <Accession database="GEO">GSM5065641</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065642">
+    <Accession database="GEO">GSM5065642</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065643">
+    <Accession database="GEO">GSM5065643</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065644">
+    <Accession database="GEO">GSM5065644</Accession>
+  </Sample>
+
+  <Sample iid="GSM5065645">
+    <Accession database="GEO">GSM5065645</Accession>
+  </Sample>
+
+  <Series iid="GSE156478">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2021-08-13</Last-Update-Date>
+    </Status>
+    <Title>High throughput joint profiling of chromatin accessibility and protein levels in single cells</Title>
+    <Accession database="GEO">GSE156478</Accession>
+    <Pubmed-ID>34083792</Pubmed-ID>
+    <Summary>
+This SuperSeries is composed of the SubSeries listed below.
+    </Summary>
+    <Overall-Design>
+Refer to individual Series
+    </Overall-Design>
+    <Type>Genome binding/occupancy profiling by high throughput sequencing</Type>
+    <Type>Other</Type>
+    <Contact-Ref ref="contrib1" />
+    <Sample-Ref ref="GSM4732109" />
+    <Sample-Ref ref="GSM4732110" />
+    <Sample-Ref ref="GSM4732111" />
+    <Sample-Ref ref="GSM4732112" />
+    <Sample-Ref ref="GSM4732113" />
+    <Sample-Ref ref="GSM4732114" />
+    <Sample-Ref ref="GSM4732115" />
+    <Sample-Ref ref="GSM4732116" />
+    <Sample-Ref ref="GSM4732117" />
+    <Sample-Ref ref="GSM4732118" />
+    <Sample-Ref ref="GSM4732119" />
+    <Sample-Ref ref="GSM4732120" />
+    <Sample-Ref ref="GSM4732121" />
+    <Sample-Ref ref="GSM4732122" />
+    <Sample-Ref ref="GSM4732123" />
+    <Sample-Ref ref="GSM4732124" />
+    <Sample-Ref ref="GSM4732125" />
+    <Sample-Ref ref="GSM4732126" />
+    <Sample-Ref ref="GSM4732127" />
+    <Sample-Ref ref="GSM4732128" />
+    <Sample-Ref ref="GSM4732129" />
+    <Sample-Ref ref="GSM4732130" />
+    <Sample-Ref ref="GSM4732131" />
+    <Sample-Ref ref="GSM4732132" />
+    <Sample-Ref ref="GSM4732133" />
+    <Sample-Ref ref="GSM4732134" />
+    <Sample-Ref ref="GSM4732135" />
+    <Sample-Ref ref="GSM4732136" />
+    <Sample-Ref ref="GSM4732137" />
+    <Sample-Ref ref="GSM4732138" />
+    <Sample-Ref ref="GSM4732139" />
+    <Sample-Ref ref="GSM4732140" />
+    <Sample-Ref ref="GSM4732141" />
+    <Sample-Ref ref="GSM4732142" />
+    <Sample-Ref ref="GSM5065524" />
+    <Sample-Ref ref="GSM5065525" />
+    <Sample-Ref ref="GSM5065526" />
+    <Sample-Ref ref="GSM5065527" />
+    <Sample-Ref ref="GSM5065528" />
+    <Sample-Ref ref="GSM5065529" />
+    <Sample-Ref ref="GSM5065530" />
+    <Sample-Ref ref="GSM5065531" />
+    <Sample-Ref ref="GSM5065532" />
+    <Sample-Ref ref="GSM5065533" />
+    <Sample-Ref ref="GSM5065534" />
+    <Sample-Ref ref="GSM5065535" />
+    <Sample-Ref ref="GSM5065640" />
+    <Sample-Ref ref="GSM5065641" />
+    <Sample-Ref ref="GSM5065642" />
+    <Sample-Ref ref="GSM5065643" />
+    <Sample-Ref ref="GSM5065644" />
+    <Sample-Ref ref="GSM5065645" />
+    <Supplementary-Data type="TAR">
+ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE156nnn/GSE156478/suppl/GSE156478_RAW.tar
+    </Supplementary-Data>
+    <Relation type="SuperSeries of" target="GSE156473" />
+    <Relation type="SuperSeries of" target="GSE156474" />
+    <Relation type="SuperSeries of" target="GSE156475" />
+    <Relation type="SuperSeries of" target="GSE156476" />
+    <Relation type="SuperSeries of" target="GSE156477" />
+    <Relation type="SuperSeries of" target="GSE166188" />
+    <Relation type="SuperSeries of" target="GSE166191" />
+    <Relation type="BioProject" target="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA658075" />
+  </Series>
+
+</MINiML>

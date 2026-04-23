@@ -1,0 +1,23 @@
+---
+accession: GSE156478
+manual_review_pass: true
+pubmed_ids:
+- '34083792'
+platforms_detail: []
+sample_sources_unique: []
+sample_characteristics_unique: []
+supplementary_files: []
+modalities_v2: []
+genome_build_v2: unknown
+sample_source_v2: unknown
+n_cells_filename_hints: []
+sra_summary:
+  n_runs: 0
+  gating_heuristic: no_sra_hits
+license_hits_on_geo_page: []
+still_unresolved:
+- n_cells_post_qc
+- license_explicit
+- FASTQ_gating_confirm
+- modality_coverage_confirm
+reviewed_at: '2026-04-23'

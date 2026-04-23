@@ -1,0 +1,21 @@
+# GEO evidence — GSE194122
+accession: GSE194122
+title: |
+  A sandbox for prediction and integration of DNA, RNA, and proteins in single cells
+pubmed_ids: []
+platforms: []
+n_samples_geo: 38
+overall_design: |
+  Single-cell multiomics data collected from bone marrow mononuclear cells of 12 healthy human donors.
+heuristic:
+  modalities_detected: ['RNA']
+  genome_build_detected: unknown
+  sample_source_detected: BMMC
+  stim_detected: []
+supplementary_files_seen: ['GSE194122_openproblems_neurips2021_cite_BMMC_processed.h5ad', 'GSE194122_openproblems_neurips2021_multiome_BMMC_processed.h5ad']
+verification_status: PARTIAL  # manual review required for n_cells_post_qc, license
+manual_review_required:
+  - n_cells_post_qc (GEO MINiML does not expose; check paper/supp)
+  - license (check GEO page + associated repository)
+  - FASTQ gating (SRA dbGaP vs open)
+fetched_at: 2026-04-22

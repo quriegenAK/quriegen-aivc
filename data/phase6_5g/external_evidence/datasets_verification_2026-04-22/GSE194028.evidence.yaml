@@ -1,0 +1,23 @@
+# GEO evidence — GSE194028
+accession: GSE194028
+title: |
+  Systematic benchmarking of single-cell ATAC sequencing protocols
+pubmed_ids: ['37537502']
+platforms: []
+n_samples_geo: 56
+overall_design: |
+  We performed a systematic benchmark of 8 different scATAC-seq methods on human PBMC across 47 samples.
+
+Please note that the CellRanger output files have been added to the GSM7102992-GSM7103000 sample records on Nov 16, 2023, as the existing scRNA-seq upload format (a .h5ad file) is dependent on specific software to read.
+heuristic:
+  modalities_detected: ['RNA', 'ATAC']
+  genome_build_detected: unknown
+  sample_source_detected: PBMC
+  stim_detected: []
+supplementary_files_seen: []
+verification_status: PARTIAL  # manual review required for n_cells_post_qc, license
+manual_review_required:
+  - n_cells_post_qc (GEO MINiML does not expose; check paper/supp)
+  - license (check GEO page + associated repository)
+  - FASTQ gating (SRA dbGaP vs open)
+fetched_at: 2026-04-22

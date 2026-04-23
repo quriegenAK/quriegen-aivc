@@ -1,0 +1,91 @@
+---
+phase: 6.5g.1
+outcome: EMPTY
+declared_at: 2026-04-23
+reason: 'K562 Multiome protocol (10x Multiome ARC or SHARE-seq/sci-CAR equivalent)
+  absent
+
+  across C1-C8 catalog probes. Pre-search by wet-lab (Thiago) independently
+
+  confirmed absence prior to scan execution. EMPTY declared within R1/R2/R3 bounds
+
+  defined by spec; not a universal-absence claim.
+
+  '
+external_evidence:
+- data/phase6_5g/external_evidence/thiago_reply_2026-04-22.md
+- data/phase6_5g/external_evidence/datasets_verification_2026-04-22/
+scan_ledger: data/phase6_5g/scan/scoping_ledger.tsv
+pre_registered_failure_handling:
+  next_branch: phase-6.5g.2-e2-iextended
+  rationale: 'Pre-registered fallback per spec §FAILURE HANDLING. E2-iextended will
+    pivot
+
+    to DOGMA-seq (GSE156478) as modality-expansion corpus, locked 2026-04-23
+
+    Thursday call. n_cells disaggregation (DOGMA-DIG vs DOGMA-LLL) pending
+
+    PROMPT E.
+
+    '
+tripwires_fired: []
+tripwires_not_fired:
+- T_cover
+- T_pair
+- T_staged
+- T_pause_tag
+- T_license
+- T_race
+closed_at: 2026-04-23
+probe_coverage:
+  automated_probes_executed:
+  - C1
+  - C2
+  - C3
+  - C5
+  - C6
+  - C7
+  manual_probes_flagged:
+  - C4
+  - C8
+  rerun_2026_04_23_v2:
+    C5_hca:
+      url: https://service.azul.data.humancellatlas.org/index/projects?catalog=dcp58&size=75&filters=%7B%22genusSpecies%22%3A%20%7B%22is%22%3A%20%5B%22Homo%20sapiens%22%5D%7D%2C%20%22sampleEntityType%22%3A%20%7B%22is%22%3A%20%5B%22cellLines%22%5D%7D%7D
+      n_hits: 0
+      note: size=75 (capped by Azul API)
+    C6_encode:
+      url: https://www.encodeproject.org/search/?type=Experiment&biosample_ontology.term_name=K562&searchTerm=multiome&format=json&limit=50
+      n_hits: 0
+      note: accepts HTTP 404 + @graph:[] as empty-result
+    C7_4dn:
+      url: https://data.4dnucleome.org/search/?type=ExperimentSetReplicate&searchTerm=K562+multiome&format=json&limit=50
+      n_hits: 0
+      note: accepts HTTP 404 + @graph:[] as empty-result
+  self_consistency_check: automated_probes_executed entries C5/C6/C7 correspond to
+    real URL executions with structured-JSON responses (n_hits >= 0).
+probe_coverage_history:
+- attempt: 1
+  label: rerun_2026_04_23 (v1, superseded)
+  result: FETCH_FAILED persisted for C5/C6/C7; fallback logic did not recognize success
+  root_cause: 'C5: size=100 exceeded HCA Azul cap (75). C6/C7: HTTP 404 with valid
+    JSON body + @graph:[] is SnoVault empty-result idiom, was misread as fetch failure.'
+  snapshot:
+    C5_hca:
+      url: FETCH_FAILED
+      n_hits: -1
+      note: auto-discovered catalog (dcp31 stale)
+    C6_encode:
+      url: FETCH_FAILED
+      n_hits: -1
+      note: multi-URL fallback (modern + legacy field names)
+    C7_4dn:
+      url: FETCH_FAILED
+      n_hits: -1
+      note: Accept:application/json + endpoint variants
+gate_template_reference:
+  canonical: data/phase6_5g/scan/diagnostics/gate_template_v2.sh
+  fixes_from_v1:
+  - 'check-7 inline-YAML parse (was: head -2 | tail -1 → read wrong line)'
+  - check-7c exclude MANUAL:* ledger rows from automated-fail assertion
+  - adds check-7b (YAML self-consistency between probe_coverage.executed and URL/n_hits)
+  source_phase: phase-6.5g.1
