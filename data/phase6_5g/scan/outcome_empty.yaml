@@ -2,28 +2,62 @@
 phase: 6.5g.1
 outcome: EMPTY
 declared_at: 2026-04-23
-reason: |
-  K562 Multiome protocol (10x Multiome ARC or SHARE-seq/sci-CAR equivalent) absent
+reason: 'K562 Multiome protocol (10x Multiome ARC or SHARE-seq/sci-CAR equivalent)
+  absent
+
   across C1-C8 catalog probes. Pre-search by wet-lab (Thiago) independently
+
   confirmed absence prior to scan execution. EMPTY declared within R1/R2/R3 bounds
+
   defined by spec; not a universal-absence claim.
+
+  '
 external_evidence:
-  - data/phase6_5g/external_evidence/thiago_reply_2026-04-22.md
-  - data/phase6_5g/external_evidence/datasets_verification_2026-04-22/
+- data/phase6_5g/external_evidence/thiago_reply_2026-04-22.md
+- data/phase6_5g/external_evidence/datasets_verification_2026-04-22/
 scan_ledger: data/phase6_5g/scan/scoping_ledger.tsv
 pre_registered_failure_handling:
   next_branch: phase-6.5g.2-e2-iextended
-  rationale: |
-    Pre-registered fallback per spec §FAILURE HANDLING. E2-iextended will pivot
+  rationale: 'Pre-registered fallback per spec §FAILURE HANDLING. E2-iextended will
+    pivot
+
     to DOGMA-seq (GSE156478) as modality-expansion corpus, locked 2026-04-23
+
     Thursday call. n_cells disaggregation (DOGMA-DIG vs DOGMA-LLL) pending
+
     PROMPT E.
+
+    '
 tripwires_fired: []
 tripwires_not_fired:
-  - T_cover
-  - T_pair
-  - T_staged
-  - T_pause_tag
-  - T_license
-  - T_race
+- T_cover
+- T_pair
+- T_staged
+- T_pause_tag
+- T_license
+- T_race
 closed_at: 2026-04-23
+probe_coverage:
+  automated_probes_executed:
+  - C1
+  - C2
+  - C3
+  - C5
+  - C6
+  - C7
+  manual_probes_flagged:
+  - C4
+  - C8
+  rerun_2026_04_23:
+    C5_hca:
+      url: FETCH_FAILED
+      n_hits: -1
+      note: auto-discovered catalog (dcp31 stale)
+    C6_encode:
+      url: FETCH_FAILED
+      n_hits: -1
+      note: multi-URL fallback (modern + legacy field names)
+    C7_4dn:
+      url: FETCH_FAILED
+      n_hits: -1
+      note: Accept:application/json + endpoint variants
