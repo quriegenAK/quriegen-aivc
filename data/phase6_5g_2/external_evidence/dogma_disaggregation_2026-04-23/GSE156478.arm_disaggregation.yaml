@@ -1,0 +1,2056 @@
+---
+schema_version: 1
+accession: GSE156478
+fetched_at: '2026-04-23'
+fetch_mode: view=full
+n_samples_total: 52
+classification_summary:
+  high_medium_confidence_samples: 0
+  low_confidence_samples: 23
+  ambiguous_or_unknown_samples: 29
+arms_high_medium_confidence: []
+arms_low_confidence:
+- protocol: unknown
+  permeabilization: DIG
+  n_samples: 6
+  gsms:
+  - GSM5065530
+  - GSM5065531
+  - GSM5065532
+  - GSM5065533
+  - GSM5065534
+  - GSM5065535
+- protocol: unknown
+  permeabilization: LLL
+  n_samples: 17
+  gsms:
+  - GSM4732117
+  - GSM4732119
+  - GSM4732121
+  - GSM4732123
+  - GSM4732124
+  - GSM4732125
+  - GSM4732126
+  - GSM4732127
+  - GSM4732140
+  - GSM4732141
+  - GSM4732142
+  - GSM5065524
+  - GSM5065525
+  - GSM5065526
+  - GSM5065527
+  - GSM5065528
+  - GSM5065529
+samples_unclassified:
+- GSM4732109
+- GSM4732110
+- GSM4732111
+- GSM4732112
+- GSM4732113
+- GSM4732114
+- GSM4732115
+- GSM4732116
+- GSM4732118
+- GSM4732120
+- GSM4732122
+- GSM4732128
+- GSM4732129
+- GSM4732130
+- GSM4732131
+- GSM4732132
+- GSM4732133
+- GSM4732134
+- GSM4732135
+- GSM4732136
+- GSM4732137
+- GSM4732138
+- GSM4732139
+- GSM5065640
+- GSM5065641
+- GSM5065642
+- GSM5065643
+- GSM5065644
+- GSM5065645
+always_unresolved_paper_required:
+- per_arm_n_cells_post_qc (Mimitou 2021 Figures/Supp Tables)
+- license_explicit_terms (GEO page + repo-linked license)
+- FASTQ_dbGaP_gating_status (SRA run accessions)
+- TotalSeq_A_panel_confirmation (expected n=210 per paper; confirm per-sample)
+- lysis_protocol_per_GSM_mapping (confirm classifier output against Fig 1/Supp Table
+  1)
+downstream_usage_rule: E2-iextended spec may cite arms_high_medium_confidence aggregates
+  only. arms_low_confidence and samples_unclassified require manual review before
+  inclusion in locked-source declarations.
+samples:
+- gsm: GSM4732109
+  title: CD28_CD3_control_ASAP_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2
+  - Accessible chromatin
+  - none
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732109/suppl/GSM4732109_CD28_CD3_control_ASAP_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732110
+  title: CD28_CD3_control_ASAP_ADT
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2
+  - Cell Surface Markers
+  - 15 bases long (227 tags total)
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732110/suppl/GSM4732110_CD28_CD3_control_ASAP_ADT.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732111
+  title: CD28_CD3_stim_ASAP_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - Accessible chromatin
+  - none
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732111/suppl/GSM4732111_CD28_CD3_stim_ASAP_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732112
+  title: CD28_CD3_stim_ASAP_ADT
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - Cell Surface Markers
+  - 15 bases long (227 tags total)
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732112/suppl/GSM4732112_CD28_CD3_stim_ASAP_ADT.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732113
+  title: CD28_CD3_control_CITE_GEX
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2
+  - polyA mRNA
+  - none
+  - no lysis
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_barcodes.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_features.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_matrix.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732114
+  title: CD28_CD3_control_CITE_ADT
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2
+  - Cell Surface Markers
+  - 15 bases long (227 tags total)
+  - no lysis
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732114/suppl/GSM4732114_CD28_CD3_control_CITE_ADT.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732115
+  title: CD28_CD3_stim_CITE_GEX
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - polyA mRNA
+  - none
+  - no lysis
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_barcodes.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_features.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_matrix.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732116
+  title: CD28_CD3_stim_CITE_ADT
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Peripheral blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - Cell Surface Markers
+  - 15 bases long (227 tags total)
+  - no lysis
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732116/suppl/GSM4732116_CD28_CD3_stim_CITE_ADT.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732117
+  title: AvsB_ATAC_LLL
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Accessible chromatin
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732117/suppl/GSM4732117_AvsB_ATAC_LLL_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732118
+  title: AvsB_ATAC_OMNI
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Accessible chromatin
+  - none
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732118/suppl/GSM4732118_AvsB_ATAC_OMNI_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732119
+  title: AvsB_TSA_LLL
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Cell Surface Markers
+  - 15 bases tag (8 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732119/suppl/GSM4732119_AvsB_TSA_LLL.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732120
+  title: AvsB_TSA_OMNI
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Cell Surface Markers
+  - 15 bases tag (8 tags total)
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732120/suppl/GSM4732120_AvsB_TSA_OMNI.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732121
+  title: AvsB_TSB_LLL
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Cell Surface Markers
+  - 15 bases tag (8 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732121/suppl/GSM4732121_AvsB_TSB_LLL.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732122
+  title: AvsB_TSB_OMNI
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Cell Surface Markers
+  - 15 bases tag (8 tags total)
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732122/suppl/GSM4732122_AvsB_TSB_OMNI.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732123
+  title: Broad_LibA_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Accessible chromatin
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732123/suppl/GSM4732123_Broad_LibA_ATAC_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732124
+  title: Broad_LibB_ADT
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Cell Surface Markers
+  - 15 bases tag (8 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732124/suppl/GSM4732124_Broad_LibB_ADT.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732125
+  title: Broad_LibB_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Accessible chromatin
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732125/suppl/GSM4732125_Broad_LibB_ATAC_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732126
+  title: Broad_LibC_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Accessible chromatin
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732126/suppl/GSM4732126_Broad_LibC_ATAC_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732127
+  title: Broad_LibC_HTO
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Cell Surface Markers for Hashing
+  - 15 bases tag (4 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732127/suppl/GSM4732127_Broad_LibC_HTO.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732128
+  title: Intra_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Accessible chromatin
+  - 15 bases tag (8 tags total)
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732128/suppl/GSM4732128_Intra_ATAC_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732129
+  title: Intra_TSA
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Cell Surface Markers
+  - 15 bases tag (8 tags total)
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732129/suppl/GSM4732129_Intra_TSA.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732130
+  title: Intra_TSB
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: genomic DNA
+  sources_raw:
+  - Peripheral blood mononuclear cells
+  characteristics_raw:
+  - Intracellular Markers
+  - 15 bases tag (3 tags total)
+  - OMNI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732130/suppl/GSM4732130_Intra_TSB.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732131
+  title: SpeciesMix1_ADT
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Cell lines
+  characteristics_raw:
+  - mixture of HEK-293 and NIH-3T3
+  - Cell Surface Markers
+  - 15 bases tag (2 tags total)
+  - OMNI
+  - pre-SPRI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732131/suppl/GSM4732131_SpeciesMix1_QC.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732132
+  title: SpeciesMix1_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Cell lines
+  characteristics_raw:
+  - mixture of HEK-293 and NIH-3T3
+  - Accessible chromatin
+  - none
+  - OMNI
+  - pre-SPRI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732132/suppl/GSM4732132_SpeciesMix1_ATAC_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732133
+  title: SpeciesMix2_ADT
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Cell lines
+  characteristics_raw:
+  - mixture of HEK-293 and NIH-3T3
+  - Cell Surface Markers
+  - 15 bases tag (2 tags total)
+  - OMNI
+  - post-SPRI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732133/suppl/GSM4732133_SpeciesMix2_QC.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732134
+  title: SpeciesMix2_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Cell lines
+  characteristics_raw:
+  - mixture of HEK-293 and NIH-3T3
+  - Accessible chromatin
+  - none
+  - OMNI
+  - post-SPRI
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732134/suppl/GSM4732134_SpeciesMix2_ATAC_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732135
+  title: Perturb_CD4_stim_AD1
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - Three distinct biological donors
+  - Selected cell surface markers
+  - silane elute
+  - mixed sample (non-demultiplexed)
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732135/suppl/GSM4732135_Perturb_CD4_stim_AD1.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732136
+  title: Perturb_CD4_stim_AD2
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - Three distinct biological donors
+  - Selected cell surface markers
+  - SPRI supernatent
+  - mixed sample (non-demultiplexed)
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732136/suppl/GSM4732136_Perturb_CD4_stim_AD2.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732137
+  title: Perturb_CD4_stim_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - Three distinct biological donors
+  - NA
+  - NA
+  - mixed sample (non-demultiplexed)
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732137/suppl/GSM4732137_Perturb_CD4_stim_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732138
+  title: Perturb_CD4_stim_HT1
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - Three distinct biological donors
+  - CD298/Beta2 microglobulin hash antibodies corresponding to CRISPR gRNA
+  - silane elute
+  - mixed sample (non-demultiplexed)
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732138/suppl/GSM4732138_Perturb_CD4_stim_HT1.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732139
+  title: Perturb_CD4_stim_HT2
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - Three distinct biological donors
+  - CD298/Beta2 microglobulin hash antibodies corresponding to CRISPR gRNA
+  - SPRI supernatent
+  - mixed sample (non-demultiplexed)
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732139/suppl/GSM4732139_Perturb_CD4_stim_HT2.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732140
+  title: Human_BoneMarrow_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Bone Marrow
+  characteristics_raw:
+  - Bone Marrow
+  - Accessible chromatin
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732140/suppl/GSM4732140_Human_BoneMarrow_hg19_fragments.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732140/suppl/GSM4732140_Human_BoneMarrow_hg38_fragments.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732141
+  title: Human_BoneMarrow_ADT
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Bone Marrow
+  characteristics_raw:
+  - Bone Marrow
+  - Cell Surface Markers
+  - 15 bases tag (242 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732141/suppl/GSM4732141_Human_BoneMarrow_ADT.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM4732142
+  title: Human_BoneMarrow_HTO
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Bone Marrow
+  characteristics_raw:
+  - Bone Marrow
+  - Cell Surface Markers for Hashing
+  - 15 bases tag (6 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732142/suppl/GSM4732142_Human_BoneMarrow_HTO.tsv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065524
+  title: CD28_CD3_LLL_control_Multiome_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2
+  - Accessible chromatin
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065524/suppl/GSM5065524_LLL_CTRL_fragments.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065524/suppl/GSM5065524_LLL_CTRL_per_barcode_metrics.csv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065525
+  title: CD28_CD3_LLL_control_Multiome_RNA
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2
+  - polyA mRNA
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_barcodes.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_features.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_matrix.mtx.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065526
+  title: CD28_CD3_LLL_control_Multiome_ADT
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2
+  - Cell Surface Markers
+  - 15 bases long (210 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.barcodes.txt.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.mtx.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.proteins.txt.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065527
+  title: CD28_CD3_LLL_stim_Multiome_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - Accessible chromatin
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065527/suppl/GSM5065527_LLL_STIM_fragments.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065527/suppl/GSM5065527_LLL_STIM_per_barcode_metrics.csv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065528
+  title: CD28_CD3_LLL_stim_Multiome_RNA
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - polyA mRNA
+  - none
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_barcodes.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_features.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_matrix.mtx.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065529
+  title: CD28_CD3_LLL_stim_Multiome_ADT
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - Cell Surface Markers
+  - 15 bases long (210 tags total)
+  - LLL
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.barcodes.txt.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.mtx.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.proteins.txt.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: LLL
+    evidence: lll
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065530
+  title: CD28_CD3_DIG_control_Multiome_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2
+  - Accessible chromatin
+  - none
+  - DIG
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065530/suppl/GSM5065530_DIG_CTRL_fragments.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065530/suppl/GSM5065530_DIG_CTRL_per_barcode_metrics.csv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: DIG
+    evidence: dig
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065531
+  title: CD28_CD3_DIG_control_Multiome_RNA
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2
+  - polyA mRNA
+  - none
+  - DIG
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_barcodes.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_features.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_matrix.mtx.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: DIG
+    evidence: dig
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065532
+  title: CD28_CD3_DIG_control_Multiome_ADT
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2
+  - Cell Surface Markers
+  - 15 bases long (210 tags total)
+  - DIG
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.barcodes.txt.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.mtx.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.proteins.txt.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: DIG
+    evidence: dig
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065533
+  title: CD28_CD3_DIG_stim_Multiome_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - Accessible chromatin
+  - none
+  - DIG
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065533/suppl/GSM5065533_DIG_STIM_fragments.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065533/suppl/GSM5065533_DIG_STIM_per_barcode_metrics.csv.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: DIG
+    evidence: dig
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065534
+  title: CD28_CD3_DIG_stim_Multiome_RNA
+  organism: Homo sapiens
+  library_strategy: RNA-Seq
+  molecule: total RNA
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - polyA mRNA
+  - none
+  - DIG
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_barcodes.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_features.tsv.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_matrix.mtx.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: DIG
+    evidence: dig
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065535
+  title: CD28_CD3_DIG_stim_Multiome_ADT
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - Peripherial blood mononuclear cells
+  characteristics_raw:
+  - Peripherial blood mononuclear cells
+  - 16hr incubation with IL2 and anti-CD3/CD28
+  - Cell Surface Markers
+  - 15 bases long (210 tags total)
+  - DIG
+  supplementary_files:
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.barcodes.txt.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.mtx.gz\n\
+    \    "
+  - "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.proteins.txt.gz\n\
+    \    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: DIG
+    evidence: dig
+    source_field: Sample/Characteristics
+    confidence: LOW
+  stim:
+    value: stim
+    evidence: anti-cd3
+    source_field: Sample/Characteristics
+    confidence: LOW
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065640
+  title: Perturb_CD4_stim_intra_C6_ADT
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - One biological donor
+  - Selected cell surface markers
+  - silane elute + SPRI supernatant
+  supplementary_files:
+  - "\nNONE\n    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065641
+  title: Perturb_CD4_stim_intra_D6_ADT
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - One biological donor
+  - Selected cell surface markers
+  - silane elute + SPRI supernatant
+  supplementary_files:
+  - "\nNONE\n    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065642
+  title: Perturb_CD4_stim_intra_C6_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - One biological donor
+  - NA
+  - NA
+  supplementary_files:
+  - "\nNONE\n    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065643
+  title: Perturb_CD4_stim_intra_D6_ATAC
+  organism: Homo sapiens
+  library_strategy: ATAC-seq
+  molecule: genomic DNA
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - One biological donor
+  - NA
+  - NA
+  supplementary_files:
+  - "\nNONE\n    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065644
+  title: Perturb_CD4_stim_intra_C6_HTO
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - One biological donor
+  - CD298/β2 microglobulin hash antibodies corresponding to CRISPR gRNA
+  - silane elute + SPRI supernatant
+  supplementary_files:
+  - "\nNONE\n    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative
+- gsm: GSM5065645
+  title: Perturb_CD4_stim_intra_D6_HTO
+  organism: Homo sapiens
+  library_strategy: OTHER
+  molecule: other
+  sources_raw:
+  - T-cells from peripheral blood mononuclear cells
+  characteristics_raw:
+  - One biological donor
+  - CD298/β2 microglobulin hash antibodies corresponding to CRISPR gRNA
+  - silane elute + SPRI supernatant
+  supplementary_files:
+  - "\nNONE\n    "
+  protocol:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  permeabilization:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  stim:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+  n_cells_hint:
+    value: null
+    evidence: null
+    source_field: null
+    confidence: UNKNOWN
+    is_authoritative: false
+    caveat: heuristic regex over free text; paper pass authoritative

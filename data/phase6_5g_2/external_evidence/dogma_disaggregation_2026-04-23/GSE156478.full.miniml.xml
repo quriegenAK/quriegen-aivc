@@ -1,0 +1,3451 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<MINiML
+   xmlns="http://www.ncbi.nlm.nih.gov/geo/info/MINiML"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.ncbi.nlm.nih.gov/geo/info/MINiML http://www.ncbi.nlm.nih.gov/geo/info/MINiML.xsd"
+   version="0.5.0" >
+
+  <Contributor iid="contrib1">
+    <Person><First>Caleb</First><Last>Lareau</Last></Person>
+    <Email>lareauc@mskcc.org</Email>
+    <Organization>Memorial Sloan Kettering</Organization>
+    <Address>
+      <Line>417 E 68th St, Zuckerman - ZRC 1132</Line>
+      <City>New York</City>
+      <State>New York</State>
+      <Zip-Code>10065</Zip-Code>
+      <Country>USA</Country>
+    </Address>
+  </Contributor>
+
+  <Contributor iid="contrib2">
+    <Organization>GEO</Organization>
+    <Address>
+      <City></City>
+      <Country>USA</Country>
+    </Address>
+  </Contributor>
+
+  <Database iid="GEO">
+    <Name>Gene Expression Omnibus (GEO)</Name>
+    <Public-ID>GEO</Public-ID>
+    <Organization>NCBI NLM NIH</Organization>
+    <Web-Link>http://www.ncbi.nlm.nih.gov/geo</Web-Link>
+    <Email>geo@ncbi.nlm.nih.gov</Email>
+  </Database>
+
+  <Platform iid="GPL21697">
+    <Status database="GEO">
+      <Submission-Date>2016-04-05</Submission-Date>
+      <Release-Date>2016-04-05</Release-Date>
+      <Last-Update-Date>2018-12-05</Last-Update-Date>
+    </Status>
+    <Title>NextSeq 550 (Homo sapiens)</Title>
+    <Accession database="GEO">GPL21697</Accession>
+    <Technology>high-throughput sequencing</Technology>
+    <Distribution>virtual</Distribution>
+    <Organism taxid="9606">Homo sapiens</Organism>
+    <Manufacturer></Manufacturer>
+    <Manufacture-Protocol>
+    </Manufacture-Protocol>
+    <Contact-Ref ref="contrib2" />
+  </Platform>
+
+  <Platform iid="GPL24625">
+    <Status database="GEO">
+      <Submission-Date>2018-02-20</Submission-Date>
+      <Release-Date>2018-02-20</Release-Date>
+      <Last-Update-Date>2018-02-20</Last-Update-Date>
+    </Status>
+    <Title>NextSeq 550 (Homo sapiens; Mus musculus)</Title>
+    <Accession database="GEO">GPL24625</Accession>
+    <Technology>high-throughput sequencing</Technology>
+    <Distribution>virtual</Distribution>
+    <Organism taxid="9606">Homo sapiens</Organism>
+    <Organism taxid="10090">Mus musculus</Organism>
+    <Manufacturer></Manufacturer>
+    <Manufacture-Protocol>
+    </Manufacture-Protocol>
+    <Contact-Ref ref="contrib2" />
+  </Platform>
+
+  <Platform iid="GPL24676">
+    <Status database="GEO">
+      <Submission-Date>2018-03-02</Submission-Date>
+      <Release-Date>2018-03-02</Release-Date>
+      <Last-Update-Date>2018-11-05</Last-Update-Date>
+    </Status>
+    <Title>Illumina NovaSeq 6000 (Homo sapiens)</Title>
+    <Accession database="GEO">GPL24676</Accession>
+    <Technology>high-throughput sequencing</Technology>
+    <Distribution>virtual</Distribution>
+    <Organism taxid="9606">Homo sapiens</Organism>
+    <Manufacturer></Manufacturer>
+    <Manufacture-Protocol>
+    </Manufacture-Protocol>
+    <Contact-Ref ref="contrib2" />
+  </Platform>
+
+  <Sample iid="GSM4732109">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_control_ASAP_ATAC</Title>
+    <Accession database="GEO">GSM4732109</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732109/suppl/GSM4732109_CD28_CD3_control_ASAP_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856888" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970659" />
+  </Sample>
+
+  <Sample iid="GSM4732110">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_control_ASAP_ADT</Title>
+    <Accession database="GEO">GSM4732110</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (227 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732110/suppl/GSM4732110_CD28_CD3_control_ASAP_ADT.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856905" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970660" />
+  </Sample>
+
+  <Sample iid="GSM4732111">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_stim_ASAP_ATAC</Title>
+    <Accession database="GEO">GSM4732111</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732111/suppl/GSM4732111_CD28_CD3_stim_ASAP_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856904" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970661" />
+  </Sample>
+
+  <Sample iid="GSM4732112">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_stim_ASAP_ADT</Title>
+    <Accession database="GEO">GSM4732112</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (227 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732112/suppl/GSM4732112_CD28_CD3_stim_ASAP_ADT.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856903" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970662" />
+  </Sample>
+
+  <Sample iid="GSM4732113">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_control_CITE_GEX</Title>
+    <Accession database="GEO">GSM4732113</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+polyA mRNA
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+no lysis
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+cDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_barcodes.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_features.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_matrix.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856902" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970663" />
+  </Sample>
+
+  <Sample iid="GSM4732114">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_control_CITE_ADT</Title>
+    <Accession database="GEO">GSM4732114</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (227 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+no lysis
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732114/suppl/GSM4732114_CD28_CD3_control_CITE_ADT.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856901" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970664" />
+  </Sample>
+
+  <Sample iid="GSM4732115">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_stim_CITE_GEX</Title>
+    <Accession database="GEO">GSM4732115</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+polyA mRNA
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+no lysis
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+cDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_barcodes.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_features.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_matrix.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856900" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970665" />
+  </Sample>
+
+  <Sample iid="GSM4732116">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_stim_CITE_ADT</Title>
+    <Accession database="GEO">GSM4732116</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripheral blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (227 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+no lysis
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while ASAP antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.GEX libraries were constructed according to the 10x Genomics scRNAseq v3.1 protocol and CITE tags as described in CITE-seq protocols (Stoeckius et al, 2017).
+10x Genomics scATAC-seq v1.1 (ASAP-seq) / scRNA-seq v3.1 (CITE-seq)
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0 (ATAC) and CellRanger mkfastq v3 (RNA) respectively.
+Sequencing reads were aligned using CellRanger-ATAC and CellRanger count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732116/suppl/GSM4732116_CD28_CD3_stim_CITE_ADT.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15856899" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970666" />
+  </Sample>
+
+  <Sample iid="GSM4732117">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>AvsB_ATAC_LLL</Title>
+    <Accession database="GEO">GSM4732117</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732117/suppl/GSM4732117_AvsB_ATAC_LLL_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857001" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970539" />
+  </Sample>
+
+  <Sample iid="GSM4732118">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>AvsB_ATAC_OMNI</Title>
+    <Accession database="GEO">GSM4732118</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732118/suppl/GSM4732118_AvsB_ATAC_OMNI_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857023" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970540" />
+  </Sample>
+
+  <Sample iid="GSM4732119">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>AvsB_TSA_LLL</Title>
+    <Accession database="GEO">GSM4732119</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (8 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732119/suppl/GSM4732119_AvsB_TSA_LLL.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857022" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970541" />
+  </Sample>
+
+  <Sample iid="GSM4732120">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>AvsB_TSA_OMNI</Title>
+    <Accession database="GEO">GSM4732120</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (8 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732120/suppl/GSM4732120_AvsB_TSA_OMNI.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857021" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970542" />
+  </Sample>
+
+  <Sample iid="GSM4732121">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>AvsB_TSB_LLL</Title>
+    <Accession database="GEO">GSM4732121</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (8 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732121/suppl/GSM4732121_AvsB_TSB_LLL.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857020" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970543" />
+  </Sample>
+
+  <Sample iid="GSM4732122">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>AvsB_TSB_OMNI</Title>
+    <Accession database="GEO">GSM4732122</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (8 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732122/suppl/GSM4732122_AvsB_TSB_OMNI.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857019" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970544" />
+  </Sample>
+
+  <Sample iid="GSM4732123">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Broad_LibA_ATAC</Title>
+    <Accession database="GEO">GSM4732123</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732123/suppl/GSM4732123_Broad_LibA_ATAC_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857018" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970545" />
+  </Sample>
+
+  <Sample iid="GSM4732124">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Broad_LibB_ADT</Title>
+    <Accession database="GEO">GSM4732124</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (8 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732124/suppl/GSM4732124_Broad_LibB_ADT.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857017" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970546" />
+  </Sample>
+
+  <Sample iid="GSM4732125">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Broad_LibB_ATAC</Title>
+    <Accession database="GEO">GSM4732125</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732125/suppl/GSM4732125_Broad_LibB_ATAC_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857016" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970547" />
+  </Sample>
+
+  <Sample iid="GSM4732126">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Broad_LibC_ATAC</Title>
+    <Accession database="GEO">GSM4732126</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732126/suppl/GSM4732126_Broad_LibC_ATAC_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857015" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970548" />
+  </Sample>
+
+  <Sample iid="GSM4732127">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Broad_LibC_HTO</Title>
+    <Accession database="GEO">GSM4732127</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Cell Surface Markers for Hashing
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (4 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732127/suppl/GSM4732127_Broad_LibC_HTO.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857014" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970549" />
+  </Sample>
+
+  <Sample iid="GSM4732128">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Intra_ATAC</Title>
+    <Accession database="GEO">GSM4732128</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (8 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732128/suppl/GSM4732128_Intra_ATAC_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857012" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970550" />
+  </Sample>
+
+  <Sample iid="GSM4732129">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Intra_TSA</Title>
+    <Accession database="GEO">GSM4732129</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (8 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732129/suppl/GSM4732129_Intra_TSA.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857011" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970551" />
+  </Sample>
+
+  <Sample iid="GSM4732130">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Intra_TSB</Title>
+    <Accession database="GEO">GSM4732130</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="target molecule">
+Intracellular Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (3 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were stained with either TSA TBNK panel only (Broad samples) or with 1:1 mix of TSA:TSB TBNK panel (AvsB samples) or with TSA extracellular TBNK followed by TSB intracellular staining, using the indicated lysis conditions.
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq or Omni ATAC as indicated in different lysis conditions
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: ASAP-seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732130/suppl/GSM4732130_Intra_TSB.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857010" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970552" />
+  </Sample>
+
+  <Sample iid="GSM4732131">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>SpeciesMix1_ADT</Title>
+    <Accession database="GEO">GSM4732131</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Cell lines</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Organism taxid="10090">Mus musculus</Organism>
+      <Characteristics tag="cell line">
+mixture of HEK-293 and NIH-3T3
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (2 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Characteristics tag="tag library input">
+pre-SPRI
+      </Characteristics>
+      <Treatment-Protocol>
+HEK-293 and NIH-3T3 cells were stained with hCD29 and mCD29, washed, fixed and lysed using the OMNI lysis buffer
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x Genomics OMNI protocol.
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol. Antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfication using tag-specific handles was performed using as input fragments before or after SPRI purification as indicated.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38-mm10 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38 / mm10
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24625" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732131/suppl/GSM4732131_SpeciesMix1_QC.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857036" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970561" />
+  </Sample>
+
+  <Sample iid="GSM4732132">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>SpeciesMix1_ATAC</Title>
+    <Accession database="GEO">GSM4732132</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Cell lines</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Organism taxid="10090">Mus musculus</Organism>
+      <Characteristics tag="cell line">
+mixture of HEK-293 and NIH-3T3
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Characteristics tag="tag library input">
+pre-SPRI
+      </Characteristics>
+      <Treatment-Protocol>
+HEK-293 and NIH-3T3 cells were stained with hCD29 and mCD29, washed, fixed and lysed using the OMNI lysis buffer
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x Genomics OMNI protocol.
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol. Antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfication using tag-specific handles was performed using as input fragments before or after SPRI purification as indicated.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38-mm10 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38 / mm10
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24625" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732132/suppl/GSM4732132_SpeciesMix1_ATAC_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857035" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970562" />
+  </Sample>
+
+  <Sample iid="GSM4732133">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>SpeciesMix2_ADT</Title>
+    <Accession database="GEO">GSM4732133</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Cell lines</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Organism taxid="10090">Mus musculus</Organism>
+      <Characteristics tag="cell line">
+mixture of HEK-293 and NIH-3T3
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (2 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Characteristics tag="tag library input">
+post-SPRI
+      </Characteristics>
+      <Treatment-Protocol>
+HEK-293 and NIH-3T3 cells were stained with hCD29 and mCD29, washed, fixed and lysed using the OMNI lysis buffer
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x Genomics OMNI protocol.
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol. Antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfication using tag-specific handles was performed using as input fragments before or after SPRI purification as indicated.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38-mm10 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38 / mm10
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24625" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732133/suppl/GSM4732133_SpeciesMix2_QC.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857034" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970563" />
+  </Sample>
+
+  <Sample iid="GSM4732134">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>SpeciesMix2_ATAC</Title>
+    <Accession database="GEO">GSM4732134</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Cell lines</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Organism taxid="10090">Mus musculus</Organism>
+      <Characteristics tag="cell line">
+mixture of HEK-293 and NIH-3T3
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+OMNI
+      </Characteristics>
+      <Characteristics tag="tag library input">
+post-SPRI
+      </Characteristics>
+      <Treatment-Protocol>
+HEK-293 and NIH-3T3 cells were stained with hCD29 and mCD29, washed, fixed and lysed using the OMNI lysis buffer
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x Genomics OMNI protocol.
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol. Antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfication using tag-specific handles was performed using as input fragments before or after SPRI purification as indicated.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38-mm10 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38 / mm10
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24625" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732134/suppl/GSM4732134_SpeciesMix2_ATAC_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857033" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970564" />
+  </Sample>
+
+  <Sample iid="GSM4732135">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_AD1</Title>
+    <Accession database="GEO">GSM4732135</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+Three distinct biological donors
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+Selected cell surface markers
+      </Characteristics>
+      <Characteristics tag="elution">
+silane elute
+      </Characteristics>
+      <Characteristics tag="knockdown">
+mixed sample (non-demultiplexed)
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+gRNA-based KOs were assigned based on a modified version of HTO Demux.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732135/suppl/GSM4732135_Perturb_CD4_stim_AD1.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857047" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970565" />
+  </Sample>
+
+  <Sample iid="GSM4732136">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_AD2</Title>
+    <Accession database="GEO">GSM4732136</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+Three distinct biological donors
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+Selected cell surface markers
+      </Characteristics>
+      <Characteristics tag="elution">
+SPRI supernatent
+      </Characteristics>
+      <Characteristics tag="knockdown">
+mixed sample (non-demultiplexed)
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+gRNA-based KOs were assigned based on a modified version of HTO Demux.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732136/suppl/GSM4732136_Perturb_CD4_stim_AD2.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857046" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970566" />
+  </Sample>
+
+  <Sample iid="GSM4732137">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_ATAC</Title>
+    <Accession database="GEO">GSM4732137</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+Three distinct biological donors
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+NA
+      </Characteristics>
+      <Characteristics tag="elution">
+NA
+      </Characteristics>
+      <Characteristics tag="knockdown">
+mixed sample (non-demultiplexed)
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+gRNA-based KOs were assigned based on a modified version of HTO Demux.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732137/suppl/GSM4732137_Perturb_CD4_stim_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857045" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970567" />
+  </Sample>
+
+  <Sample iid="GSM4732138">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_HT1</Title>
+    <Accession database="GEO">GSM4732138</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+Three distinct biological donors
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+CD298/Beta2 microglobulin hash antibodies corresponding to CRISPR gRNA
+      </Characteristics>
+      <Characteristics tag="elution">
+silane elute
+      </Characteristics>
+      <Characteristics tag="knockdown">
+mixed sample (non-demultiplexed)
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+gRNA-based KOs were assigned based on a modified version of HTO Demux.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732138/suppl/GSM4732138_Perturb_CD4_stim_HT1.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857044" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970568" />
+  </Sample>
+
+  <Sample iid="GSM4732139">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_HT2</Title>
+    <Accession database="GEO">GSM4732139</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+Three distinct biological donors
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+CD298/Beta2 microglobulin hash antibodies corresponding to CRISPR gRNA
+      </Characteristics>
+      <Characteristics tag="elution">
+SPRI supernatent
+      </Characteristics>
+      <Characteristics tag="knockdown">
+mixed sample (non-demultiplexed)
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+gRNA-based KOs were assigned based on a modified version of HTO Demux.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732139/suppl/GSM4732139_Perturb_CD4_stim_HT2.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857043" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970569" />
+  </Sample>
+
+  <Sample iid="GSM4732140">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Human_BoneMarrow_ATAC</Title>
+    <Accession database="GEO">GSM4732140</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Bone Marrow</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="tissue">
+Bone Marrow
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved bone marrow cells were stained with 6 TSA hashing antibodies and the BM antibody panel (242 antibodies), washed, fixed and lysed using the LLL lysis buffer
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+We further provide fragment counts for an hg19 alignment for community use.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38 / hg19
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732140/suppl/GSM4732140_Human_BoneMarrow_hg19_fragments.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732140/suppl/GSM4732140_Human_BoneMarrow_hg38_fragments.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857042" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970570" />
+  </Sample>
+
+  <Sample iid="GSM4732141">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Human_BoneMarrow_ADT</Title>
+    <Accession database="GEO">GSM4732141</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Bone Marrow</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="tissue">
+Bone Marrow
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (242 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved bone marrow cells were stained with 6 TSA hashing antibodies and the BM antibody panel (242 antibodies), washed, fixed and lysed using the LLL lysis buffer
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+We further provide fragment counts for an hg19 alignment for community use.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38 / hg19
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732141/suppl/GSM4732141_Human_BoneMarrow_ADT.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857041" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970571" />
+  </Sample>
+
+  <Sample iid="GSM4732142">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2020-09-08</Last-Update-Date>
+    </Status>
+    <Title>Human_BoneMarrow_HTO</Title>
+    <Accession database="GEO">GSM4732142</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Bone Marrow</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="tissue">
+Bone Marrow
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers for Hashing
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases tag (6 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved bone marrow cells were stained with 6 TSA hashing antibodies and the BM antibody panel (242 antibodies), washed, fixed and lysed using the LLL lysis buffer
+      </Treatment-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing and surface marker antibodies, fixed with 1% PFA and then extracted using the mtscATAC-seq
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+We further provide fragment counts for an hg19 alignment for community use.
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38 / hg19
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL21697" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>NextSeq 550</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732142/suppl/GSM4732142_Human_BoneMarrow_HTO.tsv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN15857040" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX8970572" />
+  </Sample>
+
+  <Sample iid="GSM5065524">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_LLL_control_Multiome_ATAC</Title>
+    <Accession database="GEO">GSM5065524</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065524/suppl/GSM5065524_LLL_CTRL_fragments.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="CSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065524/suppl/GSM5065524_LLL_CTRL_per_barcode_metrics.csv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797595" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030159" />
+  </Sample>
+
+  <Sample iid="GSM5065525">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_LLL_control_Multiome_RNA</Title>
+    <Accession database="GEO">GSM5065525</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+polyA mRNA
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+cDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_barcodes.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_features.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_matrix.mtx.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797594" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030160" />
+  </Sample>
+
+  <Sample iid="GSM5065526">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_LLL_control_Multiome_ADT</Title>
+    <Accession database="GEO">GSM5065526</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (210 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: CITE-seq
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.barcodes.txt.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.mtx.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.proteins.txt.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797592" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030161" />
+  </Sample>
+
+  <Sample iid="GSM5065527">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_LLL_stim_Multiome_ATAC</Title>
+    <Accession database="GEO">GSM5065527</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065527/suppl/GSM5065527_LLL_STIM_fragments.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="CSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065527/suppl/GSM5065527_LLL_STIM_per_barcode_metrics.csv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797590" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030162" />
+  </Sample>
+
+  <Sample iid="GSM5065528">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_LLL_stim_Multiome_RNA</Title>
+    <Accession database="GEO">GSM5065528</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+polyA mRNA
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+cDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_barcodes.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_features.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_matrix.mtx.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797859" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030163" />
+  </Sample>
+
+  <Sample iid="GSM5065529">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_LLL_stim_Multiome_ADT</Title>
+    <Accession database="GEO">GSM5065529</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (210 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+LLL
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: CITE-seq
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.barcodes.txt.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.mtx.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.proteins.txt.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797858" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030164" />
+  </Sample>
+
+  <Sample iid="GSM5065530">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_DIG_control_Multiome_ATAC</Title>
+    <Accession database="GEO">GSM5065530</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+DIG
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065530/suppl/GSM5065530_DIG_CTRL_fragments.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="CSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065530/suppl/GSM5065530_DIG_CTRL_per_barcode_metrics.csv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797856" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030165" />
+  </Sample>
+
+  <Sample iid="GSM5065531">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_DIG_control_Multiome_RNA</Title>
+    <Accession database="GEO">GSM5065531</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+polyA mRNA
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+DIG
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+cDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_barcodes.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_features.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_matrix.mtx.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797855" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030166" />
+  </Sample>
+
+  <Sample iid="GSM5065532">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_DIG_control_Multiome_ADT</Title>
+    <Accession database="GEO">GSM5065532</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (210 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+DIG
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: CITE-seq
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.barcodes.txt.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.mtx.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.proteins.txt.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797852" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030167" />
+  </Sample>
+
+  <Sample iid="GSM5065533">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_DIG_stim_Multiome_ATAC</Title>
+    <Accession database="GEO">GSM5065533</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Accessible chromatin
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+DIG
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+tagmented gDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065533/suppl/GSM5065533_DIG_STIM_fragments.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="CSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065533/suppl/GSM5065533_DIG_STIM_per_barcode_metrics.csv.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797853" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030168" />
+  </Sample>
+
+  <Sample iid="GSM5065534">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_DIG_stim_Multiome_RNA</Title>
+    <Accession database="GEO">GSM5065534</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+polyA mRNA
+      </Characteristics>
+      <Characteristics tag="ab tags">
+none
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+DIG
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>total RNA</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+cDNA
+    </Description>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>RNA-Seq</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>cDNA</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_barcodes.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TSV">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_features.tsv.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_matrix.mtx.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797850" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030169" />
+  </Sample>
+
+  <Sample iid="GSM5065535">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-16</Last-Update-Date>
+    </Status>
+    <Title>CD28_CD3_DIG_stim_Multiome_ADT</Title>
+    <Accession database="GEO">GSM5065535</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>Peripherial blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="cell type">
+Peripherial blood mononuclear cells
+      </Characteristics>
+      <Characteristics tag="treatment">
+16hr incubation with IL2 and anti-CD3/CD28
+      </Characteristics>
+      <Characteristics tag="target molecule">
+Cell Surface Markers
+      </Characteristics>
+      <Characteristics tag="ab tags">
+15 bases long (210 tags total)
+      </Characteristics>
+      <Characteristics tag="lysis buffer">
+DIG
+      </Characteristics>
+      <Treatment-Protocol>
+Thawed cryopreserved PBMCs were resuspended to 1M/ml density in either complete medium supplemented with IL2 (unstimulated control) or complete medium supplemented with IL2 and ImmunoCult Human CD3/CD28 T cell Activator (stimulated sample) for 16 hours.
+      </Treatment-Protocol>
+      <Growth-Protocol>
+NA
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Control and stimulated PBMCs were stained with a TotalSeqA antibody panel (210 antibodies), sorted to remove dead cells and granulocytes, and permeabilised with two methods: 1) 0.1% PFA fixation followed by permeabilization with LLL buffer and 2) permeabilization with 0.1% digitonin . Cells were subsequently subjected to transposition and loaded into the 10x Multiome chip for the barcoding reaction.
+ATAC and GEX libraries were constructed according to the 10x Genomics single cell Multiome protocol. Protein tags were captured via the polyT barcoded oligos and amplfied using tag-specific handles.
+10x Genomics Multiome + CITE-seq antibody capture
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: CITE-seq
+Fastqs were generated using CellRanger-ARC mkfastq v1.0.0
+Sequencing reads were aligned using CellRanger-ARC for the hg38 reference genome
+For ADT count libraries, tag abundances were quantified per barcode using the kallisto/kite framework.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the singlecell QC metrics, barcoded accessible chromatin fragments per ATAC library, gene expression counts, and mRNA counts
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.barcodes.txt.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="MTX">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.mtx.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="TXT">
+ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.proteins.txt.gz
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17797848" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030170" />
+  </Sample>
+
+  <Sample iid="GSM5065640">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-14</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_intra_C6_ADT</Title>
+    <Accession database="GEO">GSM5065640</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+One biological donor
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+Selected cell surface markers
+      </Characteristics>
+      <Characteristics tag="asap-seq protocol">
+silane elute + SPRI supernatant
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+10x Genomics scATAC-seq v1.1
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: CITE-Seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+The two sequencing lanes (C6 and D6) were combined using CellRanger-ATAC aggr
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework. gRNA-based KOs were assigned based on a modified version of HTO Demux.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="unknown">
+NONE
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17798490" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030474" />
+  </Sample>
+
+  <Sample iid="GSM5065641">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-14</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_intra_D6_ADT</Title>
+    <Accession database="GEO">GSM5065641</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+One biological donor
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+Selected cell surface markers
+      </Characteristics>
+      <Characteristics tag="asap-seq protocol">
+silane elute + SPRI supernatant
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+10x Genomics scATAC-seq v1.1
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: CITE-Seq
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+The two sequencing lanes (C6 and D6) were combined using CellRanger-ATAC aggr
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework. gRNA-based KOs were assigned based on a modified version of HTO Demux.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="unknown">
+NONE
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17798489" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030475" />
+  </Sample>
+
+  <Sample iid="GSM5065642">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-14</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_intra_C6_ATAC</Title>
+    <Accession database="GEO">GSM5065642</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+One biological donor
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+NA
+      </Characteristics>
+      <Characteristics tag="asap-seq protocol">
+NA
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+10x Genomics scATAC-seq v1.1
+      </Extract-Protocol>
+    </Channel>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+The two sequencing lanes (C6 and D6) were combined using CellRanger-ATAC aggr
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework. gRNA-based KOs were assigned based on a modified version of HTO Demux.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="unknown">
+NONE
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17798487" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030476" />
+  </Sample>
+
+  <Sample iid="GSM5065643">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-14</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_intra_D6_ATAC</Title>
+    <Accession database="GEO">GSM5065643</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+One biological donor
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+NA
+      </Characteristics>
+      <Characteristics tag="asap-seq protocol">
+NA
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>genomic DNA</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+10x Genomics scATAC-seq v1.1
+      </Extract-Protocol>
+    </Channel>
+    <Data-Processing>
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+The two sequencing lanes (C6 and D6) were combined using CellRanger-ATAC aggr
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework. gRNA-based KOs were assigned based on a modified version of HTO Demux.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>ATAC-seq</Library-Strategy>
+    <Library-Source>genomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="unknown">
+NONE
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17798486" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030471" />
+  </Sample>
+
+  <Sample iid="GSM5065644">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-14</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_intra_C6_HTO</Title>
+    <Accession database="GEO">GSM5065644</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+One biological donor
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+CD298/β2 microglobulin hash antibodies corresponding to CRISPR gRNA
+      </Characteristics>
+      <Characteristics tag="asap-seq protocol">
+silane elute + SPRI supernatant
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+10x Genomics scATAC-seq v1.1
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: Cell Hashing
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+The two sequencing lanes (C6 and D6) were combined using CellRanger-ATAC aggr
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework. gRNA-based KOs were assigned based on a modified version of HTO Demux.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="unknown">
+NONE
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17798392" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030472" />
+  </Sample>
+
+  <Sample iid="GSM5065645">
+    <Status database="GEO">
+      <Submission-Date>2021-02-04</Submission-Date>
+      <Release-Date>2021-05-14</Release-Date>
+      <Last-Update-Date>2021-05-14</Last-Update-Date>
+    </Status>
+    <Title>Perturb_CD4_stim_intra_D6_HTO</Title>
+    <Accession database="GEO">GSM5065645</Accession>
+    <Type>SRA</Type>
+    <Channel-Count>1</Channel-Count>
+    <Channel position="1">
+      <Source>T-cells from peripheral blood mononuclear cells</Source>
+      <Organism taxid="9606">Homo sapiens</Organism>
+      <Characteristics tag="donor #">
+One biological donor
+      </Characteristics>
+      <Characteristics tag="ab treatment">
+CD298/β2 microglobulin hash antibodies corresponding to CRISPR gRNA
+      </Characteristics>
+      <Characteristics tag="asap-seq protocol">
+silane elute + SPRI supernatant
+      </Characteristics>
+      <Treatment-Protocol>
+Cells were re-stimulated for 72 hours and then enriched for live cells by cell sorting
+      </Treatment-Protocol>
+      <Growth-Protocol>
+Cells were stimulated for 72 hours, followed by 4 days resting and then electroporation with Cas9 protein. Samples were treated with distinct gRNAs based on the overall design. Cells were further expanded an additional 7 days
+      </Growth-Protocol>
+      <Molecule>other</Molecule>
+      <Extract-Protocol>
+Samples were stained with hashing antibodies for multiplexing gRNAs and surface marker antibodies, fixed with 1% PFA and then extracted using the 10x protocol (Omni-ATAC)
+ATAC libraries were constructed according to the 10x Genomics scATAC-seq v1.1 protocol while antibody tags were captured via the bridge oligo spiked-in the barcoding reaction and amplfied using tag-specific handles.
+10x Genomics scATAC-seq v1.1
+      </Extract-Protocol>
+    </Channel>
+    <Description>
+antibody oligos
+    </Description>
+    <Data-Processing>
+Library strategy: Cell Hashing
+Fastqs were generated using CellRanger-ATAC mkfastq v1.2.0
+Sequencing reads were aligned using CellRanger-ATAC count for the hg38 reference genome
+The two sequencing lanes (C6 and D6) were combined using CellRanger-ATAC aggr
+For ADT and HTO count libraries, tag abundances were quantified per barcode using the kallisto/kite framework. gRNA-based KOs were assigned based on a modified version of HTO Demux.
+Genome_build: hg38
+Supplementary_files_format_and_content: Per-barcode count abundance for the protein count data including the ATAC singlecell QC metrics; barcoded accessible chromatin fragments per ATAC library
+    </Data-Processing>
+    <Platform-Ref ref="GPL24676" />
+    <Library-Strategy>OTHER</Library-Strategy>
+    <Library-Source>transcriptomic</Library-Source>
+    <Library-Selection>other</Library-Selection>
+    <Instrument-Model>
+      <Predefined>Illumina NovaSeq 6000</Predefined>
+    </Instrument-Model>
+    <Contact-Ref ref="contrib1" />
+    <Supplementary-Data type="unknown">
+NONE
+    </Supplementary-Data>
+    <Relation type="BioSample" target="https://www.ncbi.nlm.nih.gov/biosample/SAMN17798390" />
+    <Relation type="SRA" target="https://www.ncbi.nlm.nih.gov/sra?term=SRX10030473" />
+  </Sample>
+
+  <Series iid="GSE156478">
+    <Status database="GEO">
+      <Submission-Date>2020-08-19</Submission-Date>
+      <Release-Date>2020-09-08</Release-Date>
+      <Last-Update-Date>2021-08-13</Last-Update-Date>
+    </Status>
+    <Title>High throughput joint profiling of chromatin accessibility and protein levels in single cells</Title>
+    <Accession database="GEO">GSE156478</Accession>
+    <Pubmed-ID>34083792</Pubmed-ID>
+    <Summary>
+This SuperSeries is composed of the SubSeries listed below.
+    </Summary>
+    <Overall-Design>
+Refer to individual Series
+    </Overall-Design>
+    <Type>Genome binding/occupancy profiling by high throughput sequencing</Type>
+    <Type>Other</Type>
+    <Contact-Ref ref="contrib1" />
+    <Sample-Ref ref="GSM4732109" />
+    <Sample-Ref ref="GSM4732110" />
+    <Sample-Ref ref="GSM4732111" />
+    <Sample-Ref ref="GSM4732112" />
+    <Sample-Ref ref="GSM4732113" />
+    <Sample-Ref ref="GSM4732114" />
+    <Sample-Ref ref="GSM4732115" />
+    <Sample-Ref ref="GSM4732116" />
+    <Sample-Ref ref="GSM4732117" />
+    <Sample-Ref ref="GSM4732118" />
+    <Sample-Ref ref="GSM4732119" />
+    <Sample-Ref ref="GSM4732120" />
+    <Sample-Ref ref="GSM4732121" />
+    <Sample-Ref ref="GSM4732122" />
+    <Sample-Ref ref="GSM4732123" />
+    <Sample-Ref ref="GSM4732124" />
+    <Sample-Ref ref="GSM4732125" />
+    <Sample-Ref ref="GSM4732126" />
+    <Sample-Ref ref="GSM4732127" />
+    <Sample-Ref ref="GSM4732128" />
+    <Sample-Ref ref="GSM4732129" />
+    <Sample-Ref ref="GSM4732130" />
+    <Sample-Ref ref="GSM4732131" />
+    <Sample-Ref ref="GSM4732132" />
+    <Sample-Ref ref="GSM4732133" />
+    <Sample-Ref ref="GSM4732134" />
+    <Sample-Ref ref="GSM4732135" />
+    <Sample-Ref ref="GSM4732136" />
+    <Sample-Ref ref="GSM4732137" />
+    <Sample-Ref ref="GSM4732138" />
+    <Sample-Ref ref="GSM4732139" />
+    <Sample-Ref ref="GSM4732140" />
+    <Sample-Ref ref="GSM4732141" />
+    <Sample-Ref ref="GSM4732142" />
+    <Sample-Ref ref="GSM5065524" />
+    <Sample-Ref ref="GSM5065525" />
+    <Sample-Ref ref="GSM5065526" />
+    <Sample-Ref ref="GSM5065527" />
+    <Sample-Ref ref="GSM5065528" />
+    <Sample-Ref ref="GSM5065529" />
+    <Sample-Ref ref="GSM5065530" />
+    <Sample-Ref ref="GSM5065531" />
+    <Sample-Ref ref="GSM5065532" />
+    <Sample-Ref ref="GSM5065533" />
+    <Sample-Ref ref="GSM5065534" />
+    <Sample-Ref ref="GSM5065535" />
+    <Sample-Ref ref="GSM5065640" />
+    <Sample-Ref ref="GSM5065641" />
+    <Sample-Ref ref="GSM5065642" />
+    <Sample-Ref ref="GSM5065643" />
+    <Sample-Ref ref="GSM5065644" />
+    <Sample-Ref ref="GSM5065645" />
+    <Supplementary-Data type="TAR">
+ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE156nnn/GSE156478/suppl/GSE156478_RAW.tar
+    </Supplementary-Data>
+    <Relation type="SuperSeries of" target="GSE156473" />
+    <Relation type="SuperSeries of" target="GSE156474" />
+    <Relation type="SuperSeries of" target="GSE156475" />
+    <Relation type="SuperSeries of" target="GSE156476" />
+    <Relation type="SuperSeries of" target="GSE156477" />
+    <Relation type="SuperSeries of" target="GSE166188" />
+    <Relation type="SuperSeries of" target="GSE166191" />
+    <Relation type="BioProject" target="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA658075" />
+  </Series>
+
+</MINiML>
