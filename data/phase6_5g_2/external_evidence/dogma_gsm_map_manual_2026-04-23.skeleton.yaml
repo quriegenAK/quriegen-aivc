@@ -1,0 +1,136 @@
+---
+gsm_to_arm:
+  GSM5065530:
+    protocol: DOGMA
+    permeabilization: DIG
+    stim: control
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_DIG_control_Multiome_ATAC
+    notes: ''
+  GSM5065531:
+    protocol: DOGMA
+    permeabilization: DIG
+    stim: control
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_DIG_control_Multiome_RNA
+    notes: ''
+  GSM5065532:
+    protocol: DOGMA
+    permeabilization: DIG
+    stim: control
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_DIG_control_Multiome_ADT
+    notes: ''
+  GSM5065533:
+    protocol: DOGMA
+    permeabilization: DIG
+    stim: stim
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_DIG_stim_Multiome_ATAC
+    notes: ''
+  GSM5065534:
+    protocol: DOGMA
+    permeabilization: DIG
+    stim: stim
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_DIG_stim_Multiome_RNA
+    notes: ''
+  GSM5065535:
+    protocol: DOGMA
+    permeabilization: DIG
+    stim: stim
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_DIG_stim_Multiome_ADT
+    notes: ''
+  GSM4732117:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: null
+    in_scope_for_aivc_e2: null
+    title_for_reference: AvsB_ATAC_LLL
+    notes: ''
+  GSM4732119:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: null
+    in_scope_for_aivc_e2: null
+    title_for_reference: AvsB_TSA_LLL
+    notes: ''
+  GSM4732121:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: null
+    in_scope_for_aivc_e2: null
+    title_for_reference: AvsB_TSB_LLL
+    notes: ''
+  GSM5065524:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: control
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_LLL_control_Multiome_ATAC
+    notes: ''
+  GSM5065525:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: control
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_LLL_control_Multiome_RNA
+    notes: ''
+  GSM5065526:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: control
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_LLL_control_Multiome_ADT
+    notes: ''
+  GSM5065527:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: stim
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_LLL_stim_Multiome_ATAC
+    notes: ''
+  GSM5065528:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: stim
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_LLL_stim_Multiome_RNA
+    notes: ''
+  GSM5065529:
+    protocol: DOGMA
+    permeabilization: LLL
+    stim: stim
+    in_scope_for_aivc_e2: null
+    title_for_reference: CD28_CD3_LLL_stim_Multiome_ADT
+    notes: ''
+  GSM4732118:
+    protocol: DOGMA
+    permeabilization: OMNI
+    stim: null
+    in_scope_for_aivc_e2: null
+    title_for_reference: AvsB_ATAC_OMNI
+    notes: ''
+  GSM4732120:
+    protocol: DOGMA
+    permeabilization: OMNI
+    stim: null
+    in_scope_for_aivc_e2: null
+    title_for_reference: AvsB_TSA_OMNI
+    notes: ''
+  GSM4732122:
+    protocol: DOGMA
+    permeabilization: OMNI
+    stim: null
+    in_scope_for_aivc_e2: null
+    title_for_reference: AvsB_TSB_OMNI
+    notes: ''
+_instructions: 'Fill each GSM''s fields against Mimitou 2021 Supp Table 1 or Fig 1
+  sample labels. protocol: DOGMA | ASAP | CITE  (DOGMA for all entries in this skeleton)  permeabilization:
+  DIG | LLL | OMNI | null  (already inferred — confirm against paper)  stim: stim
+  | control | null  in_scope_for_aivc_e2: true | false  (false for OMNI samples unless
+  paper validates)'
+_priority_note: '18 GSMs require paper-lookup to promote from LOW→HIGH for E2-iextended
+  spec citation. Priority 1: LLL arm (n=9, largest). Priority 2: DIG arm (n=6). Priority
+  3: OMNI arm (n=3, likely out-of-scope).'
