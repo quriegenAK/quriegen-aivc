@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<MINiML
+   xmlns="http://www.ncbi.nlm.nih.gov/geo/info/MINiML"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.ncbi.nlm.nih.gov/geo/info/MINiML http://www.ncbi.nlm.nih.gov/geo/info/MINiML.xsd"
+   version="0.5.0" >
+
+  <Contributor iid="contrib1">
+    <Person><First>Allen Institute</First><Last>For Immunology</Last></Person>
+    <Email>xiaojun.li@alleninstitute.org</Email>
+    <Phone>2065487135</Phone>
+    <Organization>Allen Institute</Organization>
+    <Address>
+      <Line>615 Westlake Ave N, Seattle, WA</Line>
+      <City>Seattle</City>
+      <State>Washington</State>
+      <Zip-Code>98109</Zip-Code>
+      <Country>USA</Country>
+    </Address>
+  </Contributor>
+
+  <Contributor iid="contrib2">
+    <Person><First>Elliott</First><Last>Swanson</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib3">
+    <Person><First>Cara</First><Last>Lord</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib4">
+    <Person><First>Richard</First><Last>Green</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib5">
+    <Person><First>Thomas</First><Middle>F</Middle><Last>Bumol</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib6">
+    <Person><First>Lucas</First><Middle>T</Middle><Last>Graybuck</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib7">
+    <Person><First>Peter</First><Middle>J</Middle><Last>Skene</Last></Person>
+  </Contributor>
+
+  <Database iid="GEO">
+    <Name>Gene Expression Omnibus (GEO)</Name>
+    <Public-ID>GEO</Public-ID>
+    <Organization>NCBI NLM NIH</Organization>
+    <Web-Link>http://www.ncbi.nlm.nih.gov/geo</Web-Link>
+    <Email>geo@ncbi.nlm.nih.gov</Email>
+  </Database>
+
+  <Sample iid="GSM4784064">
+    <Accession database="GEO">GSM4784064</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784065">
+    <Accession database="GEO">GSM4784065</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784066">
+    <Accession database="GEO">GSM4784066</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784067">
+    <Accession database="GEO">GSM4784067</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784068">
+    <Accession database="GEO">GSM4784068</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784069">
+    <Accession database="GEO">GSM4784069</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784070">
+    <Accession database="GEO">GSM4784070</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784071">
+    <Accession database="GEO">GSM4784071</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784072">
+    <Accession database="GEO">GSM4784072</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784073">
+    <Accession database="GEO">GSM4784073</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784074">
+    <Accession database="GEO">GSM4784074</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784075">
+    <Accession database="GEO">GSM4784075</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784076">
+    <Accession database="GEO">GSM4784076</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784077">
+    <Accession database="GEO">GSM4784077</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784078">
+    <Accession database="GEO">GSM4784078</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784079">
+    <Accession database="GEO">GSM4784079</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784080">
+    <Accession database="GEO">GSM4784080</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784081">
+    <Accession database="GEO">GSM4784081</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784082">
+    <Accession database="GEO">GSM4784082</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784083">
+    <Accession database="GEO">GSM4784083</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784084">
+    <Accession database="GEO">GSM4784084</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784085">
+    <Accession database="GEO">GSM4784085</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784086">
+    <Accession database="GEO">GSM4784086</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784087">
+    <Accession database="GEO">GSM4784087</Accession>
+  </Sample>
+
+  <Sample iid="GSM4784088">
+    <Accession database="GEO">GSM4784088</Accession>
+  </Sample>
+
+  <Sample iid="GSM4949911">
+    <Accession database="GEO">GSM4949911</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123948">
+    <Accession database="GEO">GSM5123948</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123949">
+    <Accession database="GEO">GSM5123949</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123950">
+    <Accession database="GEO">GSM5123950</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123951">
+    <Accession database="GEO">GSM5123951</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123952">
+    <Accession database="GEO">GSM5123952</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123953">
+    <Accession database="GEO">GSM5123953</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123954">
+    <Accession database="GEO">GSM5123954</Accession>
+  </Sample>
+
+  <Sample iid="GSM5123955">
+    <Accession database="GEO">GSM5123955</Accession>
+  </Sample>
+
+  <Series iid="GSE158013">
+    <Status database="GEO">
+      <Submission-Date>2020-09-15</Submission-Date>
+      <Release-Date>2021-04-02</Release-Date>
+      <Last-Update-Date>2021-10-04</Last-Update-Date>
+    </Status>
+    <Title>Simultaneous trimodal single cell measurement of transcripts, epitopes, and chromatin accessibility using TEA-seq</Title>
+    <Accession database="GEO">GSE158013</Accession>
+    <Pubmed-ID>33835024</Pubmed-ID>
+    <Summary>
+Single-cell measurements of cellular characteristics have been instrumental in understanding the heterogeneous pathways that drive differentiation, cellular responses to signals, and human disease. Recent advances have allowed paired capture of protein abundance and transcriptomic state, but a lack of epigenetic information in these assays has left a missing link to gene regulation. Using the heterogeneous mixture of cells in human peripheral blood as a test case, we developed a novel scATAC-seq workflow that increases signal-to-noise and allows paired measurement of cell surface markers and chromatin accessibility: Integrated Cellular Indexing of Chromatin Landscape and Epitopes (ICICLE-seq). We extended this approach using a droplet-based multiomics platform to develop a trimodal assay that simultaneously measures Transcriptomics (scRNA-seq), Epitopes, and chromatin Accessibility (scATAC-seq) from thousands of single cells, which we term TEA-seq. Together, these multimodal single-cell assays provide a novel toolkit to identify type-specific gene regulation and expression grounded in phenotypically defined cell types.
+    </Summary>
+    <Overall-Design>
+PBMCs were profiled using a variety of multi-modal sequencing assays. We processed PBMCs through a number of single-cell and single-nuclei ATAC-seq protocols during development and identification of an optimized scATAC-seq assay. We processed PBMCs through our ICICLE-seq assay: a novel method for simultaneous profiling of chromatin accessibility and surface epitopes. We processed PBMCs through TEA-seq: a novel method for simulaneous single-cell profling of transcripts, epitopes, and chromatin accessiblity. As part of TEA-seq testing we prepared CITE-seq, scATAC-seq, single-cell and single-nuclei 10x Multiome ATAC + Gene Expression, and TEA-seq libraries from the same PBMC sample in parallel.
+
+**The submitter declares that the raw data are being deposited in dbGaP due to patient privacy concerns. dbGap: phs002316**
+    </Overall-Design>
+    <Type>Genome binding/occupancy profiling by high throughput sequencing</Type>
+    <Type>Expression profiling by high throughput sequencing</Type>
+    <Contributor-Ref ref="contrib2" position="1" />
+    <Contributor-Ref ref="contrib3" position="2" />
+    <Contributor-Ref ref="contrib4" position="3" />
+    <Contributor-Ref ref="contrib5" position="4" />
+    <Contributor-Ref ref="contrib6" position="5" />
+    <Contributor-Ref ref="contrib7" position="6" />
+    <Contact-Ref ref="contrib1" />
+    <Sample-Ref ref="GSM4784064" />
+    <Sample-Ref ref="GSM4784065" />
+    <Sample-Ref ref="GSM4784066" />
+    <Sample-Ref ref="GSM4784067" />
+    <Sample-Ref ref="GSM4784068" />
+    <Sample-Ref ref="GSM4784069" />
+    <Sample-Ref ref="GSM4784070" />
+    <Sample-Ref ref="GSM4784071" />
+    <Sample-Ref ref="GSM4784072" />
+    <Sample-Ref ref="GSM4784073" />
+    <Sample-Ref ref="GSM4784074" />
+    <Sample-Ref ref="GSM4784075" />
+    <Sample-Ref ref="GSM4784076" />
+    <Sample-Ref ref="GSM4784077" />
+    <Sample-Ref ref="GSM4784078" />
+    <Sample-Ref ref="GSM4784079" />
+    <Sample-Ref ref="GSM4784080" />
+    <Sample-Ref ref="GSM4784081" />
+    <Sample-Ref ref="GSM4784082" />
+    <Sample-Ref ref="GSM4784083" />
+    <Sample-Ref ref="GSM4784084" />
+    <Sample-Ref ref="GSM4784085" />
+    <Sample-Ref ref="GSM4784086" />
+    <Sample-Ref ref="GSM4784087" />
+    <Sample-Ref ref="GSM4784088" />
+    <Sample-Ref ref="GSM4949911" />
+    <Sample-Ref ref="GSM5123948" />
+    <Sample-Ref ref="GSM5123949" />
+    <Sample-Ref ref="GSM5123950" />
+    <Sample-Ref ref="GSM5123951" />
+    <Sample-Ref ref="GSM5123952" />
+    <Sample-Ref ref="GSM5123953" />
+    <Sample-Ref ref="GSM5123954" />
+    <Sample-Ref ref="GSM5123955" />
+    <Supplementary-Data type="TAR">
+ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE158nnn/GSE158013/suppl/GSE158013_RAW.tar
+    </Supplementary-Data>
+    <Relation type="BioProject" target="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA663623" />
+  </Series>
+
+</MINiML>

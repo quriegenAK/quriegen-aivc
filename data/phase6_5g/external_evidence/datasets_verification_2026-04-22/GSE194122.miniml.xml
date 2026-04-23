@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<MINiML
+   xmlns="http://www.ncbi.nlm.nih.gov/geo/info/MINiML"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.ncbi.nlm.nih.gov/geo/info/MINiML http://www.ncbi.nlm.nih.gov/geo/info/MINiML.xsd"
+   version="0.5.0" >
+
+  <Contributor iid="contrib1">
+    <Person><First>Daniel</First><Middle>B</Middle><Last>Burkhardt</Last></Person>
+    <Email>dburkhardt@cellarity.com</Email>
+    <Organization>Cellarity</Organization>
+    <Address>
+      <Line>101 South Street, 6th Floor</Line>
+      <City>Somerville</City>
+      <State>MA</State>
+      <Zip-Code>02145</Zip-Code>
+      <Country>USA</Country>
+    </Address>
+  </Contributor>
+
+  <Contributor iid="contrib2">
+    <Person><First>Malte</First><Middle>D</Middle><Last>Lücken</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib3">
+    <Person><First>Christopher</First><Last>Lance</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib4">
+    <Person><First>Robrecht</First><Last>Cannoodt</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib5">
+    <Person><First>Angela</First><Middle>O</Middle><Last>Pisco</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib6">
+    <Person><First>Smita</First><Last>Krishnaswamy</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib7">
+    <Person><First>Fabian</First><Middle>J</Middle><Last>Theis</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib8">
+    <Person><First>Jonathan</First><Middle>M</Middle><Last>Bloom</Last></Person>
+  </Contributor>
+
+  <Database iid="GEO">
+    <Name>Gene Expression Omnibus (GEO)</Name>
+    <Public-ID>GEO</Public-ID>
+    <Organization>NCBI NLM NIH</Organization>
+    <Web-Link>http://www.ncbi.nlm.nih.gov/geo</Web-Link>
+    <Email>geo@ncbi.nlm.nih.gov</Email>
+  </Database>
+
+  <Sample iid="GSM5828456">
+    <Accession database="GEO">GSM5828456</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828457">
+    <Accession database="GEO">GSM5828457</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828458">
+    <Accession database="GEO">GSM5828458</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828459">
+    <Accession database="GEO">GSM5828459</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828460">
+    <Accession database="GEO">GSM5828460</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828461">
+    <Accession database="GEO">GSM5828461</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828462">
+    <Accession database="GEO">GSM5828462</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828463">
+    <Accession database="GEO">GSM5828463</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828464">
+    <Accession database="GEO">GSM5828464</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828465">
+    <Accession database="GEO">GSM5828465</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828466">
+    <Accession database="GEO">GSM5828466</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828467">
+    <Accession database="GEO">GSM5828467</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828468">
+    <Accession database="GEO">GSM5828468</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828469">
+    <Accession database="GEO">GSM5828469</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828470">
+    <Accession database="GEO">GSM5828470</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828471">
+    <Accession database="GEO">GSM5828471</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828472">
+    <Accession database="GEO">GSM5828472</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828473">
+    <Accession database="GEO">GSM5828473</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828474">
+    <Accession database="GEO">GSM5828474</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828475">
+    <Accession database="GEO">GSM5828475</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828476">
+    <Accession database="GEO">GSM5828476</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828477">
+    <Accession database="GEO">GSM5828477</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828478">
+    <Accession database="GEO">GSM5828478</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828479">
+    <Accession database="GEO">GSM5828479</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828480">
+    <Accession database="GEO">GSM5828480</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828481">
+    <Accession database="GEO">GSM5828481</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828482">
+    <Accession database="GEO">GSM5828482</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828483">
+    <Accession database="GEO">GSM5828483</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828484">
+    <Accession database="GEO">GSM5828484</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828485">
+    <Accession database="GEO">GSM5828485</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828486">
+    <Accession database="GEO">GSM5828486</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828487">
+    <Accession database="GEO">GSM5828487</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828488">
+    <Accession database="GEO">GSM5828488</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828489">
+    <Accession database="GEO">GSM5828489</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828490">
+    <Accession database="GEO">GSM5828490</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828491">
+    <Accession database="GEO">GSM5828491</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828492">
+    <Accession database="GEO">GSM5828492</Accession>
+  </Sample>
+
+  <Sample iid="GSM5828493">
+    <Accession database="GEO">GSM5828493</Accession>
+  </Sample>
+
+  <Series iid="GSE194122">
+    <Status database="GEO">
+      <Submission-Date>2022-01-21</Submission-Date>
+      <Release-Date>2022-01-24</Release-Date>
+      <Last-Update-Date>2022-04-25</Last-Update-Date>
+    </Status>
+    <Title>A sandbox for prediction and integration of DNA, RNA, and proteins in single cells</Title>
+    <Accession database="GEO">GSE194122</Accession>
+    <Citation>https://datasets-benchmarks-proceedings.neurips.cc/paper/2021/hash/158f3069a435b314a80bdcb024f8e422-Abstract-round2.html</Citation>
+    <Summary>
+Single-cell multiomics data collected from bone marrow mononuclear cells of 12 healthy human donors. Half the samples were measured using the 10X Multiome Gene Expression and Chromatin Accessability kit and half were measured using the 10X 3' Single-Cell Gene Expression kit with Feature Barcoding in combination with the BioLegend TotalSeq B Universal Human Panel v1.0.  The dataset was generated to support Multimodal Single-Cell Data Integration Challenge at NeurIPS 2021. Samples were prepared using a standard protocol at four sites. The resulting data was then annotated to identify cell types and remove doublets. The dataset was designed with a nested batch layout such that some donor samples were measured at multiple sites with some donors measured at a single site. In the competition, participants were tasked with challenges including modality prediction, matching profiles from different modalities, and learning a joint embedding from multiple modalities.
+    </Summary>
+    <Overall-Design>
+Single-cell multiomics data collected from bone marrow mononuclear cells of 12 healthy human donors.
+    </Overall-Design>
+    <Type>Expression profiling by high throughput sequencing</Type>
+    <Type>Genome binding/occupancy profiling by high throughput sequencing</Type>
+    <Contributor-Ref ref="contrib1" position="1" />
+    <Contributor-Ref ref="contrib2" position="2" />
+    <Contributor-Ref ref="contrib3" position="3" />
+    <Contributor-Ref ref="contrib4" position="4" />
+    <Contributor-Ref ref="contrib5" position="5" />
+    <Contributor-Ref ref="contrib6" position="6" />
+    <Contributor-Ref ref="contrib7" position="7" />
+    <Contributor-Ref ref="contrib8" position="8" />
+    <Contact-Ref ref="contrib1" />
+    <Sample-Ref ref="GSM5828456" />
+    <Sample-Ref ref="GSM5828457" />
+    <Sample-Ref ref="GSM5828458" />
+    <Sample-Ref ref="GSM5828459" />
+    <Sample-Ref ref="GSM5828460" />
+    <Sample-Ref ref="GSM5828461" />
+    <Sample-Ref ref="GSM5828462" />
+    <Sample-Ref ref="GSM5828463" />
+    <Sample-Ref ref="GSM5828464" />
+    <Sample-Ref ref="GSM5828465" />
+    <Sample-Ref ref="GSM5828466" />
+    <Sample-Ref ref="GSM5828467" />
+    <Sample-Ref ref="GSM5828468" />
+    <Sample-Ref ref="GSM5828469" />
+    <Sample-Ref ref="GSM5828470" />
+    <Sample-Ref ref="GSM5828471" />
+    <Sample-Ref ref="GSM5828472" />
+    <Sample-Ref ref="GSM5828473" />
+    <Sample-Ref ref="GSM5828474" />
+    <Sample-Ref ref="GSM5828475" />
+    <Sample-Ref ref="GSM5828476" />
+    <Sample-Ref ref="GSM5828477" />
+    <Sample-Ref ref="GSM5828478" />
+    <Sample-Ref ref="GSM5828479" />
+    <Sample-Ref ref="GSM5828480" />
+    <Sample-Ref ref="GSM5828481" />
+    <Sample-Ref ref="GSM5828482" />
+    <Sample-Ref ref="GSM5828483" />
+    <Sample-Ref ref="GSM5828484" />
+    <Sample-Ref ref="GSM5828485" />
+    <Sample-Ref ref="GSM5828486" />
+    <Sample-Ref ref="GSM5828487" />
+    <Sample-Ref ref="GSM5828488" />
+    <Sample-Ref ref="GSM5828489" />
+    <Sample-Ref ref="GSM5828490" />
+    <Sample-Ref ref="GSM5828491" />
+    <Sample-Ref ref="GSM5828492" />
+    <Sample-Ref ref="GSM5828493" />
+    <Supplementary-Data type="H5AD">
+ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE194nnn/GSE194122/suppl/GSE194122_openproblems_neurips2021_cite_BMMC_processed.h5ad.gz
+    </Supplementary-Data>
+    <Supplementary-Data type="H5AD">
+ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE194nnn/GSE194122/suppl/GSE194122_openproblems_neurips2021_multiome_BMMC_processed.h5ad.gz
+    </Supplementary-Data>
+    <Relation type="BioProject" target="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA799242" />
+  </Series>
+
+</MINiML>

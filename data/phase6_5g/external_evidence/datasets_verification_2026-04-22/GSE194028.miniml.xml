@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<MINiML
+   xmlns="http://www.ncbi.nlm.nih.gov/geo/info/MINiML"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.ncbi.nlm.nih.gov/geo/info/MINiML http://www.ncbi.nlm.nih.gov/geo/info/MINiML.xsd"
+   version="0.5.0" >
+
+  <Contributor iid="contrib1">
+    <Person><First>Stein</First><Last>Aerts</Last></Person>
+    <Email>stein.aerts@kuleuven.be</Email>
+    <Laboratory>Lab of Computational Biology</Laboratory>
+    <Organization>KU Leuven</Organization>
+    <Address>
+      <Line>O&amp;N4 Herestraat 49 PO Box 602</Line>
+      <City>Leuven</City>
+      <State>Vlaams-Brabant</State>
+      <Postal-Code>3000</Postal-Code>
+      <Country>Belgium</Country>
+    </Address>
+  </Contributor>
+
+  <Contributor iid="contrib2">
+    <Person><First>Florian</First><Last>De Rop</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib3">
+    <Person><First>Gert</First><Last>Hulselmans</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib4">
+    <Person><First>Chris</First><Last>Flerin</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib5">
+    <Person><First>Paula</First><Last>Soler-Vila</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib6">
+    <Person><First>Albert</First><Last>Rafels</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib7">
+    <Person><First>Valerie</First><Last>Christiaens</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib8">
+    <Person><First>Carmen</First><Middle>B</Middle><Last>González-Blas</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib9">
+    <Person><First>Domenica</First><Last>Marchese</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib10">
+    <Person><First>Ginevra</First><Last>Caratù</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib11">
+    <Person><First>Suresh</First><Last>Poovathingal</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib12">
+    <Person><First>Orit</First><Last>Rozenblatt-Rosen</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib13">
+    <Person><First>Michael</First><Last>Slyper</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib14">
+    <Person><First>Wendy</First><Last>Luo</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib15">
+    <Person><First>Christoph</First><Last>Muus</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib16">
+    <Person><First>Fabiana</First><Last>Duarte</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib17">
+    <Person><First>Rojesh</First><Last>Shrestha</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib18">
+    <Person><First>Tansu</First><Middle>S</Middle><Last>Bagdatli</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib19">
+    <Person><First>Ryan</First><Middle>M</Middle><Last>Corces</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib20">
+    <Person><First>Lira</First><Last>Mamanova</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib21">
+    <Person><First>Andrew</First><Last>Knights</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib22">
+    <Person><First>Kerstin</First><Middle>B</Middle><Last>Meyer</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib23">
+    <Person><First>Ryan</First><Last>Mulqueen</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib24">
+    <Person><First>Patrick</First><Last>Maschmeyer</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib25">
+    <Person><First>Akram</First><Last>Taherinasab</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib26">
+    <Person><First>Jörn</First><Last>Pezoldt</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib27">
+    <Person><First>Camille</First><Middle>L</Middle><Last>Lambert</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib28">
+    <Person><First>Marta</First><Last>Iglesias</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib29">
+    <Person><First>Sebastián</First><Middle>R</Middle><Last>Najle</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib30">
+    <Person><First>Zain</First><Middle>Y</Middle><Last>Dossani</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib31">
+    <Person><First>Luciano</First><Middle>G</Middle><Last>Martelotto</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib32">
+    <Person><First>Zach</First><Last>Burkett</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib33">
+    <Person><First>Ronald</First><Last>Lebofsky</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib34">
+    <Person><First>José</First><Middle>I</Middle><Last>Martin-Subero</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib35">
+    <Person><First>Satish</First><Last>Pillai</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib36">
+    <Person><First>Arnau</First><Last>Sebé-Pedrós</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib37">
+    <Person><First>Bart</First><Last>Deplancke</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib38">
+    <Person><First>Sarah</First><Middle>A</Middle><Last>Teichmann</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib39">
+    <Person><First>Leif</First><Last>Ludwig</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib40">
+    <Person><First>Theodore</First><Middle>P</Middle><Last>Braun</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib41">
+    <Person><First>Andrew</First><Last>Adey</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib42">
+    <Person><First>William</First><Middle>J</Middle><Last>Greenleaf</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib43">
+    <Person><First>Jason</First><Last>Buenrostro</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib44">
+    <Person><First>Aviv</First><Last>Regev</Last></Person>
+  </Contributor>
+
+  <Contributor iid="contrib45">
+    <Person><First>Holger</First><Last>Heyn</Last></Person>
+  </Contributor>
+
+  <Database iid="GEO">
+    <Name>Gene Expression Omnibus (GEO)</Name>
+    <Public-ID>GEO</Public-ID>
+    <Organization>NCBI NLM NIH</Organization>
+    <Web-Link>http://www.ncbi.nlm.nih.gov/geo</Web-Link>
+    <Email>geo@ncbi.nlm.nih.gov</Email>
+  </Database>
+
+  <Sample iid="GSM7102945">
+    <Accession database="GEO">GSM7102945</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102946">
+    <Accession database="GEO">GSM7102946</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102947">
+    <Accession database="GEO">GSM7102947</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102948">
+    <Accession database="GEO">GSM7102948</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102949">
+    <Accession database="GEO">GSM7102949</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102950">
+    <Accession database="GEO">GSM7102950</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102951">
+    <Accession database="GEO">GSM7102951</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102952">
+    <Accession database="GEO">GSM7102952</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102953">
+    <Accession database="GEO">GSM7102953</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102954">
+    <Accession database="GEO">GSM7102954</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102955">
+    <Accession database="GEO">GSM7102955</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102956">
+    <Accession database="GEO">GSM7102956</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102957">
+    <Accession database="GEO">GSM7102957</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102958">
+    <Accession database="GEO">GSM7102958</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102959">
+    <Accession database="GEO">GSM7102959</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102960">
+    <Accession database="GEO">GSM7102960</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102961">
+    <Accession database="GEO">GSM7102961</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102962">
+    <Accession database="GEO">GSM7102962</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102963">
+    <Accession database="GEO">GSM7102963</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102964">
+    <Accession database="GEO">GSM7102964</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102965">
+    <Accession database="GEO">GSM7102965</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102966">
+    <Accession database="GEO">GSM7102966</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102967">
+    <Accession database="GEO">GSM7102967</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102968">
+    <Accession database="GEO">GSM7102968</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102969">
+    <Accession database="GEO">GSM7102969</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102970">
+    <Accession database="GEO">GSM7102970</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102971">
+    <Accession database="GEO">GSM7102971</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102972">
+    <Accession database="GEO">GSM7102972</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102973">
+    <Accession database="GEO">GSM7102973</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102974">
+    <Accession database="GEO">GSM7102974</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102975">
+    <Accession database="GEO">GSM7102975</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102976">
+    <Accession database="GEO">GSM7102976</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102977">
+    <Accession database="GEO">GSM7102977</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102978">
+    <Accession database="GEO">GSM7102978</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102979">
+    <Accession database="GEO">GSM7102979</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102980">
+    <Accession database="GEO">GSM7102980</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102981">
+    <Accession database="GEO">GSM7102981</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102982">
+    <Accession database="GEO">GSM7102982</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102983">
+    <Accession database="GEO">GSM7102983</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102984">
+    <Accession database="GEO">GSM7102984</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102985">
+    <Accession database="GEO">GSM7102985</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102986">
+    <Accession database="GEO">GSM7102986</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102987">
+    <Accession database="GEO">GSM7102987</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102988">
+    <Accession database="GEO">GSM7102988</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102989">
+    <Accession database="GEO">GSM7102989</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102990">
+    <Accession database="GEO">GSM7102990</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102991">
+    <Accession database="GEO">GSM7102991</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102992">
+    <Accession database="GEO">GSM7102992</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102993">
+    <Accession database="GEO">GSM7102993</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102994">
+    <Accession database="GEO">GSM7102994</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102995">
+    <Accession database="GEO">GSM7102995</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102996">
+    <Accession database="GEO">GSM7102996</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102997">
+    <Accession database="GEO">GSM7102997</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102998">
+    <Accession database="GEO">GSM7102998</Accession>
+  </Sample>
+
+  <Sample iid="GSM7102999">
+    <Accession database="GEO">GSM7102999</Accession>
+  </Sample>
+
+  <Sample iid="GSM7103000">
+    <Accession database="GEO">GSM7103000</Accession>
+  </Sample>
+
+  <Series iid="GSE194028">
+    <Status database="GEO">
+      <Submission-Date>2022-01-19</Submission-Date>
+      <Release-Date>2023-05-22</Release-Date>
+      <Last-Update-Date>2023-11-16</Last-Update-Date>
+    </Status>
+    <Title>Systematic benchmarking of single-cell ATAC sequencing protocols</Title>
+    <Accession database="GEO">GSE194028</Accession>
+    <Pubmed-ID>37537502</Pubmed-ID>
+    <Summary>
+We systematically benchmarked 8 single-cell ATAC sequencing technologies for their capacity to generate high-quality single-cell open chromatin profiles, and to elucidate the regulatory landscape of complex samples. Our study contains 47 individual human PBMC scATAC-seq experiments from a reference male and female donor. To streamline data analysis, we devised PUMATAC (https://github.com/aertslab/PUMATAC), a flexible and universal data analysis pipeline and best practices repository for scATAC-seq. Systematic technology-specific differences in sequencing library complexity and biases in tagmentation specificity were found to impact the accuracy of cell type annotation, genotype demultiplexing, peak calling, differential region accessibility, and motif enrichment. Together, our data forms a new scATAC-seq reference of more than 169, 000 PBMC cells with matched single-cell multiome and RNA-seq data.
+    </Summary>
+    <Overall-Design>
+We performed a systematic benchmark of 8 different scATAC-seq methods on human PBMC across 47 samples.
+
+Please note that the CellRanger output files have been added to the GSM7102992-GSM7103000 sample records on Nov 16, 2023, as the existing scRNA-seq upload format (a .h5ad file) is dependent on specific software to read.
+    </Overall-Design>
+    <Type>Genome binding/occupancy profiling by high throughput sequencing</Type>
+    <Type>Expression profiling by high throughput sequencing</Type>
+    <Contributor-Ref ref="contrib2" position="1" />
+    <Contributor-Ref ref="contrib3" position="2" />
+    <Contributor-Ref ref="contrib4" position="3" />
+    <Contributor-Ref ref="contrib5" position="4" />
+    <Contributor-Ref ref="contrib6" position="5" />
+    <Contributor-Ref ref="contrib7" position="6" />
+    <Contributor-Ref ref="contrib8" position="7" />
+    <Contributor-Ref ref="contrib9" position="8" />
+    <Contributor-Ref ref="contrib10" position="9" />
+    <Contributor-Ref ref="contrib11" position="10" />
+    <Contributor-Ref ref="contrib12" position="11" />
+    <Contributor-Ref ref="contrib13" position="12" />
+    <Contributor-Ref ref="contrib14" position="13" />
+    <Contributor-Ref ref="contrib15" position="14" />
+    <Contributor-Ref ref="contrib16" position="15" />
+    <Contributor-Ref ref="contrib17" position="16" />
+    <Contributor-Ref ref="contrib18" position="17" />
+    <Contributor-Ref ref="contrib19" position="18" />
+    <Contributor-Ref ref="contrib20" position="19" />
+    <Contributor-Ref ref="contrib21" position="20" />
+    <Contributor-Ref ref="contrib22" position="21" />
+    <Contributor-Ref ref="contrib23" position="22" />
+    <Contributor-Ref ref="contrib24" position="23" />
+    <Contributor-Ref ref="contrib25" position="24" />
+    <Contributor-Ref ref="contrib26" position="25" />
+    <Contributor-Ref ref="contrib27" position="26" />
+    <Contributor-Ref ref="contrib28" position="27" />
+    <Contributor-Ref ref="contrib29" position="28" />
+    <Contributor-Ref ref="contrib30" position="29" />
+    <Contributor-Ref ref="contrib31" position="30" />
+    <Contributor-Ref ref="contrib32" position="31" />
+    <Contributor-Ref ref="contrib33" position="32" />
+    <Contributor-Ref ref="contrib34" position="33" />
+    <Contributor-Ref ref="contrib35" position="34" />
+    <Contributor-Ref ref="contrib36" position="35" />
+    <Contributor-Ref ref="contrib37" position="36" />
+    <Contributor-Ref ref="contrib38" position="37" />
+    <Contributor-Ref ref="contrib39" position="38" />
+    <Contributor-Ref ref="contrib40" position="39" />
+    <Contributor-Ref ref="contrib41" position="40" />
+    <Contributor-Ref ref="contrib42" position="41" />
+    <Contributor-Ref ref="contrib43" position="42" />
+    <Contributor-Ref ref="contrib44" position="43" />
+    <Contributor-Ref ref="contrib1" position="44" />
+    <Contributor-Ref ref="contrib45" position="45" />
+    <Contact-Ref ref="contrib1" />
+    <Sample-Ref ref="GSM7102945" />
+    <Sample-Ref ref="GSM7102946" />
+    <Sample-Ref ref="GSM7102947" />
+    <Sample-Ref ref="GSM7102948" />
+    <Sample-Ref ref="GSM7102949" />
+    <Sample-Ref ref="GSM7102950" />
+    <Sample-Ref ref="GSM7102951" />
+    <Sample-Ref ref="GSM7102952" />
+    <Sample-Ref ref="GSM7102953" />
+    <Sample-Ref ref="GSM7102954" />
+    <Sample-Ref ref="GSM7102955" />
+    <Sample-Ref ref="GSM7102956" />
+    <Sample-Ref ref="GSM7102957" />
+    <Sample-Ref ref="GSM7102958" />
+    <Sample-Ref ref="GSM7102959" />
+    <Sample-Ref ref="GSM7102960" />
+    <Sample-Ref ref="GSM7102961" />
+    <Sample-Ref ref="GSM7102962" />
+    <Sample-Ref ref="GSM7102963" />
+    <Sample-Ref ref="GSM7102964" />
+    <Sample-Ref ref="GSM7102965" />
+    <Sample-Ref ref="GSM7102966" />
+    <Sample-Ref ref="GSM7102967" />
+    <Sample-Ref ref="GSM7102968" />
+    <Sample-Ref ref="GSM7102969" />
+    <Sample-Ref ref="GSM7102970" />
+    <Sample-Ref ref="GSM7102971" />
+    <Sample-Ref ref="GSM7102972" />
+    <Sample-Ref ref="GSM7102973" />
+    <Sample-Ref ref="GSM7102974" />
+    <Sample-Ref ref="GSM7102975" />
+    <Sample-Ref ref="GSM7102976" />
+    <Sample-Ref ref="GSM7102977" />
+    <Sample-Ref ref="GSM7102978" />
+    <Sample-Ref ref="GSM7102979" />
+    <Sample-Ref ref="GSM7102980" />
+    <Sample-Ref ref="GSM7102981" />
+    <Sample-Ref ref="GSM7102982" />
+    <Sample-Ref ref="GSM7102983" />
+    <Sample-Ref ref="GSM7102984" />
+    <Sample-Ref ref="GSM7102985" />
+    <Sample-Ref ref="GSM7102986" />
+    <Sample-Ref ref="GSM7102987" />
+    <Sample-Ref ref="GSM7102988" />
+    <Sample-Ref ref="GSM7102989" />
+    <Sample-Ref ref="GSM7102990" />
+    <Sample-Ref ref="GSM7102991" />
+    <Sample-Ref ref="GSM7102992" />
+    <Sample-Ref ref="GSM7102993" />
+    <Sample-Ref ref="GSM7102994" />
+    <Sample-Ref ref="GSM7102995" />
+    <Sample-Ref ref="GSM7102996" />
+    <Sample-Ref ref="GSM7102997" />
+    <Sample-Ref ref="GSM7102998" />
+    <Sample-Ref ref="GSM7102999" />
+    <Sample-Ref ref="GSM7103000" />
+    <Supplementary-Data type="TAR">
+ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE194nnn/GSE194028/suppl/GSE194028_RAW.tar
+    </Supplementary-Data>
+    <Relation type="BioProject" target="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA798749" />
+  </Series>
+
+</MINiML>

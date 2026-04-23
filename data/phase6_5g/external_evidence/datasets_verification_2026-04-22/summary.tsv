@@ -1,0 +1,5 @@
+gse	modalities	build	source	stim	n_samples	pubmed	title
+GSE158013	RNA+ATAC+Protein	unknown	PBMC	-	34	33835024	Simultaneous trimodal single cell measurement of transcripts, epitopes, and chromatin accessibility using TEA-seq
+GSE194028	RNA+ATAC	unknown	PBMC	-	56	37537502	Systematic benchmarking of single-cell ATAC sequencing protocols
+GSE194122	RNA	unknown	BMMC	-	38	-	A sandbox for prediction and integration of DNA, RNA, and proteins in single cells
+GSE156478	NONE_DETECTED	unknown	unknown	-	52	34083792	High throughput joint profiling of chromatin accessibility and protein levels in single cells

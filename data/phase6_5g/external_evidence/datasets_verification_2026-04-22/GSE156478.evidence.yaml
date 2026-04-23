@@ -1,0 +1,21 @@
+# GEO evidence — GSE156478
+accession: GSE156478
+title: |
+  High throughput joint profiling of chromatin accessibility and protein levels in single cells
+pubmed_ids: ['34083792']
+platforms: []
+n_samples_geo: 52
+overall_design: |
+  Refer to individual Series
+heuristic:
+  modalities_detected: []
+  genome_build_detected: unknown
+  sample_source_detected: unknown
+  stim_detected: []
+supplementary_files_seen: []
+verification_status: PARTIAL  # manual review required for n_cells_post_qc, license
+manual_review_required:
+  - n_cells_post_qc (GEO MINiML does not expose; check paper/supp)
+  - license (check GEO page + associated repository)
+  - FASTQ gating (SRA dbGaP vs open)
+fetched_at: 2026-04-22
