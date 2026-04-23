@@ -1,0 +1,24 @@
+---
+# Paper-anchored GSM→arm map for GSE156478 (Mimitou 2021 Nat Biotechnol)
+# Source of truth: Mimitou 2021 Supp Table 1 (or Fig 1 sample labels).
+# Fill this in manually from the paper. Classifier reads this file and
+# promotes matched GSMs to confidence=HIGH.
+#
+# Rename from .TEMPLATE to .yaml (remove the .TEMPLATE suffix) to activate.
+#
+# Schema:
+# gsm_to_arm:
+#   GSM<id>:
+#     protocol: "DOGMA" | "ASAP" | "CITE"
+#     permeabilization: "DIG" | "LLL" | "OMNI" | null
+#     stim: "stim" | "control" | null
+#     notes: "Fig1 panel b sample 3"     # optional
+
+gsm_to_arm: {}
+
+# Example (delete when filling):
+#   GSM4732122:
+#     protocol: DOGMA
+#     permeabilization: LLL
+#     stim: control
+#     notes: "Mimitou 2021 Supp Table 1 row X"

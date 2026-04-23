@@ -18,11 +18,18 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732109/suppl/GSM4732109_CD28_CD3_control_ASAP_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "asap",
+      "atac",
+      "cd28",
+      "cd3",
+      "control"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "ASAP",
+      "evidence": "token:asap",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -31,10 +38,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -42,7 +49,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -64,11 +71,18 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732110/suppl/GSM4732110_CD28_CD3_control_ASAP_ADT.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "asap",
+      "cd28",
+      "cd3",
+      "control"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "ASAP",
+      "evidence": "token:asap",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -77,10 +91,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -88,7 +102,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -110,11 +124,18 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732111/suppl/GSM4732111_CD28_CD3_stim_ASAP_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "asap",
+      "atac",
+      "cd28",
+      "cd3",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "ASAP",
+      "evidence": "token:asap",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -124,9 +145,9 @@
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -134,7 +155,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -156,11 +177,18 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732112/suppl/GSM4732112_CD28_CD3_stim_ASAP_ADT.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "asap",
+      "cd28",
+      "cd3",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "ASAP",
+      "evidence": "token:asap",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -170,9 +198,9 @@
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -180,7 +208,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -204,11 +232,18 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_features.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732113/suppl/GSM4732113_CD28_CD3_control_CITE_GEX_matrix.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "cd28",
+      "cd3",
+      "cite",
+      "control",
+      "gex"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "CITE",
+      "evidence": "token:cite",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -217,10 +252,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -228,7 +263,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -250,11 +285,18 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732114/suppl/GSM4732114_CD28_CD3_control_CITE_ADT.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "cd28",
+      "cd3",
+      "cite",
+      "control"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "CITE",
+      "evidence": "token:cite",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -263,10 +305,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -274,7 +316,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -298,11 +340,18 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_features.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732115/suppl/GSM4732115_CD28_CD3_stim_CITE_GEX_matrix.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "cd28",
+      "cd3",
+      "cite",
+      "gex",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "CITE",
+      "evidence": "token:cite",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -312,9 +361,9 @@
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -322,7 +371,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -344,11 +393,18 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732116/suppl/GSM4732116_CD28_CD3_stim_CITE_ADT.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "cd28",
+      "cd3",
+      "cite",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "CITE",
+      "evidence": "token:cite",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "permeabilization": {
       "value": null,
@@ -358,9 +414,9 @@
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -368,7 +424,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -388,17 +444,22 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732117/suppl/GSM4732117_AvsB_ATAC_LLL_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "avsb",
+      "lll"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": null,
@@ -412,7 +473,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -432,17 +493,22 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732118/suppl/GSM4732118_AvsB_ATAC_OMNI_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "avsb",
+      "omni"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=OMNI (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "OMNI",
+      "evidence": "token:omni",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": null,
@@ -456,7 +522,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -476,17 +542,22 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732119/suppl/GSM4732119_AvsB_TSA_LLL.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "avsb",
+      "lll",
+      "tsa"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": null,
@@ -500,7 +571,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -520,17 +591,22 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732120/suppl/GSM4732120_AvsB_TSA_OMNI.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "avsb",
+      "omni",
+      "tsa"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=OMNI (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "OMNI",
+      "evidence": "token:omni",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": null,
@@ -544,7 +620,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -564,17 +640,22 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732121/suppl/GSM4732121_AvsB_TSB_LLL.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "avsb",
+      "lll",
+      "tsb"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": null,
@@ -588,7 +669,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -608,17 +689,22 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732122/suppl/GSM4732122_AvsB_TSB_OMNI.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "avsb",
+      "omni",
+      "tsb"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=OMNI (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "OMNI",
+      "evidence": "token:omni",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": null,
@@ -632,7 +718,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -652,6 +738,11 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732123/suppl/GSM4732123_Broad_LibA_ATAC_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "broad",
+      "liba"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -659,10 +750,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -676,7 +767,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -696,6 +787,11 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732124/suppl/GSM4732124_Broad_LibB_ADT.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "broad",
+      "libb"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -703,10 +799,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -720,7 +816,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -740,6 +836,11 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732125/suppl/GSM4732125_Broad_LibB_ATAC_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "broad",
+      "libb"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -747,10 +848,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -764,7 +865,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -784,6 +885,11 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732126/suppl/GSM4732126_Broad_LibC_ATAC_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "broad",
+      "libc"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -791,10 +897,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -808,7 +914,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -828,6 +934,11 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732127/suppl/GSM4732127_Broad_LibC_HTO.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "broad",
+      "hto",
+      "libc"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -835,10 +946,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -852,7 +963,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -872,6 +983,10 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732128/suppl/GSM4732128_Intra_ATAC_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "intra"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -896,7 +1011,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -916,6 +1031,10 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732129/suppl/GSM4732129_Intra_TSA.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "intra",
+      "tsa"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -940,7 +1059,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -960,6 +1079,10 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732130/suppl/GSM4732130_Intra_TSB.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "intra",
+      "tsb"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -984,7 +1107,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1006,6 +1129,10 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732131/suppl/GSM4732131_SpeciesMix1_QC.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "speciesmix1"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1030,7 +1157,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1052,6 +1179,10 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732132/suppl/GSM4732132_SpeciesMix1_ATAC_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "speciesmix1"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1076,7 +1207,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1098,6 +1229,10 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732133/suppl/GSM4732133_SpeciesMix2_QC.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "speciesmix2"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1122,7 +1257,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1144,6 +1279,10 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732134/suppl/GSM4732134_SpeciesMix2_ATAC_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "speciesmix2"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1168,7 +1307,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1189,6 +1328,12 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732135/suppl/GSM4732135_Perturb_CD4_stim_AD1.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "ad1",
+      "cd4",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1202,10 +1347,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1213,7 +1358,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1234,6 +1379,12 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732136/suppl/GSM4732136_Perturb_CD4_stim_AD2.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "ad2",
+      "cd4",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1247,10 +1398,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1258,7 +1409,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1279,6 +1430,12 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732137/suppl/GSM4732137_Perturb_CD4_stim_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "cd4",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1292,10 +1449,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1303,7 +1460,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1324,6 +1481,12 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732138/suppl/GSM4732138_Perturb_CD4_stim_HT1.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "cd4",
+      "ht1",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1337,10 +1500,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1348,7 +1511,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1369,6 +1532,12 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732139/suppl/GSM4732139_Perturb_CD4_stim_HT2.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "cd4",
+      "ht2",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1382,10 +1551,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1393,7 +1562,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1415,6 +1584,11 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732140/suppl/GSM4732140_Human_BoneMarrow_hg19_fragments.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732140/suppl/GSM4732140_Human_BoneMarrow_hg38_fragments.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "bonemarrow",
+      "human"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1422,10 +1596,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -1439,7 +1613,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1460,6 +1634,11 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732141/suppl/GSM4732141_Human_BoneMarrow_ADT.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "bonemarrow",
+      "human"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1467,10 +1646,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -1484,7 +1663,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1505,6 +1684,11 @@
     "supplementary_files": [
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM4732nnn/GSM4732142/suppl/GSM4732142_Human_BoneMarrow_HTO.tsv.gz\n    "
     ],
+    "title_tokens": [
+      "bonemarrow",
+      "hto",
+      "human"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -1512,10 +1696,10 @@
       "confidence": "UNKNOWN"
     },
     "permeabilization": {
-      "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "value": null,
+      "evidence": null,
+      "source_field": null,
+      "confidence": "UNKNOWN"
     },
     "stim": {
       "value": null,
@@ -1529,7 +1713,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1552,23 +1736,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065524/suppl/GSM5065524_LLL_CTRL_fragments.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065524/suppl/GSM5065524_LLL_CTRL_per_barcode_metrics.csv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "cd28",
+      "cd3",
+      "control",
+      "lll",
+      "multiome"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1576,7 +1768,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1600,23 +1792,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_features.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065525/suppl/GSM5065525_LLL_CTRL_GExp_ATAC_filtered_matrix.mtx.gz\n    "
     ],
+    "title_tokens": [
+      "cd28",
+      "cd3",
+      "control",
+      "lll",
+      "multiome",
+      "rna"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1624,7 +1824,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1648,23 +1848,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.mtx.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065526/suppl/GSM5065526_LLL_ctrl_ADT_allCounts.proteins.txt.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "cd28",
+      "cd3",
+      "control",
+      "lll",
+      "multiome"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1672,7 +1880,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1695,23 +1903,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065527/suppl/GSM5065527_LLL_STIM_fragments.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065527/suppl/GSM5065527_LLL_STIM_per_barcode_metrics.csv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "cd28",
+      "cd3",
+      "lll",
+      "multiome",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1719,7 +1935,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1743,23 +1959,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_features.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065528/suppl/GSM5065528_LLL_STIM_GExp_ATAC_filtered_matrix.mtx.gz\n    "
     ],
+    "title_tokens": [
+      "cd28",
+      "cd3",
+      "lll",
+      "multiome",
+      "rna",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1767,7 +1991,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1791,23 +2015,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.mtx.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065529/suppl/GSM5065529_LLL_stim_ADT_allCounts.proteins.txt.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "cd28",
+      "cd3",
+      "lll",
+      "multiome",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=LLL (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "LLL",
-      "evidence": "lll",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:lll",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1815,7 +2047,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1838,23 +2070,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065530/suppl/GSM5065530_DIG_CTRL_fragments.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065530/suppl/GSM5065530_DIG_CTRL_per_barcode_metrics.csv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "cd28",
+      "cd3",
+      "control",
+      "dig",
+      "multiome"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=DIG (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "DIG",
-      "evidence": "dig",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:dig",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1862,7 +2102,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1886,23 +2126,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_features.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065531/suppl/GSM5065531_DIG_CTRL_GExp_ATAC_filtered_matrix.mtx.gz\n    "
     ],
+    "title_tokens": [
+      "cd28",
+      "cd3",
+      "control",
+      "dig",
+      "multiome",
+      "rna"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=DIG (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "DIG",
-      "evidence": "dig",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:dig",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1910,7 +2158,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1934,23 +2182,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.mtx.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065532/suppl/GSM5065532_DIG_ctrl_ADT_allCounts.proteins.txt.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "cd28",
+      "cd3",
+      "control",
+      "dig",
+      "multiome"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=DIG (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "DIG",
-      "evidence": "dig",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:dig",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "control",
+      "evidence": "token:control",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -1958,7 +2214,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -1981,23 +2237,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065533/suppl/GSM5065533_DIG_STIM_fragments.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065533/suppl/GSM5065533_DIG_STIM_per_barcode_metrics.csv.gz\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "cd28",
+      "cd3",
+      "dig",
+      "multiome",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=DIG (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "DIG",
-      "evidence": "dig",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:dig",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2005,7 +2269,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2029,23 +2293,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_features.tsv.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065534/suppl/GSM5065534_DIG_STIM_GExp_ATAC_filtered_matrix.mtx.gz\n    "
     ],
+    "title_tokens": [
+      "cd28",
+      "cd3",
+      "dig",
+      "multiome",
+      "rna",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=DIG (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "DIG",
-      "evidence": "dig",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:dig",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2053,7 +2325,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2077,23 +2349,31 @@
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.mtx.gz\n    ",
       "\nftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5065nnn/GSM5065535/suppl/GSM5065535_DIG_stim_ADT_allCounts.proteins.txt.gz\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "cd28",
+      "cd3",
+      "dig",
+      "multiome",
+      "stim"
+    ],
     "protocol": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "DOGMA",
+      "evidence": "inferred from permeabilization=DIG (no explicit ASAP/CITE/DOGMA token in title)",
+      "source_field": "inferred:Sample/Title.permeabilization_token",
+      "confidence": "LOW"
     },
     "permeabilization": {
       "value": "DIG",
-      "evidence": "dig",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:dig",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "stim": {
       "value": "stim",
-      "evidence": "anti-cd3",
-      "source_field": "Sample/Characteristics",
-      "confidence": "LOW"
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2101,7 +2381,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2121,6 +2401,14 @@
     "supplementary_files": [
       "\nNONE\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "c6",
+      "cd4",
+      "intra",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -2134,10 +2422,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2145,7 +2433,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2165,6 +2453,14 @@
     "supplementary_files": [
       "\nNONE\n    "
     ],
+    "title_tokens": [
+      "adt",
+      "cd4",
+      "d6",
+      "intra",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -2178,10 +2474,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2189,7 +2485,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2209,6 +2505,14 @@
     "supplementary_files": [
       "\nNONE\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "c6",
+      "cd4",
+      "intra",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -2222,10 +2526,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2233,7 +2537,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2253,6 +2557,14 @@
     "supplementary_files": [
       "\nNONE\n    "
     ],
+    "title_tokens": [
+      "atac",
+      "cd4",
+      "d6",
+      "intra",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -2266,10 +2578,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2277,7 +2589,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2297,6 +2609,14 @@
     "supplementary_files": [
       "\nNONE\n    "
     ],
+    "title_tokens": [
+      "c6",
+      "cd4",
+      "hto",
+      "intra",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -2310,10 +2630,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2321,7 +2641,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   },
   {
@@ -2341,6 +2661,14 @@
     "supplementary_files": [
       "\nNONE\n    "
     ],
+    "title_tokens": [
+      "cd4",
+      "d6",
+      "hto",
+      "intra",
+      "perturb",
+      "stim"
+    ],
     "protocol": {
       "value": null,
       "evidence": null,
@@ -2354,10 +2682,10 @@
       "confidence": "UNKNOWN"
     },
     "stim": {
-      "value": null,
-      "evidence": null,
-      "source_field": null,
-      "confidence": "UNKNOWN"
+      "value": "stim",
+      "evidence": "token:stim",
+      "source_field": "Sample/Title",
+      "confidence": "MEDIUM"
     },
     "n_cells_hint": {
       "value": null,
@@ -2365,7 +2693,7 @@
       "source_field": null,
       "confidence": "UNKNOWN",
       "is_authoritative": false,
-      "caveat": "heuristic regex over free text; paper pass authoritative"
+      "caveat": "no numeric hint found; paper pass required"
     }
   }
 ]
