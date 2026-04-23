@@ -82,3 +82,10 @@ probe_coverage_history:
       url: FETCH_FAILED
       n_hits: -1
       note: Accept:application/json + endpoint variants
+gate_template_reference:
+  canonical: data/phase6_5g/scan/diagnostics/gate_template_v2.sh
+  fixes_from_v1:
+  - 'check-7 inline-YAML parse (was: head -2 | tail -1 → read wrong line)'
+  - check-7c exclude MANUAL:* ledger rows from automated-fail assertion
+  - adds check-7b (YAML self-consistency between probe_coverage.executed and URL/n_hits)
+  source_phase: phase-6.5g.1
