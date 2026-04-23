@@ -48,7 +48,28 @@ probe_coverage:
   manual_probes_flagged:
   - C4
   - C8
-  rerun_2026_04_23:
+  rerun_2026_04_23_v2:
+    C5_hca:
+      url: https://service.azul.data.humancellatlas.org/index/projects?catalog=dcp58&size=75&filters=%7B%22genusSpecies%22%3A%20%7B%22is%22%3A%20%5B%22Homo%20sapiens%22%5D%7D%2C%20%22sampleEntityType%22%3A%20%7B%22is%22%3A%20%5B%22cellLines%22%5D%7D%7D
+      n_hits: 0
+      note: size=75 (capped by Azul API)
+    C6_encode:
+      url: https://www.encodeproject.org/search/?type=Experiment&biosample_ontology.term_name=K562&searchTerm=multiome&format=json&limit=50
+      n_hits: 0
+      note: accepts HTTP 404 + @graph:[] as empty-result
+    C7_4dn:
+      url: https://data.4dnucleome.org/search/?type=ExperimentSetReplicate&searchTerm=K562+multiome&format=json&limit=50
+      n_hits: 0
+      note: accepts HTTP 404 + @graph:[] as empty-result
+  self_consistency_check: automated_probes_executed entries C5/C6/C7 correspond to
+    real URL executions with structured-JSON responses (n_hits >= 0).
+probe_coverage_history:
+- attempt: 1
+  label: rerun_2026_04_23 (v1, superseded)
+  result: FETCH_FAILED persisted for C5/C6/C7; fallback logic did not recognize success
+  root_cause: 'C5: size=100 exceeded HCA Azul cap (75). C6/C7: HTTP 404 with valid
+    JSON body + @graph:[] is SnoVault empty-result idiom, was misread as fetch failure.'
+  snapshot:
     C5_hca:
       url: FETCH_FAILED
       n_hits: -1
