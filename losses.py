@@ -14,6 +14,8 @@ All loss functions are documented, tested, and importable.
 import torch
 import torch.nn.functional as F
 
+from aivc.data.modality_mask import ModalityKey
+
 
 def log_fold_change_loss(
     predicted: torch.Tensor,
@@ -266,6 +268,7 @@ def combined_loss_multimodal(
     lambda_contrast: float = 0.05,
     lambda_cross: float = 0.05,
     lambda_causal: float = 0.1,
+    modality_mask: torch.Tensor = None,
 ) -> tuple:
     """
     Extended combined loss for multi-modal training.
@@ -297,13 +300,42 @@ def combined_loss_multimodal(
 
     # Term functions — each accepts **kwargs so the registry can pass a
     # superset of batch fields without breaking signature contracts.
-    def _mse_fn(predicted, actual_stim, **_):
+    #
+    # Day 2 additions: modality_mask gating on MSE / LFC / cosine / contrastive.
+    # Per D2 semantics, when modality_mask indicates the RNA column is all-zero
+    # for the batch, MSE/LFC/cosine silently return 0 contribution (they operate
+    # on the RNA-reconstruction axis). Contrastive returns 0 if fewer than 2
+    # modalities have any present cells in the batch.
+    # _l1_fn, _cross_modal_fn, _causal_fn are unchanged.
+    def _mse_fn(predicted, actual_stim, modality_mask=None, **_):
+        if modality_mask is not None:
+            rna_present = modality_mask[:, int(ModalityKey.RNA)]
+            if float(rna_present.sum()) < 1.0:
+                return torch.zeros((), device=predicted.device, requires_grad=True)
+            w = rna_present.unsqueeze(-1)  # (B, 1)
+            sq = (predicted - actual_stim) ** 2 * w
+            denom = w.expand_as(sq).sum().clamp_min(1.0)
+            return sq.sum() / denom
         return F.mse_loss(predicted, actual_stim)
 
-    def _lfc_fn(predicted, actual_stim, actual_ctrl, **_):
+    def _lfc_fn(predicted, actual_stim, actual_ctrl, modality_mask=None, **_):
+        if modality_mask is not None:
+            rna_present = modality_mask[:, int(ModalityKey.RNA)]
+            if float(rna_present.sum()) < 1.0:
+                return torch.zeros((), device=predicted.device, requires_grad=True)
+            keep = rna_present.bool()
+            return log_fold_change_loss(
+                predicted[keep], actual_stim[keep], actual_ctrl[keep],
+            )
         return log_fold_change_loss(predicted, actual_stim, actual_ctrl)
 
-    def _cosine_fn(predicted, actual_stim, **_):
+    def _cosine_fn(predicted, actual_stim, modality_mask=None, **_):
+        if modality_mask is not None:
+            rna_present = modality_mask[:, int(ModalityKey.RNA)]
+            if float(rna_present.sum()) < 1.0:
+                return torch.zeros((), device=predicted.device, requires_grad=True)
+            keep = rna_present.bool()
+            return cosine_loss(predicted[keep], actual_stim[keep])
         return cosine_loss(predicted, actual_stim)
 
     def _l1_fn(predicted, neumann_module=None, **_):
@@ -311,13 +343,22 @@ def combined_loss_multimodal(
             return neumann_module.l1_penalty()
         return torch.tensor(0.0, device=predicted.device)
 
-    def _contrastive_fn(predicted, emb_pairs=None, contrastive_loss_fn=None, **_):
+    def _contrastive_fn(
+        predicted, emb_pairs=None, contrastive_loss_fn=None,
+        modality_mask=None, **_,
+    ):
         term = torch.tensor(0.0, device=predicted.device)
-        if emb_pairs is not None and contrastive_loss_fn is not None:
-            for emb_a, emb_b in emb_pairs:
-                term = term + contrastive_loss_fn(emb_a, emb_b)
-            if len(emb_pairs) > 0:
-                term = term / len(emb_pairs)
+        if emb_pairs is None or contrastive_loss_fn is None:
+            return term
+        # D2: skip contrastive if <2 modalities have any present cells
+        if modality_mask is not None:
+            n_present_modalities = int((modality_mask.sum(dim=0) > 0).sum().item())
+            if n_present_modalities < 2:
+                return term
+        for emb_a, emb_b in emb_pairs:
+            term = term + contrastive_loss_fn(emb_a, emb_b)
+        if len(emb_pairs) > 0:
+            term = term / len(emb_pairs)
         return term
 
     def _cross_modal_fn(predicted, emb_pairs=None, cross_modal_fn=None, **_):
@@ -356,6 +397,7 @@ def combined_loss_multimodal(
         contrastive_loss_fn=contrastive_loss_fn,
         cross_modal_fn=cross_modal_fn,
         attn_weights=attn_weights,
+        modality_mask=modality_mask,
     )
 
     breakdown = {
@@ -370,6 +412,76 @@ def combined_loss_multimodal(
     }
 
     return total, breakdown
+
+
+def _dogma_pretrain_loss(
+    rna_recon: torch.Tensor,
+    rna_target: torch.Tensor,
+    atac_recon: torch.Tensor,
+    atac_target: torch.Tensor,
+    protein_recon: torch.Tensor,
+    protein_target: torch.Tensor,
+    z_rna: torch.Tensor,
+    z_atac: torch.Tensor,
+    z_protein: torch.Tensor,
+    modality_mask: torch.Tensor,
+    rna_mask: torch.Tensor = None,
+    atac_mask: torch.Tensor = None,
+    protein_mask: torch.Tensor = None,
+    infonce_temperature: float = 0.1,
+    w_rna: float = 1.0,
+    w_atac: float = 1.0,
+    w_protein: float = 1.0,
+    w_triad: float = 0.5,
+) -> tuple:
+    """DOGMA pretrain loss — 3-modal reconstruction + 3-way InfoNCE.
+
+    Composition:
+      w_rna     * masked_rna_recon
+    + w_atac    * masked_atac_recon
+    + w_protein * masked_protein_recon       (D2 mask-gated)
+    + w_triad   * cross_modal_infonce_triad  (D1 pairwise-average)
+
+    NO Neumann L1 (DOGMA is pretrain, not causal).
+    NO causal_ordering term (same reason).
+
+    Registers under stage="pretrain" via LossRegistry. Each term name
+    passes _guard_pretrain_name (causal-adjacent substring guard) at
+    registration — defense-in-depth per the Phase 5 PR contract.
+    """
+    from aivc.training.loss_registry import LossRegistry, LossTerm
+    from aivc.training.pretrain_losses import (
+        _masked_rna_recon,
+        _masked_atac_recon,
+        _masked_protein_recon,
+        _cross_modal_infonce_triad,
+        _guard_pretrain_name,
+    )
+
+    spec = (
+        ("masked_rna_recon",          _masked_rna_recon,          w_rna),
+        ("masked_atac_recon",         _masked_atac_recon,         w_atac),
+        ("masked_protein_recon",      _masked_protein_recon,      w_protein),
+        ("cross_modal_infonce_triad", _cross_modal_infonce_triad, w_triad),
+    )
+    registry = LossRegistry()
+    for name, fn, weight in spec:
+        _guard_pretrain_name(name)
+        registry.register(LossTerm(name=name, fn=fn, weight=weight, stage="pretrain"))
+
+    total, components = registry.compute(
+        stage="pretrain",
+        predicted=rna_recon,  # device-fallback anchor for all-skip edge case
+        rna_recon=rna_recon, rna_target=rna_target, rna_mask=rna_mask,
+        atac_recon=atac_recon, atac_target=atac_target, atac_mask=atac_mask,
+        protein_recon=protein_recon, protein_target=protein_target,
+        protein_mask=protein_mask,
+        z_rna=z_rna, z_atac=z_atac, z_protein=z_protein,
+        modality_mask=modality_mask,
+        infonce_temperature=infonce_temperature,
+    )
+    components["total"] = total.item() if isinstance(total, torch.Tensor) else float(total)
+    return total, components
 
 
 # =========================================================================
