@@ -1,0 +1,10 @@
+{
+  "source_url": "https://raw.githubusercontent.com/caleblareau/asap_reproducibility/master/pbmc_stim_multiome/output/pairs_of_wnn.tsv",
+  "sha256": "29a7565e15e23761c41af3c3e99d24f3c1ca0acb2c8ef19323e51a23a674ee0e",
+  "rows_total": 13763,
+  "LLL_CTRL_n": 7624,
+  "LLL_STIM_n": 6139,
+  "DIG_CTRL_n_in_file": 0,
+  "DIG_STIM_n_in_file": 0,
+  "note": "LLL-only 3WNN output, not LLL+DIG joint."
+}
