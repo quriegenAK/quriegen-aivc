@@ -65,6 +65,28 @@ RESPONSE_TRAINING_DATASETS = {"kang", "pbmc_ifng"}
 W_PRETRAIN_ONLY_DATASETS = {"frangieh", "immport", "replogle"}
 
 
+
+def _stamp_modality_tags(
+    adata,
+    *,
+    has_rna: bool = False,
+    has_atac: bool = False,
+    has_protein: bool = False,
+    has_phospho: bool = False,
+):
+    """Stamp boolean modality-presence columns on AnnData.obs (DD4).
+
+    Required by aivc.data.modality_mask.mask_from_obs to derive per-cell
+    modality_mask at batch-construction time. Every loader must stamp
+    these 4 columns explicitly; build_combined_corpus enforces presence.
+    """
+    adata.obs["has_rna"] = has_rna
+    adata.obs["has_atac"] = has_atac
+    adata.obs["has_protein"] = has_protein
+    adata.obs["has_phospho"] = has_phospho
+    return adata
+
+
 class MultiPerturbationLoader:
     """
     Unified data loader for multi-perturbation training corpus.
@@ -129,6 +151,7 @@ class MultiPerturbationLoader:
         )
         adata.obs["USE_FOR_W_ONLY"] = False
         adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
+        _stamp_modality_tags(adata, has_rna=True)
 
         n_test = adata.obs["in_test_set"].sum()
         logger.info(f"  Test cells (locked): {n_test}")
@@ -195,6 +218,7 @@ class MultiPerturbationLoader:
         adata.obs["USE_FOR_W_ONLY"] = True
         adata.obs["use_for_response_training"] = False
         adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
+        _stamp_modality_tags(adata, has_rna=True)
 
         if "cell_type" not in adata.obs.columns:
             adata.obs["cell_type"] = "melanoma"
@@ -262,6 +286,7 @@ class MultiPerturbationLoader:
         adata.obs["USE_FOR_W_ONLY"] = True
         adata.obs["condition"] = "ctrl"
         adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
+        _stamp_modality_tags(adata, has_rna=True)
 
         # Normalise
         sc.pp.normalize_total(adata, target_sum=1e4)
@@ -483,6 +508,7 @@ class MultiPerturbationLoader:
         adata.obs["USE_FOR_W_ONLY"] = False
         adata.obs["use_for_response_training"] = True
         adata.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
+        _stamp_modality_tags(adata, has_rna=True)
 
         if "donor_id" not in adata.obs.columns:
             donor_col = next(
@@ -545,6 +571,7 @@ class MultiPerturbationLoader:
         adata_synth.obs["SYNTHETIC_IFNG"] = True
         adata_synth.obs["dataset_kind"] = DatasetKind.INTERVENTIONAL.value
         adata_synth.uns["synthetic_ifng"] = True
+        _stamp_modality_tags(adata_synth, has_rna=True)
 
         logger.warning(f"Synthetic IFN-G: {adata_synth.n_obs} cells. OAS1/OAS2 scaled 50%.")
         self._datasets["pbmc_ifng"] = adata_synth
@@ -597,13 +624,18 @@ class MultiPerturbationLoader:
         required_cols = [
             "perturbation_id", "dataset_id", "donor_id",
             "in_test_set", "USE_FOR_W_ONLY",
+            # DD4: modality-presence tags enable downstream mask_from_obs()
+            "has_rna", "has_atac", "has_protein", "has_phospho",
         ]
         # Map parts (positional) back to their loader name for error messages.
         _loader_name_by_id = {id(v): k for k, v in self._datasets.items()}
         for part in parts:
             for col in required_cols:
                 if col not in part.obs.columns:
-                    part.obs[col] = False if col.startswith(("in_", "USE_")) else 0
+                    # Boolean defaults for in_*, USE_*, has_* columns; else 0
+                    part.obs[col] = (
+                        False if col.startswith(("in_", "USE_", "has_")) else 0
+                    )
             # Phase 4 hardening: every source dataset must stamp
             # dataset_kind EXPLICITLY before concat. No silent fallback.
             if "dataset_kind" not in part.obs.columns:

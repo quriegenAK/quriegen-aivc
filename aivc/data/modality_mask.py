@@ -70,3 +70,30 @@ def build_mask(present: Set[ModalityKey], batch_size: int) -> torch.Tensor:
     for mk in present:
         row[int(mk)] = 1.0
     return row.unsqueeze(0).expand(batch_size, -1).clone()
+
+
+
+def mask_from_obs(obs_row) -> torch.Tensor:
+    """Build a (4,) modality_mask from boolean has_* columns of an obs row.
+
+    Reads has_rna / has_atac / has_protein / has_phospho from a pandas
+    Series, dict, or mapping-like obs row and returns the canonical
+    (4,) float mask tensor in TEMPORAL_ORDER. Missing columns default
+    to False (modality absent).
+
+    Used by collate / dataset wrappers to derive per-cell modality_mask
+    from the obs-column tags set by MultiPerturbationLoader._stamp_modality_tags.
+    """
+    def _get(key: str) -> bool:
+        try:
+            v = obs_row[key]
+        except (KeyError, TypeError, AttributeError):
+            return False
+        return bool(v)
+
+    present = set()
+    if _get("has_rna"):     present.add(ModalityKey.RNA)
+    if _get("has_atac"):    present.add(ModalityKey.ATAC)
+    if _get("has_protein"): present.add(ModalityKey.PROTEIN)
+    if _get("has_phospho"): present.add(ModalityKey.PHOSPHO)
+    return build_mask(present, batch_size=1).squeeze(0)
