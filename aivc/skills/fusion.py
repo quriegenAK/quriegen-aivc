@@ -33,6 +33,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
+from typing import Optional
 
 
 class TemporalCrossModalFusion(nn.Module):
@@ -119,6 +120,7 @@ class TemporalCrossModalFusion(nn.Module):
         phospho_emb: torch.Tensor = None,
         atac_emb: torch.Tensor = None,
         pert_id: torch.Tensor = None,
+        modality_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """
         Fuse modality embeddings via temporal cross-attention.
@@ -129,6 +131,12 @@ class TemporalCrossModalFusion(nn.Module):
             phospho_emb: (batch, phospho_dim) — optional, zero-filled if absent.
             atac_emb: (batch, atac_dim) — optional, zero-filled if absent.
             pert_id: (batch,) or scalar — perturbation index.
+            modality_mask: (batch, 4) bool/float tensor in TEMPORAL order
+                [ATAC, Phospho, RNA, Protein]. 1 = modality present for that
+                cell and contributes to attention; 0 = modality absent (row
+                and column masked to -inf, effectively excluded from
+                softmax). Default None = all 4 modalities present for all
+                cells (backward-compatible).
 
         Returns:
             (batch, output_dim) — fused 384-dim representation.
@@ -185,12 +193,35 @@ class TemporalCrossModalFusion(nn.Module):
         #   Phospho attends to: [ATAC, Phospho]
         #   RNA     attends to: [ATAC, Phospho, RNA]
         #   Protein attends to: [ATAC, Phospho, RNA, Protein]
+        # Base attention validity mask (n_mod, n_mod). Start with all-True;
+        # then AND in causal mask (if enabled) and modality_mask (if given).
         if self.use_causal_mask:
-            causal_mask = torch.tril(
+            base_mask = torch.tril(
                 torch.ones(n_mod, n_mod, device=device, dtype=torch.bool)
+            ).unsqueeze(0).unsqueeze(0)  # (1, 1, 4, 4)
+        else:
+            base_mask = torch.ones(
+                1, 1, n_mod, n_mod, device=device, dtype=torch.bool
             )
-            causal_mask = causal_mask.unsqueeze(0).unsqueeze(0)  # (1, 1, 4, 4)
-            attn_scores = attn_scores.masked_fill(~causal_mask, float('-inf'))
+
+        # Modality mask: absent modalities cannot be attended to (column)
+        # AND cannot attend out (row). Outer-product of presence vector.
+        if modality_mask is not None:
+            m = modality_mask.bool()
+            if m.shape != (batch_size, n_mod):
+                raise ValueError(
+                    f"modality_mask shape {tuple(m.shape)} != "
+                    f"({batch_size}, {n_mod}). Order is "
+                    f"[ATAC, Phospho, RNA, Protein]."
+                )
+            # (batch, n_mod, n_mod): (i, j) present iff both i and j present
+            m2d = m.unsqueeze(-1) & m.unsqueeze(-2)
+            m2d = m2d.unsqueeze(1)  # (batch, 1, n_mod, n_mod), broadcasts over heads
+            full_mask = base_mask & m2d
+        else:
+            full_mask = base_mask
+
+        attn_scores = attn_scores.masked_fill(~full_mask, float('-inf'))
         # ─────────────────────────────────────────────────────────
 
         attn_weights = F.softmax(attn_scores, dim=-1)
@@ -226,6 +257,7 @@ class TemporalCrossModalFusion(nn.Module):
         protein_emb: torch.Tensor = None,
         phospho_emb: torch.Tensor = None,
         atac_emb: torch.Tensor = None,
+        modality_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """
         Extract cross-modal attention weights for interpretability.
@@ -255,10 +287,22 @@ class TemporalCrossModalFusion(nn.Module):
         attn_scores = torch.matmul(q, k.transpose(-2, -1)) / scale
 
         if self.use_causal_mask:
-            causal_mask = torch.tril(
+            base_mask = torch.tril(
                 torch.ones(4, 4, device=device, dtype=torch.bool)
             ).unsqueeze(0).unsqueeze(0)
-            attn_scores = attn_scores.masked_fill(~causal_mask, float('-inf'))
+        else:
+            base_mask = torch.ones(1, 1, 4, 4, device=device, dtype=torch.bool)
+        if modality_mask is not None:
+            m = modality_mask.bool()
+            if m.shape != (batch_size, 4):
+                raise ValueError(
+                    f"modality_mask shape {tuple(m.shape)} != ({batch_size}, 4)."
+                )
+            m2d = (m.unsqueeze(-1) & m.unsqueeze(-2)).unsqueeze(1)
+            full_mask = base_mask & m2d
+        else:
+            full_mask = base_mask
+        attn_scores = attn_scores.masked_fill(~full_mask, float('-inf'))
 
         attn_weights = F.softmax(attn_scores, dim=-1)
         attn_weights = torch.nan_to_num(attn_weights, nan=0.0)
