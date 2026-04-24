@@ -200,6 +200,55 @@ class PairingCertificate:
         )
 
     @classmethod
+    def make_dogma_seq(cls) -> "PairingCertificate":
+        """Pre-built certificate for DOGMA-seq (Mimitou 2021, GSE156478).
+
+        All 3 pairs PHYSICAL at paired_fraction=1.0. Per Mimitou 2021
+        Methods: RNA + ATAC + ADT captured from the same 10x Multiome
+        droplet; barcode column shared across modalities. Validated
+        against pairs_of_wnn.tsv fidelity gate in
+        data/phase6_5g_2/external_evidence/dogma_ncells_measured_2026-04-23/.
+        """
+        return cls(
+            experiment_id="mimitou2021_dogma_pbmc_gse156478",
+            platform="DOGMA-seq (10x Multiome ATAC+GEX + TotalSeq-A n=210)",
+            created_by="Ash Khan",
+            creation_date="2026-04-23",
+            pairs=[
+                ModalityPair(
+                    modality_a="rna",
+                    modality_b="atac",
+                    pairing_type=PairingType.PHYSICAL,
+                    paired_fraction=1.0,
+                    barcode_col="barcode",
+                    protocol_ref="Mimitou 2021, Nat Biotechnol; 10x Chromium Multiome",
+                    validated_by="Ash Khan (paper Methods + pairs_of_wnn.tsv fidelity gate)",
+                    notes="Same droplet, same barcode. Validated via DOGMA n_cells reconstruction.",
+                ),
+                ModalityPair(
+                    modality_a="rna",
+                    modality_b="protein",
+                    pairing_type=PairingType.PHYSICAL,
+                    paired_fraction=1.0,
+                    barcode_col="barcode",
+                    protocol_ref="Mimitou 2021; TotalSeq-A (n=210) + ADT bridge oligo via CITE-seq chemistry",
+                    validated_by="Ash Khan",
+                    notes="DOGMA-seq arm of GSE156478. DIG + LLL permeabilization variants.",
+                ),
+                ModalityPair(
+                    modality_a="atac",
+                    modality_b="protein",
+                    pairing_type=PairingType.PHYSICAL,
+                    paired_fraction=1.0,
+                    barcode_col="barcode",
+                    protocol_ref="Mimitou 2021",
+                    validated_by="Ash Khan",
+                    notes="Same-cell ATAC + Protein via DOGMA permeabilization.",
+                ),
+            ],
+        )
+
+    @classmethod
     def make_quriegen_pending(cls) -> "PairingCertificate":
         """
         Placeholder certificate for QuRIE-seq (pending wet-lab confirmation).
