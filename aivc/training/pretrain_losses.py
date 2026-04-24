@@ -44,6 +44,7 @@ from aivc.training.loss_registry import (
     LossTerm,
     _PRETRAIN_FORBIDDEN_NAMES,
 )
+from aivc.data.modality_mask import ModalityKey
 
 
 # Four names registered by this module. Exposed for tests.
@@ -52,6 +53,16 @@ PRETRAIN_TERM_NAMES = (
     "masked_atac_recon",
     "cross_modal_infonce",
     "peak_to_gene_aux",
+)
+
+# DOGMA-specific term names (Day 2). Registered via _dogma_pretrain_loss
+# in losses.py, NOT via register_pretrain_terms — so they are not in
+# _PRETRAIN_SPEC and do not affect existing Phase 5 registration.
+DOGMA_PRETRAIN_TERM_NAMES = (
+    "masked_rna_recon",
+    "masked_atac_recon",
+    "masked_protein_recon",
+    "cross_modal_infonce_triad",
 )
 
 # Substrings that indicate a term probably drags gradient through the
@@ -124,6 +135,38 @@ def _masked_atac_recon(**batch) -> torch.Tensor:
     return diff.sum() / denom
 
 
+def _masked_protein_recon(**batch) -> torch.Tensor:
+    """Masked protein (ADT) reconstruction, gated on per-cell modality presence.
+
+    Gates on modality_mask[:, ModalityKey.PROTEIN]. Per D2 semantics:
+    if no cell in the batch has Protein present (mask column all-zero),
+    returns 0 contribution silently — enables mixed-corpus training where
+    some batches are DOGMA (Protein present) and others are RNA+ATAC-only.
+    """
+    pred = batch["protein_recon"]
+    target = batch["protein_target"]
+    token_mask = batch.get("protein_mask")        # token-level mask, optional
+    modality_mask = batch.get("modality_mask")    # (B, 4) per-cell presence
+
+    if modality_mask is not None:
+        protein_present = modality_mask[:, int(ModalityKey.PROTEIN)]
+        if float(protein_present.sum()) < 1.0:
+            # D2: silent zero when whole batch has no Protein-present cells
+            return torch.zeros((), device=pred.device, requires_grad=True)
+        cell_weight = protein_present.unsqueeze(-1)  # (B, 1)
+    else:
+        cell_weight = torch.ones(pred.shape[0], 1, device=pred.device)
+
+    if token_mask is None:
+        diff = (pred - target) ** 2 * cell_weight
+        denom = cell_weight.expand_as(pred).sum().clamp_min(1.0)
+    else:
+        combined = token_mask * cell_weight
+        diff = (pred - target) ** 2 * combined
+        denom = combined.sum().clamp_min(1.0)
+    return diff.sum() / denom
+
+
 def _cross_modal_infonce(**batch) -> torch.Tensor:
     """Symmetric InfoNCE between L2-normalized rna/atac projections."""
     z_rna = batch["z_rna"]
@@ -132,6 +175,63 @@ def _cross_modal_infonce(**batch) -> torch.Tensor:
     logits = z_rna @ z_atac.t() / temperature
     labels = torch.arange(z_rna.shape[0], device=z_rna.device)
     return 0.5 * (F.cross_entropy(logits, labels) + F.cross_entropy(logits.t(), labels))
+
+
+def _cross_modal_infonce_triad(**batch) -> torch.Tensor:
+    """Pairwise-average 3-way InfoNCE for RNA+ATAC+Protein (D1 decision).
+
+    Computes:
+      mean over {NCE(z_rna, z_atac), NCE(z_rna, z_protein), NCE(z_atac, z_protein)}
+
+    Each pairwise term is skipped (contributes 0) if:
+      - either projection key (z_rna / z_atac / z_protein) is absent from batch, OR
+      - either modality's mask column is all-zero for the batch (D2 silent skip)
+
+    Falls back cleanly to bimodal (2 present terms averaged) when only 2
+    modalities present; returns 0 contribution if fewer than 2 modality
+    projections are available.
+
+    Reuses the same NCE kernel as the 2-way _cross_modal_infonce. The 2-way
+    function is untouched; this is additive.
+    """
+    modality_mask = batch.get("modality_mask")
+    temperature = float(batch.get("infonce_temperature", 0.1))
+
+    def _is_present(mk: ModalityKey) -> bool:
+        if modality_mask is None:
+            return True  # backward-compat: assume modality present
+        return bool((modality_mask[:, int(mk)].sum() > 0).item())
+
+    def _pair_nce(z_a: torch.Tensor, z_b: torch.Tensor) -> torch.Tensor:
+        logits = z_a @ z_b.t() / temperature
+        labels = torch.arange(z_a.shape[0], device=z_a.device)
+        return 0.5 * (F.cross_entropy(logits, labels) + F.cross_entropy(logits.t(), labels))
+
+    pair_defs = (
+        (ModalityKey.RNA,  ModalityKey.ATAC,    "z_rna", "z_atac"),
+        (ModalityKey.RNA,  ModalityKey.PROTEIN, "z_rna", "z_protein"),
+        (ModalityKey.ATAC, ModalityKey.PROTEIN, "z_atac", "z_protein"),
+    )
+    terms = []
+    for mk_a, mk_b, k_a, k_b in pair_defs:
+        if not (_is_present(mk_a) and _is_present(mk_b)):
+            continue
+        if k_a not in batch or k_b not in batch:
+            continue
+        if batch[k_a] is None or batch[k_b] is None:
+            continue
+        terms.append(_pair_nce(batch[k_a], batch[k_b]))
+
+    if not terms:
+        # D2 silent skip: pick any tensor for device inheritance
+        anchor = next(
+            (v for v in batch.values() if isinstance(v, torch.Tensor)),
+            None,
+        )
+        device = anchor.device if anchor is not None else torch.device("cpu")
+        return torch.zeros((), device=device, requires_grad=True)
+
+    return torch.stack(terms).mean()
 
 
 def _peak_to_gene_aux(**batch) -> torch.Tensor:
