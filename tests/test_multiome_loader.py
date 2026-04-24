@@ -47,7 +47,10 @@ def test_obsm_schema_yields_correct_keys_and_kind():
             peak_set_path=peak_set, atac_key="ATAC",
         )
         batch = loader[0]
-        assert set(batch.keys()) == {"rna", "atac_peaks", "dataset_kind"}
+        assert set(batch.keys()) == {
+            "rna", "atac_peaks", "dataset_kind",
+            "modality_mask", "lysis_protocol", "protein_panel_id",
+        }
         assert batch["dataset_kind"] == DatasetKind.OBSERVATIONAL.value
         assert batch["rna"].shape == (50,)
         assert batch["atac_peaks"].shape == (200,)
