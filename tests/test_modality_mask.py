@@ -76,3 +76,55 @@ def test_build_mask_rejects_invalid_batch_size():
 def test_key_constants_distinct():
     keys = [RNA_KEY, ATAC_KEY, PROTEIN_KEY, PHOSPHO_KEY, MASK_KEY, LYSIS_KEY, PROTEIN_PANEL_KEY]
     assert len(set(keys)) == len(keys), f"duplicate keys among: {keys}"
+
+
+
+# ---------------------------------------------------------------------
+# mask_from_obs (Day 3 addition)
+# ---------------------------------------------------------------------
+def test_mask_from_obs_rna_only():
+    """Kang-style dataset: has_rna=True, others False -> mask = [0,0,1,0]."""
+    from aivc.data.modality_mask import mask_from_obs
+    row = {"has_rna": True, "has_atac": False, "has_protein": False, "has_phospho": False}
+    m = mask_from_obs(row)
+    assert m.shape == (4,)
+    assert m[int(ModalityKey.ATAC)] == 0.0
+    assert m[int(ModalityKey.PHOSPHO)] == 0.0
+    assert m[int(ModalityKey.RNA)] == 1.0
+    assert m[int(ModalityKey.PROTEIN)] == 0.0
+
+
+def test_mask_from_obs_trimodal_dogma():
+    """DOGMA-style: has_rna + has_atac + has_protein all True."""
+    from aivc.data.modality_mask import mask_from_obs
+    row = {"has_rna": True, "has_atac": True, "has_protein": True, "has_phospho": False}
+    m = mask_from_obs(row)
+    assert m[int(ModalityKey.ATAC)] == 1.0
+    assert m[int(ModalityKey.PHOSPHO)] == 0.0
+    assert m[int(ModalityKey.RNA)] == 1.0
+    assert m[int(ModalityKey.PROTEIN)] == 1.0
+
+
+def test_mask_from_obs_missing_columns_default_false():
+    """Missing has_* keys default to False (modality absent)."""
+    from aivc.data.modality_mask import mask_from_obs
+    row = {"has_rna": True}
+    m = mask_from_obs(row)
+    assert m[int(ModalityKey.RNA)] == 1.0
+    assert m[int(ModalityKey.ATAC)] == 0.0
+    assert m[int(ModalityKey.PROTEIN)] == 0.0
+    assert m[int(ModalityKey.PHOSPHO)] == 0.0
+
+
+def test_mask_from_obs_with_pandas_series():
+    """mask_from_obs works on pandas Series (AnnData.obs row idiom)."""
+    import pandas as pd
+    from aivc.data.modality_mask import mask_from_obs
+    row = pd.Series({
+        "has_rna": True, "has_atac": True,
+        "has_protein": False, "has_phospho": False,
+    })
+    m = mask_from_obs(row)
+    assert m[int(ModalityKey.RNA)] == 1.0
+    assert m[int(ModalityKey.ATAC)] == 1.0
+    assert m[int(ModalityKey.PROTEIN)] == 0.0
