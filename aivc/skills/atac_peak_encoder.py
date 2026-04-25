@@ -37,12 +37,19 @@ class PeakLevelATACEncoder(nn.Module):
         dropout: float = 0.1,
         groupnorm_groups: int = 8,
         tfidf_eps: float = 1e-6,
+        apply_tfidf: bool = True,
     ):
         super().__init__()
         self.n_peaks = n_peaks
         self.svd_dim = svd_dim
         self.attn_dim = attn_dim
         self.tfidf_eps = tfidf_eps
+        # apply_tfidf: True for raw peak counts (default, count-based semantics);
+        # False for pre-normalized features like chromVAR motif deviations
+        # (z-score-like, can be negative). TF-IDF on chromVAR scores produces
+        # silent garbage — clamp_min(eps) saves the divisor but TF/IDF lose
+        # their count-based biological meaning.
+        self.apply_tfidf = apply_tfidf
 
         # Linear LSI projection (learnable surrogate for truncated SVD).
         self.lsi = nn.Linear(n_peaks, svd_dim, bias=False)
@@ -92,7 +99,9 @@ class PeakLevelATACEncoder(nn.Module):
         """
         if peaks.is_sparse:
             peaks = peaks.to_dense()
-        x = self._tfidf(peaks)
+        # apply_tfidf=False is required for chromVAR motif deviations or any
+        # pre-normalized score-based input (negative values + non-count semantics).
+        x = self._tfidf(peaks) if self.apply_tfidf else peaks.float()
         x = self.lsi(x)
         z = self.mlp(x)
         return z
