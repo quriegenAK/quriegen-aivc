@@ -131,6 +131,9 @@ No bare `torch.load()` — enforced by tests/test_no_bare_torch_load.py.
 - Issue #11: env-only test failures (anthropic SDK, typer unpinned)
 - Two whitelisted legacy bare `torch.load` in train_hpc, evaluate_zero_shot
 
+**Pending (Track A — PR #26)**:
+- DOGMA h5ad assembly pending — `make_dogma_lll()` / `make_dogma_dig()` factories reference paths that don't exist yet. Resolve by running `python scripts/assemble_dogma_h5ad.py --raw-path ~/aivc_dogma_ncells_py --output-dir data/phase6_5g_2/dogma_h5ads/`. Remove this line when the h5ads are produced.
+
 **Resolved during DOGMA 4-day arc (2026-04-23 → 2026-04-24)**:
 - ~~fusion.py zero-fill attention leak~~ — fixed PR #21 (modality_mask hotfix)
 - ~~Pre-DOGMA losses without modality_mask gating~~ — fixed PR #23
