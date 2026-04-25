@@ -194,6 +194,7 @@ def assemble_arm(
     raw_path: Path,
     anchor_barcodes: Optional[set] = None,
     use_chromvar: bool = True,
+    chromvar_scores_csv: Optional[Path] = None,
 ) -> "anndata.AnnData":
     """Assemble a single DOGMA arm (LLL or DIG) as an AnnData."""
     import anndata as ad
@@ -202,6 +203,7 @@ def assemble_arm(
     lane_names = [f"{arm}_CTRL", f"{arm}_STIM"]
 
     rna_mats, atac_mats, adt_mats = [], [], []
+    atac_peak_names_per_lane = []
     all_barcodes = []
     obs_rows = []
 
@@ -211,6 +213,7 @@ def assemble_arm(
 
         rna_mat, rna_bcs, rna_names = load_rna_h5(h5_path)
         atac_mat, atac_bcs, peak_names = load_atac_h5(h5_path)
+        atac_peak_names_per_lane.append(peak_names)
         assert rna_bcs == atac_bcs, f"RNA/ATAC barcode mismatch in {lane}"
 
         metrics = load_metrics(met_path)
@@ -228,7 +231,12 @@ def assemble_arm(
         metrics["barcode"] = metrics["barcode"].str.replace(
             r"-1$", f"-{idx}", regex=True
         )
-        adt_bcs_suffixed = [re.sub(r"-1$", f"-{idx}", b) for b in adt_bcs]
+        # Kite ADT barcodes are bare (no -1 suffix); use direct concat per
+        # reference_phase6_5g_2_dogma_ncells memory. Defensive: strip any
+        # trailing -N first to handle either convention.
+        adt_bcs_suffixed = [
+            re.sub(r"-\d+$", "", b) + f"-{idx}" for b in adt_bcs
+        ]
 
         iso_mask = np.array([bool(re.search(r"Ctrl|CTRL|ctrl|IgG|Isotype", a)) for a in ab_names])
         cd4_idx = next((i for i, a in enumerate(ab_names) if re.match(r"^CD4(-|$|_)", a)), None)
@@ -284,8 +292,30 @@ def assemble_arm(
             })
 
     rna_full = sp.hstack(rna_mats).tocsc()
-    atac_full = sp.hstack(atac_mats).tocsc()
     adt_full = sp.hstack(adt_mats).tocsr()
+
+    # ATAC: 10x Multiome calls peaks per-lane, so peak sets differ across lanes.
+    # Use UNION of peak coordinates within an arm and zero-fill missing peaks
+    # per lane. This preserves all observed peaks (vs intersection which is
+    # punitively small at exact-coordinate match: ~50-200 peaks across lanes).
+    # A unified MACS2 call on pooled fragments would be the canonical fix;
+    # union-with-zero-fill is a faithful approximation for the raw-peaks path.
+    union_peaks = sorted(set().union(*[set(p) for p in atac_peak_names_per_lane]))
+    print(f"[atac] peak union across {len(atac_mats)} lanes: "
+          f"{len(union_peaks):,} peaks "
+          f"(per-lane sizes: {[len(p) for p in atac_peak_names_per_lane]})")
+    union_idx = {n: i for i, n in enumerate(union_peaks)}
+    atac_mats_aligned = []
+    for mat, names in zip(atac_mats, atac_peak_names_per_lane):
+        # Build a (len(union_peaks), n_cells) matrix; rows for absent peaks stay 0.
+        n_cells = mat.shape[1]
+        out = sp.lil_matrix((len(union_peaks), n_cells), dtype=mat.dtype)
+        for src_row, name in enumerate(names):
+            out[union_idx[name], :] = mat[src_row, :]
+        atac_mats_aligned.append(out.tocsc())
+    atac_full = sp.hstack(atac_mats_aligned).tocsc()
+    peak_names = union_peaks
+
     n_total = rna_full.shape[1]
     assert len(all_barcodes) == n_total == atac_full.shape[1] == adt_full.shape[1]
 
@@ -293,9 +323,25 @@ def assemble_arm(
     adt_clr = clr_normalize(adt_full.T)
 
     if use_chromvar:
-        atac_scores, motif_names = compute_chromvar_deviations(
-            atac_full, peak_names, all_barcodes,
-        )
+        if chromvar_scores_csv is not None and chromvar_scores_csv.exists():
+            df = pd.read_csv(chromvar_scores_csv)
+            score_lookup = df.set_index("barcode")
+            kept = score_lookup.reindex(all_barcodes)
+            n_missing = kept.isnull().any(axis=1).sum()
+            if n_missing > 0:
+                raise ValueError(
+                    f"{n_missing} barcodes from QC-passed set absent in "
+                    f"chromVAR scores at {chromvar_scores_csv}. R/Python "
+                    f"barcode suffix conventions may have diverged."
+                )
+            motif_names = list(kept.columns)
+            atac_scores = kept.values.astype(np.float32)
+            print(f"[chromVAR] loaded R-computed scores: "
+                  f"{atac_scores.shape[0]} cells x {atac_scores.shape[1]} motifs")
+        else:
+            atac_scores, motif_names = compute_chromvar_deviations(
+                atac_full, peak_names, all_barcodes,
+            )
     else:
         atac_scores = np.asarray(atac_full.T.toarray(), dtype=np.float32)
         motif_names = peak_names
@@ -331,6 +377,10 @@ def main():
                     help="Directory with h5/, metrics/, adt/ subdirs (PROMPT K v3 output).")
     ap.add_argument("--output-dir", type=Path, required=True)
     ap.add_argument("--arm", choices=["lll", "dig", "both"], default="both")
+    ap.add_argument("--chromvar-scores-dir", type=Path, default=None,
+                    help="If set, load pre-computed chromVAR scores from "
+                         "{dir}/chromvar_scores_{arm}.csv (R/Bioconductor "
+                         "path, mirrors Mimitou 2021 codepath).")
     ap.add_argument("--raw-peaks-fallback", action="store_true",
                     help="Skip chromVAR; emit raw peak counts in obsm['atac_peaks'].")
     ap.add_argument("--anchor-path", type=Path, default=None,
@@ -351,8 +401,13 @@ def main():
     for arm in arms:
         anc = anchor if arm == "LLL" else None
         print(f"\n=== Assembling {arm} ===")
+        scores_csv = (
+            args.chromvar_scores_dir / f"chromvar_scores_{arm.lower()}.csv"
+            if args.chromvar_scores_dir else None
+        )
         adata = assemble_arm(arm, args.raw_path, anchor_barcodes=anc,
-                             use_chromvar=use_chromvar)
+                             use_chromvar=use_chromvar,
+                             chromvar_scores_csv=scores_csv)
         out = args.output_dir / f"dogma_{arm.lower()}.h5ad"
         adata.write_h5ad(out)
         print(f"  wrote {out}  ({adata.n_obs:,} cells, {adata.n_vars:,} genes)")

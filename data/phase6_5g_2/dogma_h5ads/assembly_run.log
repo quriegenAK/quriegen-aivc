@@ -1,0 +1,11 @@
+[anchor] 13,763 barcodes from data/phase6_5g_2/external_evidence/dogma_ncells_measured_2026-04-23/pairs_of_wnn.tsv
+
+=== Assembling LLL ===
+[atac] peak union across 2 lanes: 198,947 peaks (per-lane sizes: [84846, 114148])
+  wrote data/phase6_5g_2/dogma_h5ads/dogma_lll.h5ad  (13,763 cells, 36,601 genes)
+  cert validate: can_train=True, contrastive_pairs=[('atac', 'protein'), ('atac', 'rna'), ('protein', 'rna')]
+
+=== Assembling DIG ===
+[atac] peak union across 2 lanes: 124,619 peaks (per-lane sizes: [61538, 63305])
+  wrote data/phase6_5g_2/dogma_h5ads/dogma_dig.h5ad  (18,111 cells, 36,601 genes)
+  cert validate: can_train=True, contrastive_pairs=[('atac', 'protein'), ('atac', 'rna'), ('protein', 'rna')]

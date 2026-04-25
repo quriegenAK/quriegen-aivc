@@ -1,0 +1,45 @@
+{
+  "anchor_source": "data/phase6_5g_2/external_evidence/dogma_ncells_measured_2026-04-23/pairs_of_wnn.tsv (PR #29)",
+  "atac_representation": "raw peak counts (chromVAR path abandoned after pip + R install attempts)",
+  "files": {
+    "dogma_dig.h5ad": {
+      "atac_dim": 124619,
+      "atac_type": "raw_peaks",
+      "condition_values": [
+        "CTRL",
+        "STIM"
+      ],
+      "lysis_protocol_values": [
+        "DIG"
+      ],
+      "n_cells": 18111,
+      "n_genes": 36601,
+      "protein_dim": 210,
+      "sha256": "b04e85934fc72ac374b6162fa348e13ba62355b56bdbaebf2ad0fb523d8fc927",
+      "size_bytes": 9279920579
+    },
+    "dogma_lll.h5ad": {
+      "atac_dim": 198947,
+      "atac_type": "raw_peaks",
+      "condition_values": [
+        "CTRL",
+        "STIM"
+      ],
+      "lysis_protocol_values": [
+        "LLL"
+      ],
+      "n_cells": 13763,
+      "n_genes": 36601,
+      "protein_dim": 210,
+      "sha256": "db6d3fb413915e7c1e222c0884d51f0d3bee39a66ca0b9447caeaeab04820954",
+      "size_bytes": 11220880567
+    }
+  },
+  "generated_at": "2026-04-25T20:16:45.782912+00:00",
+  "protein_normalization": "CLR (centered log-ratio)",
+  "raw_data_path": "/Users/ashkhan/aivc_dogma_ncells_py",
+  "rna_normalization": "normalize_total(1e4) + log1p",
+  "schema_version": 1,
+  "source_script": "scripts/assemble_dogma_h5ad.py (PR #26) with --raw-peaks-fallback",
+  "spec_amendment": "E2_dogma_pretrain_spec.md section 2 amended: chromVAR -> raw peaks (this PR)"
+}
