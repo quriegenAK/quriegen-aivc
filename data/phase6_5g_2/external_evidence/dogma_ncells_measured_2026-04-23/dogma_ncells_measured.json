@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "method": "Python-only reconstruction of 15_LLLandDIG.R subset filter",
+  "anchor_source": "pairs_of_wnn.tsv (caleblareau/asap_reproducibility master)",
+  "per_arm_n_cells": {
+    "LLL_CTRL": 7624,
+    "LLL_STIM": 6139,
+    "DIG_CTRL": 9483,
+    "DIG_STIM": 8628
+  },
+  "fidelity": {
+    "LLL_CTRL_set_equal_anchor": true,
+    "LLL_STIM_set_equal_anchor": true,
+    "LLL_CTRL_measured": 7624,
+    "LLL_STIM_measured": 6139,
+    "LLL_CTRL_anchor": 7624,
+    "LLL_STIM_anchor": 6139
+  },
+  "dig_trusted": true,
+  "DIG_CTRL_n_cells_post_qc": 9483,
+  "DIG_STIM_n_cells_post_qc": 8628,
+  "DIG_total_n_cells_post_qc": 18111,
+  "combined_DOGMA_total": 31874
+}
