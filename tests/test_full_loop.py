@@ -17,6 +17,19 @@ from eval.benchmarks.norman_eval import NormanEvalReport
 from eval.eval_runner import EvalSuite
 
 
+# REAL_DATA_MARKER_NOTE_2026_04_27
+# The success-path tests below are marked @pytest.mark.real_data because
+# pre_train_hook (aivc/scripts/hooks.py) performs a hard existence check
+# on data/kang2018_pbmc_fixed.h5ad BEFORE the mocks for DataAgent.run /
+# subprocess.run / EvalAgent.run engage. The hook abort was the source of
+# 3 CI failures on PR #33 (run 25022072372). Marker excludes them from
+# default `pytest -q` (via pytest.ini addopts); opt-in via `-m real_data`.
+#
+# Follow-up: refactor to mock pre_train_hook itself so the tests become
+# pure orchestration tests independent of local data presence. Tracked
+# in a separate issue (option C from PR #33 review).
+
+
 runner = CliRunner()
 
 
@@ -118,6 +131,7 @@ def _patch_memory_and_heavy(stack, mock_finish: bool = True):
 # Test A — SUCCESS
 # ─────────────────────────────────────────────────────────────────────
 
+@pytest.mark.real_data
 def test_a_success_path(sandbox):
     import cli as cli_module
 
@@ -163,6 +177,7 @@ def test_a_success_path(sandbox):
 # Test B — DELTA COLLAPSE
 # ─────────────────────────────────────────────────────────────────────
 
+@pytest.mark.real_data
 def test_b_delta_collapse(sandbox):
     import cli as cli_module
 
@@ -225,6 +240,7 @@ def test_c_data_halt(sandbox):
 # Test D — KANG REGRESSION
 # ─────────────────────────────────────────────────────────────────────
 
+@pytest.mark.real_data
 def test_d_kang_regression(sandbox):
     import cli as cli_module
 
