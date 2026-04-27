@@ -230,6 +230,8 @@ def test_python_path_aware_invocation():
     assert hasattr(assemble_dogma_h5ad, "validate_with_pairing_cert")
 
 
+@pytest.mark.real_data
+@pytest.mark.slow
 def test_real_data_smoke_test_lll():
     """Optional: skip if cached real data not present."""
     import os
