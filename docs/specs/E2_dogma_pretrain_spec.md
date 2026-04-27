@@ -88,6 +88,37 @@ RNA + ATAC + Protein. **Phospho and mtDNA explicitly out-of-scope** for E2-iexte
 **Metric**: Adjusted Rand Index (ARI) on CD4, CD8, B cell, NK clusters.
 **Pass threshold**: ARI ≥ 0.70 (conservative; Calderon clusters are coarse).
 
+<!-- CALDERON_PREP_AMENDMENT_2026_04_27 -->
+#### §6.1 amendment — Calderon 2019 external eval (raw peaks)
+
+**Variant**: raw peak counts (consistent with DOGMA post-PR #30 chromVAR
+abandonment; same rationale: chromVAR install path was unrecoverable on
+macOS-x86_64 + Python 3.9/3.11, R/Bioconductor path consumed 7+ debug
+iterations without convergence).
+
+**Source**: GSE118189 — Calderon et al. 2019 *Nat Genet*, "Landscape of
+stimulation-responsive chromatin across diverse human immune cells".
+
+**File format (verified 2026-04-27 via NCBI FTP listing)**: single
+supplementary file `GSE118189_ATAC_counts.txt.gz` (~111 MB). Tab-separated,
+peaks as rows, samples as columns. Sample IDs encode `{donor}-{cell_type}-{stim_state}`
+(e.g. `1001-CD4_Teff-S` for stimulated, `1002-Bulk_B-U` for unstimulated).
+
+**Build script**: `scripts/prepare_calderon_2019.py` — produces an AnnData
+with raw counts in `.X`, donor/cell_type/stim_state in `.obs`, peak
+chrom/start/end in `.var`, and `uns = {source: GSE118189, assay: bulk_ATAC,
+variant: raw_peaks}`.
+
+**Integration test**: `tests/test_calderon_prep_integration.py` — 6
+synthetic tests run by default; 1 real-data smoke test gated behind
+`@pytest.mark.real_data + @pytest.mark.slow`. Opt-in via
+`pytest -m real_data tests/test_calderon_prep_integration.py`.
+
+**Peak harmonization to DOGMA**: deferred to a follow-up PR
+(`scripts/harmonize_calderon_peaks.py`). Calderon and DOGMA peak sets are
+called independently — overlap-matching with bedtools or pyranges is
+required before joint representation eval.
+
 ### 6.2 Secondary: internal stratified holdout
 **Split**: 10% per-arm-per-condition holdout, stratified by `lysis_protocol × condition` (so holdout preserves the 2×2 structure).
 **Metric**: 3WNN clustering ARI on held-out cells vs trained-model projection.
