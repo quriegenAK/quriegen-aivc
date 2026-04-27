@@ -25,12 +25,25 @@ Single donor (Mimitou 2021 Methods: "Cryopreserved healthy donor PBMCs... cells 
 
 ## 2. Modalities
 
+> **Amendment (2026-04-25)**: ATAC representation pivoted from chromVAR
+> motif deviations (~700 dim) to raw peak counts (~85k–150k dim sparse).
+> Rationale: pip-on-macOS + R/Bioconductor chromVAR install paths both
+> exhausted dep-conflict / system-tooling debug cycles after multiple
+> attempts. Raw peaks is the AIVC ATAC encoder's native input
+> (`PeakLevelATACEncoder` with TF-IDF + LSI; `apply_tfidf=True` default
+> from PR #28). Trade-off: lose TF-activity interpretability of motifs;
+> retain finer-grained peak-level signal. Calderon 2019 eval (§6.1)
+> needs corresponding amendment — peak-set harmonization to Calderon's
+> peak coordinates instead of motif-space alignment. PR #28's
+> `apply_tfidf=False` flag retained for future chromVAR revival without
+> code change.
+
 RNA + ATAC + Protein. **Phospho and mtDNA explicitly out-of-scope** for E2-iextended (future QuRIE-seq extension).
 
 | Modality | Representation | Normalization | Dim |
 |---|---|---|---|
 | RNA | `.X` | `normalize_total(1e4)` + `log1p` | ~30k genes (deposit-dependent) |
-| ATAC | `obsm['atac_peaks']` | chromVAR motif deviations (JASPAR 2022 CORE vertebrates, Homo sapiens) | ~700 motifs |
+| ATAC | `obsm['atac_peaks']` | raw peak counts (sparse, hg38-aligned) | ~85k–150k peaks (lane-dependent) |
 | Protein | `obsm['protein']` | CLR (centered log-ratio) | 210 (TotalSeq-A fixed) |
 
 ## 3. Batch correction
