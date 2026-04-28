@@ -36,3 +36,6 @@ dvc>=3.0
 
 # Genomic interval operations (peak overlap / harmonization)
 pyranges>=0.0.129
+
+# Genome coordinate liftOver (hg19 -> hg38 for Calderon)
+pyliftover>=0.4
