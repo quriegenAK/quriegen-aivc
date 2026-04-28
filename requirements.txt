@@ -39,3 +39,6 @@ pyranges>=0.0.129
 
 # Genome coordinate liftOver (hg19 -> hg38 for Calderon)
 pyliftover>=0.4
+
+# Linear probe + CV (was transitive via scanpy; explicit per direct usage)
+scikit-learn>=1.3
