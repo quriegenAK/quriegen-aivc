@@ -93,3 +93,8 @@ experiments/test_*/
 experiments/test_run/
 tea_debug.log
 wandb/
+
+# Experiment + memory state — drifting JSON files that should not be tracked.
+# Untracked via PR #35 (2026-04-27) after they forced rebase stashes during M1.
+experiments/index.jsonl
+memory/experiments.json
