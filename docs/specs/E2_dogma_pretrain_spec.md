@@ -88,6 +88,10 @@ RNA + ATAC + Protein. **Phospho and mtDNA explicitly out-of-scope** for E2-iexte
 **Metric**: Adjusted Rand Index (ARI) on CD4, CD8, B cell, NK clusters.
 **Pass threshold**: ARI ≥ 0.70 (conservative; Calderon clusters are coarse).
 
+
+<!-- PRE_REGISTERED_SUCCESS_THRESHOLD_2026_04_28 -->
+**Pre-registered success threshold**: Calderon cell-type accuracy >= 0.70 (pre-registered 2026-04-28, baseline 0.64 mock encoder PR #40). Sub-threshold results trigger architecture-class pivot per spec FAILURE HANDLING; no recipe tuning.
+
 <!-- CALDERON_PREP_AMENDMENT_2026_04_27 -->
 #### §6.1 amendment — Calderon 2019 external eval (raw peaks)
 
