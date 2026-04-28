@@ -1,35 +1,41 @@
 """Compute Calderon -> DOGMA peak projection matrix.
 
-Calderon 2019 (GSE118189) and DOGMA-seq (GSE156478) call peaks from
-different read pileups; their peak sets are not directly comparable.
-This script computes a Calderon-normalized fractional-overlap projection
-matrix that maps Calderon raw counts into DOGMA peak space:
+Calderon-normalized fractional-overlap projection:
+    M[i, j] = overlap_length(C_i n D_j) / length(C_i)
+    X_dogma_space = X_calderon @ M
 
-    X_dogma_space[sample, j] = sum_i X_calderon[sample, i] * M[i, j]
-    where M[i, j] = overlap_length(C_i n D_j) / length(C_i)
+Row-sum semantics (PR #38 update): row sums M[i,:].sum() are <= 1.0
+when DOGMA peaks form a partition of the genome (synthetic / ideal case).
+Real DOGMA peak sets contain overlapping peaks (~78% of DOGMA LLL peaks
+overlap another peak); when two DOGMA peaks both cover the same
+Calderon peak, that Calderon peak's row sum can exceed 1.0. The
+projection still represents "how much of Calderon peak i lands on
+DOGMA peak j", just with overcount in DOGMA-redundant regions.
+Stats include n_calderon_with_dogma_redundancy for tracking.
 
-Properties:
-    - M is sparse (CSR), shape (n_calderon, n_dogma).
-    - Row sums M[i, :].sum() <= 1.0 -- fractional mass distribution.
-    - M[i, :].sum() == 1.0 iff Calderon peak C_i is fully covered by
-      DOGMA peaks (otherwise coverage gap = 1 - row_sum).
-    - Total mass-preserving: sum(X @ M) <= sum(X), equality on full coverage.
+Peak coordinates may be stored in two AnnData layouts (extract helper
+handles both):
+
+1. .var-style: peaks in .var with chrom/start/end columns.
+   Used by Calderon prep (scripts/prepare_calderon_2019.py).
+
+2. DOGMA-style: peak names in .uns['atac_feature_names'] as a flat
+   string array. Counts in .obsm['atac_peaks']. Peak names use either
+   colon-dash (chr1:1000-2000) or underscore (chr1_1000_2000) format.
+   Used by DOGMA assembly (scripts/assemble_dogma_h5ad.py, PR #30).
 
 Usage:
     python scripts/harmonize_calderon_peaks.py \\
-        --dogma data/phase6_5g_2/dogma_lll.h5ad \\
+        --dogma data/phase6_5g_2/dogma_h5ads/dogma_lll.h5ad \\
         --calderon data/calderon2019/calderon_atac.h5ad \\
-        --out-projection data/calderon2019/calderon_to_dogma_M.npz \\
-        --out-stats data/calderon2019/harmonization_stats.json
-
-Output:
-    - projection.npz -- scipy.sparse.csr_matrix saved via save_npz
-    - stats.json -- coverage diagnostics
+        --out-projection data/calderon2019/calderon_to_dogma_lll_M.npz \\
+        --out-stats data/calderon2019/harmonization_stats_lll.json
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import anndata as ad
@@ -39,14 +45,69 @@ import pyranges as pr
 import scipy.sparse as sp
 
 
+# Accepts both `chr1:1000-2000` (legacy) and `chr1_1000_2000` (DOGMA + Calderon).
+# Also accepts unplaced contigs (e.g. `GL000194.1:100-200`) which appear in
+# real DOGMA peak sets; they won't match Calderon (chr-prefixed only) but
+# should not crash the dispatcher.
+PEAK_RE = re.compile(r"^(?P<chrom>[\w.]+)[_:](?P<start>\d+)[_-](?P<end>\d+)$")
+
+
+def extract_peaks_to_var_format(adata: ad.AnnData, name: str = "") -> pd.DataFrame:
+    """Extract peak coordinates into a uniform (chrom, start, end) DataFrame.
+
+    Dispatches on AnnData layout:
+    1. DOGMA-style: peaks in adata.uns['atac_feature_names'] as strings.
+    2. .var-style: peaks in adata.var with chrom/start/end columns.
+
+    Returns
+    -------
+    pd.DataFrame with columns chrom (str), start (int64), end (int64),
+    indexed by peak_id (the raw string from input).
+    """
+    # PR #38: Try DOGMA-style first (uns wins if both present).
+    if "atac_feature_names" in adata.uns:
+        feat = list(adata.uns["atac_feature_names"])
+        if not feat:
+            raise ValueError(f"{name}: .uns['atac_feature_names'] is empty")
+        peak_ids, chroms, starts, ends = [], [], [], []
+        for i, p in enumerate(feat):
+            m = PEAK_RE.match(str(p))
+            if m is None:
+                raise ValueError(
+                    f"{name}: cannot parse peak name {p!r} at index {i}"
+                )
+            peak_ids.append(p)
+            chroms.append(m.group("chrom"))
+            starts.append(int(m.group("start")))
+            ends.append(int(m.group("end")))
+        df = pd.DataFrame(
+            {"chrom": chroms, "start": starts, "end": ends},
+            index=pd.Index(peak_ids, name="peak_id"),
+        )
+        return df
+
+    # Fall back to .var-style.
+    required = {"chrom", "start", "end"}
+    if required.issubset(adata.var.columns):
+        df = adata.var[["chrom", "start", "end"]].copy()
+        df["chrom"] = df["chrom"].astype(str)
+        df["start"] = df["start"].astype(np.int64)
+        df["end"] = df["end"].astype(np.int64)
+        return df
+
+    raise ValueError(
+        f"{name}: unrecognized peak layout -- neither "
+        ".uns['atac_feature_names'] nor .var with chrom/start/end. "
+        f"var_cols={list(adata.var.columns)[:8]}, "
+        f"uns_keys={list(adata.uns.keys())[:8]}"
+    )
+
+
 def _var_to_pyranges(var_df: pd.DataFrame, name: str) -> pr.PyRanges:
-    """Convert AnnData .var (chrom/start/end columns) to PyRanges with
-    integer position index preserved as `peak_idx`."""
     required = {"chrom", "start", "end"}
     missing = required - set(var_df.columns)
     if missing:
         raise ValueError(f"{name}.var missing columns: {missing}")
-
     df = pd.DataFrame({
         "Chromosome": var_df["chrom"].astype(str).values,
         "Start": var_df["start"].astype(np.int64).values,
@@ -62,15 +123,7 @@ def compute_projection_matrix(
     dogma_var: pd.DataFrame,
     calderon_var: pd.DataFrame,
 ) -> tuple[sp.csr_matrix, dict]:
-    """Compute the (n_calderon, n_dogma) Calderon-normalized projection.
-
-    Returns
-    -------
-    M : sp.csr_matrix
-        Shape (n_calderon, n_dogma). Row i sums to <= 1.0.
-    stats : dict
-        Coverage diagnostics for sanity checks and PR-body reporting.
-    """
+    """Compute (n_calderon, n_dogma) Calderon-normalized projection."""
     n_c = len(calderon_var)
     n_d = len(dogma_var)
 
@@ -80,13 +133,12 @@ def compute_projection_matrix(
     joined = pr_c.join(pr_d, suffix="_d").df
     if len(joined) == 0:
         M = sp.csr_matrix((n_c, n_d), dtype=np.float32)
-        stats = {
+        return M, {
             "n_calderon": n_c, "n_dogma": n_d,
             "n_overlaps": 0, "n_orphan_calderon": n_c,
             "frac_calderon_with_any_overlap": 0.0,
             "mean_row_sum": 0.0, "max_row_sum": 0.0,
         }
-        return M, stats
 
     overlap_start = np.maximum(joined["Start"].values, joined["Start_d"].values)
     overlap_end = np.minimum(joined["End"].values, joined["End_d"].values)
@@ -102,38 +154,40 @@ def compute_projection_matrix(
 
     M = sp.coo_matrix((weights, (rows, cols)), shape=(n_c, n_d)).tocsr()
 
-    row_sum = np.asarray(M.sum(axis=1)).ravel()
-    if (row_sum > 1.0 + 1e-5).any():
+    # PR #38: real DOGMA peak sets are NOT partitions of the genome -- 78% of
+    # peaks overlap another peak (nested/border). When two DOGMA peaks both
+    # cover the same Calderon peak, weights legitimately sum > 1. Track the
+    # redundancy as a stat instead of raising. Hard cap at 2.0 still flags
+    # actual data-corruption (e.g. duplicate Calderon coordinates).
+    row_sum_pre_clamp = np.asarray(M.sum(axis=1)).ravel()
+    if (row_sum_pre_clamp > 2.0 + 1e-3).any():
         raise RuntimeError(
-            f"Row sums exceed 1.0 (max={row_sum.max():.6f}) -- "
-            "indicates duplicate Calderon entries or join bug"
+            f"Row sums exceed 2.0 (max={row_sum_pre_clamp.max():.6f}) -- "
+            "indicates duplicate Calderon peak coordinates or join bug"
         )
-    has_overlap = row_sum > 0
+    has_overlap = row_sum_pre_clamp > 0
+    n_redundant = int((row_sum_pre_clamp > 1.0 + 1e-5).sum())
     overlaps_per_c = np.asarray((M > 0).sum(axis=1)).ravel()
 
-    stats = {
+    return M, {
         "n_calderon": int(n_c),
         "n_dogma": int(n_d),
         "n_overlaps": int(len(joined)),
         "n_orphan_calderon": int((~has_overlap).sum()),
         "frac_calderon_with_any_overlap": float(has_overlap.mean()),
-        "mean_row_sum": float(row_sum.mean()),
-        "max_row_sum": float(row_sum.max()),
+        "mean_row_sum": float(row_sum_pre_clamp.mean()),
+        "max_row_sum": float(row_sum_pre_clamp.max()),
+        "n_calderon_with_dogma_redundancy": n_redundant,
+        "frac_calderon_with_dogma_redundancy": float(n_redundant / n_c),
         "mean_overlaps_per_calderon": float(overlaps_per_c.mean()),
         "max_overlaps_per_calderon": int(overlaps_per_c.max()),
     }
-    return M, stats
 
 
-def apply_projection(
-    calderon_X,
-    M: sp.csr_matrix,
-) -> sp.csr_matrix:
-    """X_dogma_space = X_calderon @ M. Shape (n_samples, n_dogma)."""
+def apply_projection(calderon_X, M: sp.csr_matrix) -> sp.csr_matrix:
     if calderon_X.shape[1] != M.shape[0]:
         raise ValueError(
-            f"calderon_X.shape[1]={calderon_X.shape[1]} != "
-            f"M.shape[0]={M.shape[0]}"
+            f"calderon_X.shape[1]={calderon_X.shape[1]} != M.shape[0]={M.shape[0]}"
         )
     if sp.issparse(calderon_X):
         return (calderon_X @ M).tocsr()
@@ -153,10 +207,13 @@ def main():
     print(f"Loading Calderon: {args.calderon}")
     calderon = ad.read_h5ad(args.calderon, backed="r")
 
-    M, stats = compute_projection_matrix(dogma.var.copy(), calderon.var.copy())
+    # PR #38: layout-aware peak extraction (handles DOGMA's .uns layout).
+    dogma_var = extract_peaks_to_var_format(dogma, name="dogma")
+    calderon_var = extract_peaks_to_var_format(calderon, name="calderon")
+
+    M, stats = compute_projection_matrix(dogma_var, calderon_var)
     print(f"Projection: shape={M.shape}, nnz={M.nnz}")
-    print(f"Coverage: {stats['frac_calderon_with_any_overlap']:.3%} of "
-          f"Calderon peaks have >=1 DOGMA overlap")
+    print(f"Coverage: {stats['frac_calderon_with_any_overlap']:.3%}")
     print(f"Orphan Calderon peaks: {stats['n_orphan_calderon']}")
 
     args.out_projection.parent.mkdir(parents=True, exist_ok=True)
