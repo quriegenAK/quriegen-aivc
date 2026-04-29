@@ -163,15 +163,19 @@ def main(argv=None):
                    help="Path to YAML config; CLI args override config values")
     p.add_argument("--epochs", type=int, default=None,
                    help="Number of outer epochs (each runs --steps inner iterations)")
-    # PR #42 (logical): DOGMA tri-modal arms.
+    # PR #42 (logical): DOGMA tri-modal arms. PR #43 (logical) extends with "joint".
     p.add_argument("--arm", type=str, default=None,
-                   choices=["lll", "dig"],
+                   choices=["lll", "dig", "joint"],
                    help="DOGMA arm to load via make_dogma_<arm>_union; "
-                        "supersedes --multiome_h5ad/--peak_set_path when set, "
+                        "'joint' enables the lysis_protocol categorical "
+                        "covariate (LLL=0, DIG=1) at the encoder level. "
+                        "Supersedes --multiome_h5ad/--peak_set_path when set, "
                         "and switches the loss from MultiomePretrainHead "
                         "(bimodal) to _dogma_pretrain_loss (tri-modal).")
     p.add_argument("--protein_latent", type=int, default=64,
                    help="ProteinEncoder output latent dim (only used with --arm)")
+    p.add_argument("--lysis_cov_dim", type=int, default=8,
+                   help="Lysis covariate embedding dim (only used with --arm joint)")
     args = p.parse_args(argv)
 
     # PR #41: load config and override defaults (CLI wins on conflict).
@@ -216,8 +220,11 @@ def main(argv=None):
 
     # ---- Data ---- #
     # PR #42 (logical): tri-modal DOGMA path via --arm.
-    prot_all = None  # populated only on the trimodal branch
+    # PR #43 (logical): --arm joint adds lysis covariate threading.
+    prot_all = None       # populated only on the trimodal branch
+    lysis_all = None      # populated only on the joint branch
     n_proteins = None
+    n_lysis_categories = 0
     if args.arm in ("lll", "dig"):
         from aivc.data.multiome_loader import MultiomeLoader
         factory = (MultiomeLoader.make_dogma_lll_union
@@ -231,6 +238,23 @@ def main(argv=None):
         prot_all = torch.stack([torch.from_numpy(ds[i]["protein"]) for i in range(len(ds))])
         print(f"[data] DOGMA {args.arm} union: n_cells={rna_all.shape[0]} "
               f"n_genes={n_genes} n_peaks={n_peaks} n_proteins={n_proteins}")
+    elif args.arm == "joint":
+        from aivc.data.multiome_loader import MultiomeLoader
+        ds = MultiomeLoader.make_dogma_joint_union()
+        n_genes = ds.n_genes
+        n_peaks = ds.n_peaks
+        n_proteins = ds.n_proteins
+        n_lysis_categories = 2  # LLL + DIG
+        rna_all = torch.stack([torch.from_numpy(ds[i]["rna"]) for i in range(len(ds))])
+        atac_all = torch.stack([torch.from_numpy(ds[i]["atac_peaks"]) for i in range(len(ds))])
+        prot_all = torch.stack([torch.from_numpy(ds[i]["protein"]) for i in range(len(ds))])
+        lysis_all = torch.tensor(
+            [ds[i]["lysis_idx"] for i in range(len(ds))], dtype=torch.long
+        )
+        print(f"[data] DOGMA joint union: n_cells={rna_all.shape[0]} "
+              f"(LLL={ds.n_lll}, DIG={ds.n_dig}) n_genes={n_genes} "
+              f"n_peaks={n_peaks} n_proteins={n_proteins} "
+              f"n_lysis_categories={n_lysis_categories}")
     elif args.multiome_h5ad and args.peak_set:
         from aivc.data.multiome_loader import MultiomeLoader
         ds = MultiomeLoader(
@@ -255,8 +279,21 @@ def main(argv=None):
         n_genes, n_peaks = args.n_genes, args.n_peaks
 
     # ---- Model ---- #
-    rna_enc = SimpleRNAEncoder(n_genes=n_genes, latent_dim=args.rna_latent).to(device)
-    atac_enc = PeakLevelATACEncoder(n_peaks=n_peaks, attn_dim=args.atac_latent).to(device)
+    # PR #43 (logical): pass n_lysis_categories to all three encoders so
+    # they allocate their lysis_emb when the joint arm is active. Default
+    # 0 keeps single-arm + bimodal back-compat untouched.
+    rna_enc = SimpleRNAEncoder(
+        n_genes=n_genes,
+        latent_dim=args.rna_latent,
+        n_lysis_categories=n_lysis_categories,
+        lysis_cov_dim=args.lysis_cov_dim,
+    ).to(device)
+    atac_enc = PeakLevelATACEncoder(
+        n_peaks=n_peaks,
+        attn_dim=args.atac_latent,
+        n_lysis_categories=n_lysis_categories,
+        lysis_cov_dim=args.lysis_cov_dim,
+    ).to(device)
     atac_decoder = _ATACDecoder(latent_dim=args.atac_latent, n_peaks=n_peaks).to(device)
     head = MultiomePretrainHead(
         rna_dim=args.rna_latent,
@@ -269,9 +306,12 @@ def main(argv=None):
     # projections to a common proj_dim for the 3-way InfoNCE in
     # _dogma_pretrain_loss. The bimodal MultiomePretrainHead is unused on this
     # branch (left in `head` for parameter symmetry / unchanged ckpt slot).
-    if args.arm in ("lll", "dig"):
+    if args.arm in ("lll", "dig", "joint"):
         protein_enc = ProteinEncoder(
-            n_proteins=n_proteins, embed_dim=args.protein_latent
+            n_proteins=n_proteins,
+            embed_dim=args.protein_latent,
+            n_lysis_categories=n_lysis_categories,
+            lysis_cov_dim=args.lysis_cov_dim,
         ).to(device)
         protein_decoder = _ProteinDecoder(
             latent_dim=args.protein_latent, n_proteins=n_proteins
@@ -290,7 +330,7 @@ def main(argv=None):
         + list(atac_decoder.parameters())
         + list(head.parameters())
     )
-    if args.arm in ("lll", "dig"):
+    if args.arm in ("lll", "dig", "joint"):
         params += (
             list(protein_enc.parameters())
             + list(protein_decoder.parameters())
@@ -322,7 +362,7 @@ def main(argv=None):
     # assert it explicitly — otherwise "W.grad is None" after backward
     # would pass for the wrong reason (the module simply does not exist).
     composite_modules = [rna_enc, atac_enc, atac_decoder, head]
-    if args.arm in ("lll", "dig"):
+    if args.arm in ("lll", "dig", "joint"):
         composite_modules += [
             protein_enc, protein_decoder, rna_proj, atac_proj, protein_proj,
         ]
@@ -385,14 +425,30 @@ def main(argv=None):
             atac_latent = atac_enc(atac_batch)
             atac_recon = atac_decoder(atac_latent)
 
-            if args.arm in ("lll", "dig"):
+            if args.arm in ("lll", "dig", "joint"):
                 # PR #42 (logical): tri-modal DOGMA path — _dogma_pretrain_loss
                 # with masked recon + 3-way InfoNCE. ProteinEncoder.forward
-                # signature is (adt, rna_emb=None); we pass rna_latent as the
-                # alignment query so the cross-attn block participates.
+                # signature is (adt, rna_emb=None, lysis_idx=None); we pass
+                # rna_latent as the alignment query so the cross-attn block
+                # participates.
+                # PR #43 (logical): joint arm threads lysis_idx into all
+                # three encoders. Single-arm (lll/dig): no covariate (the
+                # encoders' lysis_emb is None at construction).
                 prot_batch = prot_all[idx].to(device)
                 prot_token_mask = (torch.rand_like(prot_batch) < 0.15).float()
-                protein_latent = protein_enc(prot_batch, rna_emb=rna_latent)
+
+                if args.arm == "joint":
+                    lysis_batch = lysis_all[idx].to(device)
+                    # Re-run RNA + ATAC encoders WITH covariate (the earlier
+                    # rna_latent / atac_latent were computed without it).
+                    rna_latent, rna_recon = rna_enc(rna_batch, lysis_idx=lysis_batch)
+                    atac_latent = atac_enc(atac_batch, lysis_idx=lysis_batch)
+                    atac_recon = atac_decoder(atac_latent)
+                    protein_latent = protein_enc(
+                        prot_batch, rna_emb=rna_latent, lysis_idx=lysis_batch
+                    )
+                else:
+                    protein_latent = protein_enc(prot_batch, rna_emb=rna_latent)
                 protein_recon = protein_decoder(protein_latent)
 
                 # Project all three encoder latents to common proj_dim for
@@ -510,7 +566,9 @@ def main(argv=None):
     }
     # PR #42 (logical): persist protein encoder + decoder + projections when
     # the trimodal arm was active. Empty slot otherwise (back-compat).
-    if args.arm in ("lll", "dig"):
+    # PR #43 (logical): also stamp n_lysis_categories + lysis_cov_dim into
+    # config so ckpt loaders can reconstruct encoders with the right shape.
+    if args.arm in ("lll", "dig", "joint"):
         ckpt_payload["protein_encoder"] = protein_enc.state_dict()
         ckpt_payload["protein_decoder"] = protein_decoder.state_dict()
         ckpt_payload["rna_proj"] = rna_proj.state_dict()
@@ -520,6 +578,8 @@ def main(argv=None):
         config_to_save["n_proteins"] = int(n_proteins)
         config_to_save["protein_latent"] = int(args.protein_latent)
         config_to_save["arm"] = str(args.arm)
+        config_to_save["n_lysis_categories"] = int(n_lysis_categories)
+        config_to_save["lysis_cov_dim"] = int(args.lysis_cov_dim)
     torch.save(ckpt_payload, ckpt_path)
     print(f"[ckpt] saved -> {ckpt_path}")
 

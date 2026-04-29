@@ -49,19 +49,49 @@ class SimpleRNAEncoder(nn.Module):
         Output latent dimensionality.
     """
 
-    def __init__(self, n_genes: int, hidden_dim: int = 256, latent_dim: int = 128):
+    def __init__(
+        self,
+        n_genes: int,
+        hidden_dim: int = 256,
+        latent_dim: int = 128,
+        n_lysis_categories: int = 0,
+        lysis_cov_dim: int = 8,
+    ):
         super().__init__()
         self.n_genes = n_genes
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
+        self.n_lysis_categories = n_lysis_categories
+        self.lysis_cov_dim = lysis_cov_dim
+        # PR #43 (logical): scVI-style categorical batch covariate. Opt-in
+        # via n_lysis_categories>0; default 0 preserves pre-PR behavior so
+        # existing checkpoints (no lysis_emb in state_dict) load unchanged.
+        if n_lysis_categories > 0:
+            self.lysis_emb = nn.Embedding(n_lysis_categories, lysis_cov_dim)
+            input_dim = n_genes + lysis_cov_dim
+        else:
+            self.lysis_emb = None
+            input_dim = n_genes
         self.net = nn.Sequential(
-            nn.Linear(n_genes, hidden_dim),
+            nn.Linear(input_dim, hidden_dim),
             nn.GELU(),
             nn.Linear(hidden_dim, latent_dim),
         )
+        # Decoder reconstructs raw n_genes (no covariate); the latent z
+        # captures cov structure as needed.
         self.decoder = nn.Linear(latent_dim, n_genes)
 
-    def forward(self, x: torch.Tensor):
-        """Return (latent, reconstruction). Structurally W-independent."""
+    def forward(self, x: torch.Tensor, lysis_idx: torch.Tensor | None = None):
+        """Return (latent, reconstruction). Structurally W-independent.
+
+        lysis_idx : optional (B,) LongTensor of categorical batch covariates.
+            Only consumed when self.lysis_emb is not None (i.e.
+            n_lysis_categories > 0 at construction). Negative indices
+            (-1 unknown sentinel) must be filtered upstream — nn.Embedding
+            does not accept them.
+        """
+        if self.lysis_emb is not None and lysis_idx is not None:
+            cov = self.lysis_emb(lysis_idx)
+            x = torch.cat([x, cov], dim=1)
         z = self.net(x)
         return z, self.decoder(z)
