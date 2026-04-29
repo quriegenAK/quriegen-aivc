@@ -256,6 +256,56 @@ class MultiomeLoader(Dataset):
             lazy=lazy,
         )
 
+    # ------------------------------------------------------------------
+    # PR #41a: union-peak-space factories for joint LLL+DIG training
+    # ------------------------------------------------------------------
+    @classmethod
+    def make_dogma_lll_union(
+        cls,
+        base_path: str,
+        peak_set_path: str,
+        lazy: bool = False,
+    ) -> "MultiomeLoader":
+        """Factory for DOGMA-LLL arm in union peak space (PR #41a).
+
+        Use this for joint LLL+DIG training where both arms must share
+        the encoder's input dim. Arm-unique peaks are zero-filled in
+        the other arm's cells. Expects ``{base_path}/dogma_lll_union.h5ad``
+        produced by scripts/build_dogma_peak_union.py.
+        """
+        return cls(
+            h5ad_path=os.path.join(base_path, "dogma_lll_union.h5ad"),
+            schema="obsm_atac",
+            peak_set_path=peak_set_path,
+            atac_key="atac_peaks",
+            protein_obsm_key="protein",
+            lysis_protocol="LLL",
+            protein_panel_id="totalseq_a_210",
+            lazy=lazy,
+        )
+
+    @classmethod
+    def make_dogma_dig_union(
+        cls,
+        base_path: str,
+        peak_set_path: str,
+        lazy: bool = False,
+    ) -> "MultiomeLoader":
+        """Factory for DOGMA-DIG arm in union peak space (PR #41a).
+
+        See make_dogma_lll_union. Expects ``{base_path}/dogma_dig_union.h5ad``.
+        """
+        return cls(
+            h5ad_path=os.path.join(base_path, "dogma_dig_union.h5ad"),
+            schema="obsm_atac",
+            peak_set_path=peak_set_path,
+            atac_key="atac_peaks",
+            protein_obsm_key="protein",
+            lysis_protocol="DIG",
+            protein_panel_id="totalseq_a_210",
+            lazy=lazy,
+        )
+
 
 def _to_dense(x) -> np.ndarray:
     if hasattr(x, "toarray"):
