@@ -1,0 +1,37 @@
+# DOGMA pretrain config (spec §9, pre-registered 2026-04-28).
+# Consumed by scripts/pretrain_multiome.py via --config flag.
+
+optimizer:
+  type: adamw
+  lr: 1.0e-4
+  weight_decay: 0.01
+  betas: [0.9, 0.999]
+
+schedule:
+  type: warmup_cosine
+  warmup_steps: 500
+  # Total steps computed from epochs * steps_per_epoch at runtime.
+
+training:
+  epochs: 50
+  batch_size: 256
+  seed: 0
+  # Early stop (Calderon ARI plateau) is implemented in PR #42 onward;
+  # this PR provides the loop infra only.
+
+compute:
+  max_gpu_hours: 24  # informational; surfaced in logs
+
+checkpoint:
+  dir: checkpoints/pretrain
+  every_n_epochs: 5
+
+wandb:
+  project: aivc-pretrain
+  enabled: true
+
+# Architecture dims (encoder latent sizes — matches existing defaults).
+model:
+  rna_latent: 128
+  atac_latent: 64
+  proj_dim: 128

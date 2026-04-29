@@ -142,7 +142,43 @@ def main(argv=None):
     p.add_argument("--wandb_project", default="aivc-pretrain")
     p.add_argument("--no_wandb", action="store_true")
     p.add_argument("--seed", type=int, default=0)
+    # PR #41: external YAML config + epoch-based loop.
+    p.add_argument("--config", type=str, default=None,
+                   help="Path to YAML config; CLI args override config values")
+    p.add_argument("--epochs", type=int, default=None,
+                   help="Number of outer epochs (each runs --steps inner iterations)")
     args = p.parse_args(argv)
+
+    # PR #41: load config and override defaults (CLI wins on conflict).
+    # Sentinel-based detection: compare against argparse default and assume
+    # any non-default value was set by the user. Crude but matches spec §9.
+    if args.config:
+        import yaml
+        with open(args.config) as f:
+            cfg = yaml.safe_load(f)
+        if args.lr == 1e-3:  # default; not user-set
+            args.lr = float(cfg["optimizer"]["lr"])
+        if args.batch_size == 64:
+            args.batch_size = int(cfg["training"]["batch_size"])
+        if args.epochs is None:
+            args.epochs = int(cfg["training"]["epochs"])
+        if args.seed == 0:
+            args.seed = int(cfg["training"]["seed"])
+        weight_decay = float(cfg["optimizer"].get("weight_decay", 0.01))
+        warmup_steps = int(cfg["schedule"]["warmup_steps"])
+        ckpt_every = int(cfg["checkpoint"].get("every_n_epochs", 5))
+    else:
+        weight_decay = 0.01
+        warmup_steps = 500
+        ckpt_every = 5
+
+    # Epochs supersede --steps when set; back-compat default is single epoch.
+    if args.epochs is None:
+        args.epochs = 1
+    print(f"[config] lr={args.lr} batch_size={args.batch_size} "
+          f"epochs={args.epochs} steps_per_epoch={args.steps} "
+          f"weight_decay={weight_decay} warmup_steps={warmup_steps} "
+          f"ckpt_every_n_epochs={ckpt_every}")
 
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
@@ -194,7 +230,24 @@ def main(argv=None):
         + list(atac_decoder.parameters())
         + list(head.parameters())
     )
-    optim = torch.optim.Adam(params, lr=args.lr)
+    # PR #41: AdamW with weight decay + warmup-cosine LR schedule (spec §9).
+    optim = torch.optim.AdamW(params, lr=args.lr, weight_decay=weight_decay)
+
+    total_steps = max(1, args.epochs * args.steps)
+    from torch.optim.lr_scheduler import (  # noqa: E402
+        CosineAnnealingLR,
+        LinearLR,
+        SequentialLR,
+    )
+    warmup = LinearLR(
+        optim, start_factor=1e-3, end_factor=1.0,
+        total_iters=max(1, warmup_steps),
+    )
+    cosine = CosineAnnealingLR(optim, T_max=max(1, total_steps - warmup_steps))
+    scheduler = SequentialLR(
+        optim, schedulers=[warmup, cosine],
+        milestones=[max(1, warmup_steps)],
+    )
 
     # ---- Setup grad-guard sentinel ---- #
     # If NeumannPropagation is NOT in this entrypoint's graph, we must
@@ -241,66 +294,79 @@ def main(argv=None):
     ckpt_dir.mkdir(parents=True, exist_ok=True)
 
     loss_ma = None
-    for step in range(args.steps):
-        idx = torch.randint(0, rna_all.shape[0], (args.batch_size,))
-        rna_batch = rna_all[idx].to(device)
-        atac_batch = atac_all[idx].to(device)
+    global_step = 0
+    # PR #41: outer epoch loop * inner step loop = total_steps iterations.
+    # back-compat: --epochs unset -> default 1 epoch -> behavior identical to
+    # pre-PR (single pass of --steps iterations).
+    for epoch in range(args.epochs):
+        for step in range(args.steps):
+            idx = torch.randint(0, rna_all.shape[0], (args.batch_size,))
+            rna_batch = rna_all[idx].to(device)
+            atac_batch = atac_all[idx].to(device)
 
-        # Random masks (15%) for reconstruction heads.
-        rna_mask = (torch.rand_like(rna_batch) < 0.15).float()
-        atac_mask = (torch.rand_like(atac_batch) < 0.15).float()
+            # Random masks (15%) for reconstruction heads.
+            rna_mask = (torch.rand_like(rna_batch) < 0.15).float()
+            atac_mask = (torch.rand_like(atac_batch) < 0.15).float()
 
-        rna_latent, rna_recon = rna_enc(rna_batch)
-        atac_latent = atac_enc(atac_batch)
-        atac_recon = atac_decoder(atac_latent)
+            rna_latent, rna_recon = rna_enc(rna_batch)
+            atac_latent = atac_enc(atac_batch)
+            atac_recon = atac_decoder(atac_latent)
 
-        batch_dict = {
-            "rna": rna_batch,
-            "atac_peaks": atac_batch,
-        }
-        outputs = head(batch_dict, rna_latent, atac_latent)
+            batch_dict = {
+                "rna": rna_batch,
+                "atac_peaks": atac_batch,
+            }
+            outputs = head(batch_dict, rna_latent, atac_latent)
 
-        # Simple gene target: the RNA batch itself (peak_to_gene predicts
-        # expression proxy from peaks). Scale-matched to rna_recon loss.
-        loss_batch = {
-            "rna_recon": rna_recon,
-            "rna_target": rna_batch,
-            "rna_mask": rna_mask,
-            "atac_recon": atac_recon,
-            "atac_target": atac_batch,
-            "atac_mask": atac_mask,
-            "z_rna": outputs["z_rna"],
-            "z_atac": outputs["z_atac"],
-            "gene_pred": outputs["gene_pred"],
-            "gene_target": rna_batch,
-            "infonce_temperature": 0.1,
-        }
+            # Simple gene target: the RNA batch itself (peak_to_gene predicts
+            # expression proxy from peaks). Scale-matched to rna_recon loss.
+            loss_batch = {
+                "rna_recon": rna_recon,
+                "rna_target": rna_batch,
+                "rna_mask": rna_mask,
+                "atac_recon": atac_recon,
+                "atac_target": atac_batch,
+                "atac_mask": atac_mask,
+                "z_rna": outputs["z_rna"],
+                "z_atac": outputs["z_atac"],
+                "gene_pred": outputs["gene_pred"],
+                "gene_target": rna_batch,
+                "infonce_temperature": 0.1,
+            }
 
-        total, components = registry.compute(stage="pretrain", **loss_batch)
+            total, components = registry.compute(stage="pretrain", **loss_batch)
 
-        optim.zero_grad(set_to_none=True)
-        total.backward()
+            optim.zero_grad(set_to_none=True)
+            total.backward()
 
-        # Runtime grad guard: no NeumannPropagation in this graph, but we
-        # run the traversal anyway as defense-in-depth so a future edit
-        # that accidentally adds a Neumann instance will fire this check.
-        from aivc.skills.neumann_propagation import NeumannPropagation
-        for m in composite.modules():
-            if isinstance(m, NeumannPropagation):
-                assert m.W.grad is None, (
-                    "Phase 5 grad guard fired: NeumannPropagation.W "
-                    "received gradient from pretrain backward."
-                )
+            # Runtime grad guard: no NeumannPropagation in this graph, but we
+            # run the traversal anyway as defense-in-depth so a future edit
+            # that accidentally adds a Neumann instance will fire this check.
+            from aivc.skills.neumann_propagation import NeumannPropagation
+            for m in composite.modules():
+                if isinstance(m, NeumannPropagation):
+                    assert m.W.grad is None, (
+                        "Phase 5 grad guard fired: NeumannPropagation.W "
+                        "received gradient from pretrain backward."
+                    )
 
-        optim.step()
+            optim.step()
+            scheduler.step()  # PR #41: warmup-cosine LR step
+            global_step += 1
 
-        loss_val = total.item()
-        loss_ma = loss_val if loss_ma is None else 0.9 * loss_ma + 0.1 * loss_val
-        if step % 5 == 0 or step == args.steps - 1:
-            print(f"[step {step:03d}] total={loss_val:.4f} ma={loss_ma:.4f} "
-                  f"components={components}")
-        if run is not None:
-            run.log({"total": loss_val, "loss_ma": loss_ma, **components, "step": step})
+            loss_val = total.item()
+            loss_ma = loss_val if loss_ma is None else 0.9 * loss_ma + 0.1 * loss_val
+            if step % 5 == 0 or step == args.steps - 1:
+                cur_lr = optim.param_groups[0]["lr"]
+                print(f"[epoch {epoch:03d} step {step:03d} g{global_step:05d}] "
+                      f"lr={cur_lr:.2e} total={loss_val:.4f} ma={loss_ma:.4f} "
+                      f"components={components}")
+            if run is not None:
+                run.log({
+                    "total": loss_val, "loss_ma": loss_ma, **components,
+                    "epoch": epoch, "step": step, "global_step": global_step,
+                    "lr": optim.param_groups[0]["lr"],
+                })
 
     # ---- Checkpoint ---- #
     # Phase 6.7b fix: stamp actual runtime shapes into config so the
