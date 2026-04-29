@@ -34,6 +34,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from aivc.skills.atac_peak_encoder import PeakLevelATACEncoder
+from aivc.skills.protein_encoder import ProteinEncoder  # logical PR #42
 from aivc.skills.rna_encoder import SimpleRNAEncoder
 from aivc.training.loss_registry import LossRegistry
 from aivc.training.pretrain_heads import MultiomePretrainHead
@@ -51,6 +52,21 @@ class _ATACDecoder(nn.Module):
     def __init__(self, latent_dim: int, n_peaks: int):
         super().__init__()
         self.decoder = nn.Linear(latent_dim, n_peaks)
+
+    def forward(self, z: torch.Tensor) -> torch.Tensor:
+        return self.decoder(z)
+
+
+class _ProteinDecoder(nn.Module):
+    """Small linear decoder from Protein latent back to ADT count space.
+
+    PR #42 (logical): mirrors _ATACDecoder for symmetric trimodal recon
+    when --arm is set. Output dim is n_proteins (210 for TotalSeq-A panel).
+    """
+
+    def __init__(self, latent_dim: int, n_proteins: int):
+        super().__init__()
+        self.decoder = nn.Linear(latent_dim, n_proteins)
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         return self.decoder(z)
@@ -147,6 +163,15 @@ def main(argv=None):
                    help="Path to YAML config; CLI args override config values")
     p.add_argument("--epochs", type=int, default=None,
                    help="Number of outer epochs (each runs --steps inner iterations)")
+    # PR #42 (logical): DOGMA tri-modal arms.
+    p.add_argument("--arm", type=str, default=None,
+                   choices=["lll", "dig"],
+                   help="DOGMA arm to load via make_dogma_<arm>_union; "
+                        "supersedes --multiome_h5ad/--peak_set_path when set, "
+                        "and switches the loss from MultiomePretrainHead "
+                        "(bimodal) to _dogma_pretrain_loss (tri-modal).")
+    p.add_argument("--protein_latent", type=int, default=64,
+                   help="ProteinEncoder output latent dim (only used with --arm)")
     args = p.parse_args(argv)
 
     # PR #41: load config and override defaults (CLI wins on conflict).
@@ -190,7 +215,23 @@ def main(argv=None):
     print(f"[device] {device}")
 
     # ---- Data ---- #
-    if args.multiome_h5ad and args.peak_set:
+    # PR #42 (logical): tri-modal DOGMA path via --arm.
+    prot_all = None  # populated only on the trimodal branch
+    n_proteins = None
+    if args.arm in ("lll", "dig"):
+        from aivc.data.multiome_loader import MultiomeLoader
+        factory = (MultiomeLoader.make_dogma_lll_union
+                   if args.arm == "lll" else MultiomeLoader.make_dogma_dig_union)
+        ds = factory()
+        n_genes = ds.n_genes
+        n_peaks = ds.n_peaks
+        n_proteins = ds.n_proteins
+        rna_all = torch.stack([torch.from_numpy(ds[i]["rna"]) for i in range(len(ds))])
+        atac_all = torch.stack([torch.from_numpy(ds[i]["atac_peaks"]) for i in range(len(ds))])
+        prot_all = torch.stack([torch.from_numpy(ds[i]["protein"]) for i in range(len(ds))])
+        print(f"[data] DOGMA {args.arm} union: n_cells={rna_all.shape[0]} "
+              f"n_genes={n_genes} n_peaks={n_peaks} n_proteins={n_proteins}")
+    elif args.multiome_h5ad and args.peak_set:
         from aivc.data.multiome_loader import MultiomeLoader
         ds = MultiomeLoader(
             h5ad_path=args.multiome_h5ad,
@@ -224,12 +265,39 @@ def main(argv=None):
         n_genes=n_genes,
     ).to(device)
 
+    # PR #42 (logical): tri-modal arm — ProteinEncoder + decoder + per-modality
+    # projections to a common proj_dim for the 3-way InfoNCE in
+    # _dogma_pretrain_loss. The bimodal MultiomePretrainHead is unused on this
+    # branch (left in `head` for parameter symmetry / unchanged ckpt slot).
+    if args.arm in ("lll", "dig"):
+        protein_enc = ProteinEncoder(
+            n_proteins=n_proteins, embed_dim=args.protein_latent
+        ).to(device)
+        protein_decoder = _ProteinDecoder(
+            latent_dim=args.protein_latent, n_proteins=n_proteins
+        ).to(device)
+        rna_proj = nn.Linear(args.rna_latent, args.proj_dim).to(device)
+        atac_proj = nn.Linear(args.atac_latent, args.proj_dim).to(device)
+        protein_proj = nn.Linear(args.protein_latent, args.proj_dim).to(device)
+    else:
+        protein_enc = None
+        protein_decoder = None
+        rna_proj = atac_proj = protein_proj = None
+
     params = (
         list(rna_enc.parameters())
         + list(atac_enc.parameters())
         + list(atac_decoder.parameters())
         + list(head.parameters())
     )
+    if args.arm in ("lll", "dig"):
+        params += (
+            list(protein_enc.parameters())
+            + list(protein_decoder.parameters())
+            + list(rna_proj.parameters())
+            + list(atac_proj.parameters())
+            + list(protein_proj.parameters())
+        )
     # PR #41: AdamW with weight decay + warmup-cosine LR schedule (spec §9).
     optim = torch.optim.AdamW(params, lr=args.lr, weight_decay=weight_decay)
 
@@ -253,7 +321,12 @@ def main(argv=None):
     # If NeumannPropagation is NOT in this entrypoint's graph, we must
     # assert it explicitly — otherwise "W.grad is None" after backward
     # would pass for the wrong reason (the module simply does not exist).
-    composite = nn.ModuleList([rna_enc, atac_enc, atac_decoder, head])
+    composite_modules = [rna_enc, atac_enc, atac_decoder, head]
+    if args.arm in ("lll", "dig"):
+        composite_modules += [
+            protein_enc, protein_decoder, rna_proj, atac_proj, protein_proj,
+        ]
+    composite = nn.ModuleList(composite_modules)
     if _has_neumann_in_graph(composite):
         raise RuntimeError(
             "Phase 5 invariant violated: NeumannPropagation unexpectedly "
@@ -312,29 +385,63 @@ def main(argv=None):
             atac_latent = atac_enc(atac_batch)
             atac_recon = atac_decoder(atac_latent)
 
-            batch_dict = {
-                "rna": rna_batch,
-                "atac_peaks": atac_batch,
-            }
-            outputs = head(batch_dict, rna_latent, atac_latent)
+            if args.arm in ("lll", "dig"):
+                # PR #42 (logical): tri-modal DOGMA path — _dogma_pretrain_loss
+                # with masked recon + 3-way InfoNCE. ProteinEncoder.forward
+                # signature is (adt, rna_emb=None); we pass rna_latent as the
+                # alignment query so the cross-attn block participates.
+                prot_batch = prot_all[idx].to(device)
+                prot_token_mask = (torch.rand_like(prot_batch) < 0.15).float()
+                protein_latent = protein_enc(prot_batch, rna_emb=rna_latent)
+                protein_recon = protein_decoder(protein_latent)
 
-            # Simple gene target: the RNA batch itself (peak_to_gene predicts
-            # expression proxy from peaks). Scale-matched to rna_recon loss.
-            loss_batch = {
-                "rna_recon": rna_recon,
-                "rna_target": rna_batch,
-                "rna_mask": rna_mask,
-                "atac_recon": atac_recon,
-                "atac_target": atac_batch,
-                "atac_mask": atac_mask,
-                "z_rna": outputs["z_rna"],
-                "z_atac": outputs["z_atac"],
-                "gene_pred": outputs["gene_pred"],
-                "gene_target": rna_batch,
-                "infonce_temperature": 0.1,
-            }
+                # Project all three encoder latents to common proj_dim for
+                # InfoNCE matmul (z_a @ z_b.t() requires equal hidden dim).
+                z_rna = rna_proj(rna_latent)
+                z_atac = atac_proj(atac_latent)
+                z_protein = protein_proj(protein_latent)
 
-            total, components = registry.compute(stage="pretrain", **loss_batch)
+                # DOGMA single-arm: PHOSPHO absent, others present.
+                # ModalityKey order: ATAC=0, PHOSPHO=1, RNA=2, PROTEIN=3.
+                B = rna_batch.shape[0]
+                modality_mask = torch.tensor(
+                    [[1, 0, 1, 1]], device=device, dtype=torch.float32
+                ).expand(B, 4)
+
+                from losses import _dogma_pretrain_loss  # noqa: E402
+                total, components = _dogma_pretrain_loss(
+                    rna_recon=rna_recon, rna_target=rna_batch, rna_mask=rna_mask,
+                    atac_recon=atac_recon, atac_target=atac_batch, atac_mask=atac_mask,
+                    protein_recon=protein_recon, protein_target=prot_batch,
+                    protein_mask=prot_token_mask,
+                    z_rna=z_rna, z_atac=z_atac, z_protein=z_protein,
+                    modality_mask=modality_mask,
+                    infonce_temperature=0.1,
+                )
+            else:
+                batch_dict = {
+                    "rna": rna_batch,
+                    "atac_peaks": atac_batch,
+                }
+                outputs = head(batch_dict, rna_latent, atac_latent)
+
+                # Simple gene target: the RNA batch itself (peak_to_gene predicts
+                # expression proxy from peaks). Scale-matched to rna_recon loss.
+                loss_batch = {
+                    "rna_recon": rna_recon,
+                    "rna_target": rna_batch,
+                    "rna_mask": rna_mask,
+                    "atac_recon": atac_recon,
+                    "atac_target": atac_batch,
+                    "atac_mask": atac_mask,
+                    "z_rna": outputs["z_rna"],
+                    "z_atac": outputs["z_atac"],
+                    "gene_pred": outputs["gene_pred"],
+                    "gene_target": rna_batch,
+                    "infonce_temperature": 0.1,
+                }
+
+                total, components = registry.compute(stage="pretrain", **loss_batch)
 
             optim.zero_grad(set_to_none=True)
             total.backward()
@@ -391,19 +498,29 @@ def main(argv=None):
         config_to_save["peak_set_sha256"] = None
 
     ckpt_path = ckpt_dir / "pretrain_encoders.pt"
-    torch.save(
-        {
-            "schema_version": PRETRAIN_CKPT_SCHEMA_VERSION,
-            "rna_encoder": rna_enc.state_dict(),
-            "atac_encoder": atac_enc.state_dict(),
-            "pretrain_head": head.state_dict(),
-            "rna_encoder_class": "aivc.skills.rna_encoder.SimpleRNAEncoder",
-            "atac_encoder_class": "aivc.skills.atac_peak_encoder.PeakLevelATACEncoder",
-            "pretrain_head_class": "aivc.training.pretrain_heads.MultiomePretrainHead",
-            "config": config_to_save,
-        },
-        ckpt_path,
-    )
+    ckpt_payload = {
+        "schema_version": PRETRAIN_CKPT_SCHEMA_VERSION,
+        "rna_encoder": rna_enc.state_dict(),
+        "atac_encoder": atac_enc.state_dict(),
+        "pretrain_head": head.state_dict(),
+        "rna_encoder_class": "aivc.skills.rna_encoder.SimpleRNAEncoder",
+        "atac_encoder_class": "aivc.skills.atac_peak_encoder.PeakLevelATACEncoder",
+        "pretrain_head_class": "aivc.training.pretrain_heads.MultiomePretrainHead",
+        "config": config_to_save,
+    }
+    # PR #42 (logical): persist protein encoder + decoder + projections when
+    # the trimodal arm was active. Empty slot otherwise (back-compat).
+    if args.arm in ("lll", "dig"):
+        ckpt_payload["protein_encoder"] = protein_enc.state_dict()
+        ckpt_payload["protein_decoder"] = protein_decoder.state_dict()
+        ckpt_payload["rna_proj"] = rna_proj.state_dict()
+        ckpt_payload["atac_proj"] = atac_proj.state_dict()
+        ckpt_payload["protein_proj"] = protein_proj.state_dict()
+        ckpt_payload["protein_encoder_class"] = "aivc.skills.protein_encoder.ProteinEncoder"
+        config_to_save["n_proteins"] = int(n_proteins)
+        config_to_save["protein_latent"] = int(args.protein_latent)
+        config_to_save["arm"] = str(args.arm)
+    torch.save(ckpt_payload, ckpt_path)
     print(f"[ckpt] saved -> {ckpt_path}")
 
     # Post-save provenance: hash the checkpoint we just wrote and log

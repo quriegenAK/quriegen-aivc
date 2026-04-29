@@ -191,6 +191,28 @@ class MultiomeLoader(Dataset):
     def __len__(self) -> int:
         return 0 if self._rna is None else self._rna.shape[0]
 
+    # ------------------------------------------------------------------
+    # PR #42 (logical): public shape accessors for downstream encoder
+    # construction. Keeps `_rna`/`_atac`/`_protein` private while letting
+    # callers size encoders without poking at internals.
+    # ------------------------------------------------------------------
+    @property
+    def n_genes(self) -> int:
+        if self._rna is None:
+            raise RuntimeError("MultiomeLoader._rna not loaded yet (lazy=True?)")
+        return int(self._rna.shape[1])
+
+    @property
+    def n_peaks(self) -> int:
+        if self._atac is None:
+            raise RuntimeError("MultiomeLoader._atac not loaded yet (lazy=True?)")
+        return int(self._atac.shape[1])
+
+    @property
+    def n_proteins(self) -> int | None:
+        """None if protein modality absent."""
+        return None if self._protein is None else int(self._protein.shape[1])
+
     def __getitem__(self, idx: int) -> dict:
         item = {
             RNA_KEY: self._rna[idx],
@@ -262,8 +284,8 @@ class MultiomeLoader(Dataset):
     @classmethod
     def make_dogma_lll_union(
         cls,
-        base_path: str,
-        peak_set_path: str,
+        base_path: str = "data/phase6_5g_2/dogma_h5ads",
+        peak_set_path: str = "data/phase6_5g_2/dogma_h5ads/UNION_MANIFEST.json",
         lazy: bool = False,
     ) -> "MultiomeLoader":
         """Factory for DOGMA-LLL arm in union peak space (PR #41a).
@@ -272,6 +294,10 @@ class MultiomeLoader(Dataset):
         the encoder's input dim. Arm-unique peaks are zero-filled in
         the other arm's cells. Expects ``{base_path}/dogma_lll_union.h5ad``
         produced by scripts/build_dogma_peak_union.py.
+
+        Defaults match the canonical Path A artifact layout from the
+        production union run (PROMPT 41a-PRODUCTION). Override paths
+        only for off-canon layouts (tests, alt root, etc.).
         """
         return cls(
             h5ad_path=os.path.join(base_path, "dogma_lll_union.h5ad"),
@@ -287,8 +313,8 @@ class MultiomeLoader(Dataset):
     @classmethod
     def make_dogma_dig_union(
         cls,
-        base_path: str,
-        peak_set_path: str,
+        base_path: str = "data/phase6_5g_2/dogma_h5ads",
+        peak_set_path: str = "data/phase6_5g_2/dogma_h5ads/UNION_MANIFEST.json",
         lazy: bool = False,
     ) -> "MultiomeLoader":
         """Factory for DOGMA-DIG arm in union peak space (PR #41a).

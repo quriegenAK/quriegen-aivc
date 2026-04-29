@@ -24,13 +24,20 @@ def _make_rna_emb(batch=BATCH):
 class TestCLRNorm:
 
     def test_clr_output_sums_to_zero_per_cell(self):
-        """CLR(x).sum(dim=-1) should be ~0 per cell."""
+        """CLR(x).sum(dim=-1) should be ~0 per cell.
+
+        atol=1e-3: pre-PR #42 was 1e-4 but float32 accumulation drift
+        over N_PROTEINS=200 log-values empirically reaches ~1.4e-4 when
+        upstream RNG state shifts (passed on prior CI by RNG luck; PR #42
+        adds new tests that perturb the order). 1e-3 is still a tight
+        property check while no longer rejecting valid float32 output.
+        """
         from aivc.skills.protein_encoder import CLRNorm
         clr = CLRNorm()
         x = torch.rand(BATCH, N_PROTEINS).abs() * 100 + 1.0
         out = clr(x)
         row_sums = out.sum(dim=-1)
-        assert torch.allclose(row_sums, torch.zeros(BATCH), atol=1e-4), \
+        assert torch.allclose(row_sums, torch.zeros(BATCH), atol=1e-3), \
             f"CLR row sums should be ~0, got max {row_sums.abs().max():.6f}"
 
     def test_clr_handles_zero_counts(self):
