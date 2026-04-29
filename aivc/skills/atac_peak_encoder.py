@@ -38,6 +38,8 @@ class PeakLevelATACEncoder(nn.Module):
         groupnorm_groups: int = 8,
         tfidf_eps: float = 1e-6,
         apply_tfidf: bool = True,
+        n_lysis_categories: int = 0,
+        lysis_cov_dim: int = 8,
     ):
         super().__init__()
         self.n_peaks = n_peaks
@@ -50,6 +52,8 @@ class PeakLevelATACEncoder(nn.Module):
         # silent garbage — clamp_min(eps) saves the divisor but TF/IDF lose
         # their count-based biological meaning.
         self.apply_tfidf = apply_tfidf
+        self.n_lysis_categories = n_lysis_categories
+        self.lysis_cov_dim = lysis_cov_dim
 
         # Linear LSI projection (learnable surrogate for truncated SVD).
         self.lsi = nn.Linear(n_peaks, svd_dim, bias=False)
@@ -64,9 +68,22 @@ class PeakLevelATACEncoder(nn.Module):
         while hidden_dim % g2 != 0 and g2 > 1:
             g2 -= 1
 
+        # PR #43 (logical): scVI-style categorical batch covariate. The
+        # covariate is concatenated AFTER the first GroupNorm (so the
+        # normalization sees svd_dim alone, unmodified) and BEFORE the
+        # first Linear, which is widened by lysis_cov_dim when the
+        # covariate is enabled. TF-IDF on raw peaks runs upstream of
+        # this and is unaffected.
+        if n_lysis_categories > 0:
+            self.lysis_emb = nn.Embedding(n_lysis_categories, lysis_cov_dim)
+            mlp_linear_in = svd_dim + lysis_cov_dim
+        else:
+            self.lysis_emb = None
+            mlp_linear_in = svd_dim
+
         self.mlp = nn.Sequential(
             nn.GroupNorm(g1, svd_dim),
-            nn.Linear(svd_dim, hidden_dim),
+            nn.Linear(mlp_linear_in, hidden_dim),
             nn.GELU(),
             nn.GroupNorm(g2, hidden_dim),
             nn.Dropout(dropout),
@@ -90,12 +107,19 @@ class PeakLevelATACEncoder(nn.Module):
         idf = torch.log1p(n_cells / (df + 1.0))
         return tf * idf
 
-    def forward(self, peaks: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        peaks: torch.Tensor,
+        lysis_idx: torch.Tensor | None = None,
+    ) -> torch.Tensor:
         """Forward pass: (batch, n_peaks) -> (batch, attn_dim).
 
         Structural independence: this forward path does NOT reference
         NeumannPropagation.W or any causal-head parameter. Verified by
         tests/test_peak_encoder.py::test_graph_independence_from_W.
+
+        lysis_idx : optional (B,) LongTensor. Only consumed when
+            self.lysis_emb is not None.
         """
         if peaks.is_sparse:
             peaks = peaks.to_dense()
@@ -103,5 +127,13 @@ class PeakLevelATACEncoder(nn.Module):
         # pre-normalized score-based input (negative values + non-count semantics).
         x = self._tfidf(peaks) if self.apply_tfidf else peaks.float()
         x = self.lsi(x)
-        z = self.mlp(x)
-        return z
+        # Walk the MLP manually so we can inject the covariate between
+        # the first GroupNorm and the first Linear when enabled. Back-compat
+        # path (no covariate) is identical to the pre-PR Sequential call.
+        x = self.mlp[0](x)  # GroupNorm(svd_dim)
+        if self.lysis_emb is not None and lysis_idx is not None:
+            cov = self.lysis_emb(lysis_idx)
+            x = torch.cat([x, cov], dim=1)
+        for layer in self.mlp[1:]:
+            x = layer(x)
+        return x

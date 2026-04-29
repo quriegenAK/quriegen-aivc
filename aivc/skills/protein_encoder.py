@@ -78,10 +78,14 @@ class ProteinEncoder(nn.Module):
         hidden_dim: int = 256,
         n_heads: int = 4,
         dropout: float = 0.1,
+        n_lysis_categories: int = 0,
+        lysis_cov_dim: int = 8,
     ):
         super().__init__()
         self.n_proteins = n_proteins
         self.embed_dim = embed_dim
+        self.n_lysis_categories = n_lysis_categories
+        self.lysis_cov_dim = lysis_cov_dim
 
         self.clr_norm = CLRNorm()
         self.layer_norm = nn.LayerNorm(n_proteins)
@@ -109,10 +113,24 @@ class ProteinEncoder(nn.Module):
         self.output_proj = nn.Linear(embed_dim, embed_dim)
         self.output_norm = nn.LayerNorm(embed_dim)
 
+        # PR #43 (logical): scVI-style categorical batch covariate.
+        # Cross-attn here uses single-token (B, 1, embed_dim), so
+        # token-prepend doesn't apply. Use additive shift: project
+        # lysis_emb -> embed_dim and add to encoder output before
+        # cross-attn. Back-compat: lysis_emb is None when
+        # n_lysis_categories=0 (default), forward path unchanged.
+        if n_lysis_categories > 0:
+            self.lysis_emb = nn.Embedding(n_lysis_categories, lysis_cov_dim)
+            self.lysis_to_embed = nn.Linear(lysis_cov_dim, embed_dim)
+        else:
+            self.lysis_emb = None
+            self.lysis_to_embed = None
+
     def forward(
         self,
         adt: torch.Tensor,
         rna_emb: Optional[torch.Tensor] = None,
+        lysis_idx: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """
         Encode ADT counts into a 128-dim protein embedding.
@@ -122,12 +140,21 @@ class ProteinEncoder(nn.Module):
             rna_emb: (batch, 128) — RNA encoder output (optional).
                      When provided: cross-attention aligns to RNA space.
                      When None: pure MLP encoding.
+            lysis_idx: optional (batch,) LongTensor — categorical batch
+                     covariate (LLL=0, DIG=1). Only consumed when this
+                     encoder was constructed with n_lysis_categories>0.
         Returns:
             (batch, 128)
         """
         x = self.clr_norm(adt)
         x = self.layer_norm(x)
         x = self.encoder(x)
+
+        # PR #43 (logical): additive batch-covariate shift.
+        if self.lysis_emb is not None and lysis_idx is not None:
+            cov = self.lysis_emb(lysis_idx)            # (B, cov_dim)
+            cov_proj = self.lysis_to_embed(cov)        # (B, embed_dim)
+            x = x + cov_proj
 
         if rna_emb is not None:
             x_q = x.unsqueeze(1)

@@ -332,6 +332,92 @@ class MultiomeLoader(Dataset):
             lazy=lazy,
         )
 
+    # ------------------------------------------------------------------
+    # PR #43 (logical): joint LLL+DIG factory. See DogmaJointLoader below.
+    # ------------------------------------------------------------------
+    @classmethod
+    def make_dogma_joint_union(
+        cls,
+        base_path: str = "data/phase6_5g_2/dogma_h5ads",
+        peak_set_path: str = "data/phase6_5g_2/dogma_h5ads/UNION_MANIFEST.json",
+    ) -> "DogmaJointLoader":
+        """Construct a joint LLL+DIG loader over the union peak space.
+
+        Cells are concatenated; ``lysis_idx`` is stamped per cell
+        (LLL=0, DIG=1 — matching ``aivc.data.collate.LYSIS_PROTOCOL_CODES``).
+        Use ``--arm joint`` in scripts/pretrain_multiome.py to invoke.
+        """
+        lll = cls.make_dogma_lll_union(
+            base_path=base_path, peak_set_path=peak_set_path,
+        )
+        dig = cls.make_dogma_dig_union(
+            base_path=base_path, peak_set_path=peak_set_path,
+        )
+        return DogmaJointLoader(lll, dig)
+
+
+# ----------------------------------------------------------------------
+# PR #43 (logical): joint LLL+DIG dataset wrapper for shared-encoder
+# training with lysis_protocol as a scVI-style categorical batch covariate.
+# Codes follow LYSIS_PROTOCOL_CODES (LLL=0, DIG=1) — must stay in sync.
+# ----------------------------------------------------------------------
+class DogmaJointLoader(Dataset):
+    """Joint LLL+DIG dataset wrapper. Stamps lysis_idx per cell.
+
+    LLL cells get ``lysis_idx=0``; DIG cells get ``lysis_idx=1``.
+    Length = len(lll_loader) + len(dig_loader).
+
+    Properties n_genes / n_peaks / n_proteins are required to match
+    across arms (after PR #41a peak union, ATAC dim does match;
+    RNA n_genes and Protein n_proteins always match by panel design).
+
+    Validation: dim mismatch raises at construction time with a clear
+    message naming the offending property — fail loud at the contract
+    boundary rather than during forward.
+    """
+
+    LYSIS_LLL = 0
+    LYSIS_DIG = 1
+
+    def __init__(self, lll_loader, dig_loader):
+        for prop in ("n_genes", "n_peaks", "n_proteins"):
+            lll_val = getattr(lll_loader, prop)
+            dig_val = getattr(dig_loader, prop)
+            if lll_val != dig_val:
+                raise ValueError(
+                    f"DogmaJointLoader: {prop} mismatch — "
+                    f"LLL={lll_val} vs DIG={dig_val}. "
+                    "Have you run the PR #41a peak union production?"
+                )
+        self.lll = lll_loader
+        self.dig = dig_loader
+        self.n_lll = len(lll_loader)
+        self.n_dig = len(dig_loader)
+
+    def __len__(self):
+        return self.n_lll + self.n_dig
+
+    def __getitem__(self, idx):
+        if idx < self.n_lll:
+            item = dict(self.lll[idx])
+            item["lysis_idx"] = self.LYSIS_LLL
+        else:
+            item = dict(self.dig[idx - self.n_lll])
+            item["lysis_idx"] = self.LYSIS_DIG
+        return item
+
+    @property
+    def n_genes(self):
+        return self.lll.n_genes
+
+    @property
+    def n_peaks(self):
+        return self.lll.n_peaks
+
+    @property
+    def n_proteins(self):
+        return self.lll.n_proteins
+
 
 def _to_dense(x) -> np.ndarray:
     if hasattr(x, "toarray"):
