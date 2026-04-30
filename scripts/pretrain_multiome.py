@@ -253,8 +253,16 @@ def main(argv=None):
                         "Supersedes --multiome_h5ad/--peak_set_path when set, "
                         "and switches the loss from MultiomePretrainHead "
                         "(bimodal) to _dogma_pretrain_loss (tri-modal).")
-    p.add_argument("--protein_latent", type=int, default=64,
-                   help="ProteinEncoder output latent dim (only used with --arm)")
+    # PR #45 (logical): default 128 matches rna_latent (config default).
+    # ProteinEncoder.cross_attn uses a single embed_dim for q/k/v (no separate
+    # kdim/vdim), so rna_emb passed at forward time must have last-dim ==
+    # embed_dim. The encoder's own docstring states "embed_dim MUST be 128".
+    # The prior default (64) silently broke the trimodal forward when used
+    # with the canonical config (rna_latent=128); surfaced by the PR #45
+    # real-data kill-and-resume integration test.
+    p.add_argument("--protein_latent", type=int, default=128,
+                   help="ProteinEncoder output latent dim (only used with --arm). "
+                        "MUST equal rna_latent — cross-attn shares embed_dim.")
     p.add_argument("--lysis_cov_dim", type=int, default=8,
                    help="Lysis covariate embedding dim (only used with --arm joint)")
     # PR #44 (logical): resume.
@@ -263,7 +271,18 @@ def main(argv=None):
                         "Encoder weights + optimizer + scheduler + epoch are "
                         "restored; config compatibility is validated at load "
                         "time (mismatch raises ValueError naming offending fields).")
+    # PR #45 (logical): clean termination after N steps. Used by the
+    # pre-flight kill-and-resume cycle test (deterministic, CI-friendly
+    # alternative to subprocess+SIGTERM) and as a compute-budget cap.
+    p.add_argument("--max-steps", "--max_steps", dest="max_steps",
+                   type=int, default=None,
+                   help="If set, terminate cleanly after global_step reaches "
+                        "N. Existing save block fires on exit, producing a "
+                        "resume-able checkpoint. Useful for compute-budget "
+                        "caps and the PR #45 pre-flight kill-and-resume cycle.")
     args = p.parse_args(argv)
+    if args.max_steps is not None and args.max_steps <= 0:
+        raise ValueError(f"--max-steps must be positive, got {args.max_steps}")
 
     # PR #41: load config and override defaults (CLI wins on conflict).
     # Sentinel-based detection: compare against argparse default and assume
@@ -555,8 +574,25 @@ def main(argv=None):
     # PR #41: outer epoch loop * inner step loop = total_steps iterations.
     # back-compat: --epochs unset -> default 1 epoch -> behavior identical to
     # pre-PR (single pass of --steps iterations).
+    # PR #45 (logical): hit_max_steps sentinel propagates a clean break from
+    # the inner loop out through the outer loop so the end-of-training save
+    # block below still runs and produces a resume-able checkpoint at the
+    # kill point. last_completed_epoch tracks how many epochs ran to
+    # completion — this is what gets stamped into resume_state, not
+    # args.epochs - 1 (the argparse ceiling), so a mid-epoch kill resumes
+    # in the SAME epoch instead of skipping forward to args.epochs.
+    hit_max_steps = False
+    last_completed_epoch = start_epoch - 1
     for epoch in range(start_epoch, args.epochs):
+        if hit_max_steps:
+            break
         for step in range(args.steps):
+            if args.max_steps is not None and global_step >= args.max_steps:
+                print(f"[max-steps] reached limit "
+                      f"global_step={global_step} >= {args.max_steps}; "
+                      f"breaking loops, will save below.")
+                hit_max_steps = True
+                break
             idx = torch.randint(0, rna_all.shape[0], (args.batch_size,))
             rna_batch = rna_all[idx].to(device)
             atac_batch = atac_all[idx].to(device)
@@ -674,6 +710,11 @@ def main(argv=None):
                     "epoch": epoch, "step": step, "global_step": global_step,
                     "lr": optim.param_groups[0]["lr"],
                 })
+        # PR #45 (logical): mark the epoch completed only if the inner loop
+        # ran to its natural end (no max-steps break). This drives the
+        # resume_state.epoch field — see save block below.
+        if not hit_max_steps:
+            last_completed_epoch = epoch
 
     # ---- Checkpoint ---- #
     # Phase 6.7b fix: stamp actual runtime shapes into config so the
@@ -730,10 +771,14 @@ def main(argv=None):
         config_to_save["arm"] = str(args.arm)
     # PR #44 (logical): resume state — captured at end-of-training. The
     # saved `epoch` is the LAST COMPLETED one; resume bumps to epoch+1.
+    # PR #45 (logical): use last_completed_epoch (tracked in the loop) not
+    # args.epochs - 1, so a max-steps kill mid-epoch resumes in the same
+    # epoch instead of jumping to args.epochs (which would leave the outer
+    # range empty and never advance global_step).
     ckpt_payload["resume_state"] = _build_resume_state(
         optimizer=optim,
         scheduler=scheduler,
-        epoch=args.epochs - 1,
+        epoch=last_completed_epoch,
         global_step=global_step,
     )
     torch.save(ckpt_payload, ckpt_path)
