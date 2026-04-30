@@ -133,6 +133,87 @@ def _git_rev() -> str:
         return "unknown"
 
 
+# ---------------------------------------------------------------------------
+# PR #44 (logical): resume mechanism — approximate granularity.
+#
+# Captures: optimizer state + scheduler state + epoch + global_step.
+# Does NOT capture: RNG state. Decision per spec — bit-exact resume costs
+# more code than it saves; sample-order divergence on resume is acceptable
+# for a 24-h GPU pretrain run.
+# ---------------------------------------------------------------------------
+
+def _build_resume_state(optimizer, scheduler, epoch: int, global_step: int) -> dict:
+    """Capture optimizer + scheduler + position counters for resume."""
+    from datetime import datetime, timezone
+    return {
+        "optimizer": optimizer.state_dict(),
+        "scheduler": scheduler.state_dict(),
+        "epoch": int(epoch),
+        "global_step": int(global_step),
+        "saved_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+# Critical config fields that MUST match between saved ckpt and current run
+# for resume to be safe. Mismatch on any of these means encoder/loss/data
+# shapes have changed; load_state_dict would fail anyway, but better to
+# fail fast with a clear message.
+_RESUME_CRITICAL_FIELDS = (
+    "arm",
+    "n_genes",
+    "n_peaks",
+    "n_proteins",
+    "rna_latent",
+    "atac_latent",
+    "proj_dim",
+    "protein_latent",
+    "n_lysis_categories",
+    "lysis_cov_dim",
+)
+
+
+def _validate_resume_config(saved_config: dict, current_config: dict) -> None:
+    """Raise ValueError if any critical config field differs.
+
+    Reports ALL mismatches in a single error (not just the first) so a
+    debugging operator sees the full delta in one read.
+    """
+    mismatches = []
+    for key in _RESUME_CRITICAL_FIELDS:
+        sv = saved_config.get(key)
+        cv = current_config.get(key)
+        # None == None is fine (field genuinely absent on both sides — e.g.
+        # a pre-PR-#43 single-arm ckpt has no n_lysis_categories key)
+        if sv != cv:
+            mismatches.append(f"  {key}: saved={sv!r}, current={cv!r}")
+    if mismatches:
+        raise ValueError(
+            "Resume config mismatch — critical fields differ:\n"
+            + "\n".join(mismatches)
+            + "\n\nResume cannot proceed. Either:\n"
+            + "  (a) re-invoke with matching args (same --arm, same dims), or\n"
+            + "  (b) start fresh without --resume."
+        )
+
+
+def _apply_resume_state(ckpt: dict, optimizer, scheduler) -> tuple[int, int]:
+    """Restore optimizer + scheduler from ckpt['resume_state'].
+
+    Returns
+    -------
+    (start_epoch, start_global_step) : tuple[int, int]
+        Caller resumes loop at start_epoch (the SAVED epoch is the LAST
+        completed one, so resume starts at saved_epoch + 1). For pre-PR-#44
+        ckpts (no ``resume_state`` key) returns (0, 0) → fresh start.
+    """
+    if "resume_state" not in ckpt:
+        return 0, 0
+    rs = ckpt["resume_state"]
+    optimizer.load_state_dict(rs["optimizer"])
+    scheduler.load_state_dict(rs["scheduler"])
+    return int(rs["epoch"]) + 1, int(rs["global_step"])
+
+
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--multiome_h5ad", default=None, help="Path to multiome .h5ad (optional)")
@@ -176,6 +257,12 @@ def main(argv=None):
                    help="ProteinEncoder output latent dim (only used with --arm)")
     p.add_argument("--lysis_cov_dim", type=int, default=8,
                    help="Lysis covariate embedding dim (only used with --arm joint)")
+    # PR #44 (logical): resume.
+    p.add_argument("--resume", type=str, default=None,
+                   help="Path to a previous checkpoint to resume from. "
+                        "Encoder weights + optimizer + scheduler + epoch are "
+                        "restored; config compatibility is validated at load "
+                        "time (mismatch raises ValueError naming offending fields).")
     args = p.parse_args(argv)
 
     # PR #41: load config and override defaults (CLI wins on conflict).
@@ -357,6 +444,62 @@ def main(argv=None):
         milestones=[max(1, warmup_steps)],
     )
 
+    # PR #44 (logical): optional resume from prior checkpoint. Restores
+    # encoder weights + optimizer + scheduler + position. Validates that
+    # critical config fields (arm, dims, covariate cardinality) match
+    # before loading; raises ValueError with a multi-field diagnostic
+    # if they don't.
+    start_epoch = 0
+    start_global_step = 0
+    if args.resume:
+        print(f"[resume] loading from {args.resume}")
+        # Routes through aivc.training.ckpt_loader to keep the
+        # test_no_bare_torch_load.py CI invariant intact (PR #44 added
+        # load_pretrain_ckpt_raw specifically for the resume use case).
+        from aivc.training.ckpt_loader import load_pretrain_ckpt_raw
+        ckpt = load_pretrain_ckpt_raw(args.resume, map_location=str(device))
+        # Mirror the same fields the save block stamps so validation
+        # compares apples-to-apples. protein_latent is always present
+        # in saved configs (from dict(vars(args))) regardless of arm,
+        # so don't None-gate it here either.
+        current_config = {
+            "arm": args.arm,
+            "n_genes": n_genes,
+            "n_peaks": n_peaks,
+            "n_proteins": (
+                n_proteins if args.arm in ("lll", "dig", "joint") else None
+            ),
+            "rna_latent": args.rna_latent,
+            "atac_latent": args.atac_latent,
+            "proj_dim": args.proj_dim,
+            "protein_latent": args.protein_latent,
+            "n_lysis_categories": n_lysis_categories,
+            "lysis_cov_dim": args.lysis_cov_dim,
+        }
+        _validate_resume_config(ckpt.get("config", {}), current_config)
+
+        # Restore encoder weights (always present in v1 ckpts)
+        rna_enc.load_state_dict(ckpt["rna_encoder"])
+        atac_enc.load_state_dict(ckpt["atac_encoder"])
+        if "pretrain_head" in ckpt:
+            head.load_state_dict(ckpt["pretrain_head"])
+        # Trimodal optional weights (only present for --arm in lll/dig/joint)
+        if "protein_encoder" in ckpt and protein_enc is not None:
+            protein_enc.load_state_dict(ckpt["protein_encoder"])
+        if "protein_decoder" in ckpt and protein_decoder is not None:
+            protein_decoder.load_state_dict(ckpt["protein_decoder"])
+        if "rna_proj" in ckpt and rna_proj is not None:
+            rna_proj.load_state_dict(ckpt["rna_proj"])
+        if "atac_proj" in ckpt and atac_proj is not None:
+            atac_proj.load_state_dict(ckpt["atac_proj"])
+        if "protein_proj" in ckpt and protein_proj is not None:
+            protein_proj.load_state_dict(ckpt["protein_proj"])
+
+        # Restore optimizer + scheduler + position counters
+        start_epoch, start_global_step = _apply_resume_state(ckpt, optim, scheduler)
+        print(f"[resume] start_epoch={start_epoch}, "
+              f"start_global_step={start_global_step}")
+
     # ---- Setup grad-guard sentinel ---- #
     # If NeumannPropagation is NOT in this entrypoint's graph, we must
     # assert it explicitly — otherwise "W.grad is None" after backward
@@ -407,11 +550,12 @@ def main(argv=None):
     ckpt_dir.mkdir(parents=True, exist_ok=True)
 
     loss_ma = None
-    global_step = 0
+    # PR #44 (logical): both counters seed from --resume when provided.
+    global_step = start_global_step
     # PR #41: outer epoch loop * inner step loop = total_steps iterations.
     # back-compat: --epochs unset -> default 1 epoch -> behavior identical to
     # pre-PR (single pass of --steps iterations).
-    for epoch in range(args.epochs):
+    for epoch in range(start_epoch, args.epochs):
         for step in range(args.steps):
             idx = torch.randint(0, rna_all.shape[0], (args.batch_size,))
             rna_batch = rna_all[idx].to(device)
@@ -568,6 +712,12 @@ def main(argv=None):
     # the trimodal arm was active. Empty slot otherwise (back-compat).
     # PR #43 (logical): also stamp n_lysis_categories + lysis_cov_dim into
     # config so ckpt loaders can reconstruct encoders with the right shape.
+    # PR #44 (logical): always stamp n_lysis_categories + lysis_cov_dim into
+    # config so resume validation has consistent fields across arm and no-arm
+    # ckpts (otherwise non-arm saves leave those keys absent and resume on a
+    # non-arm run with current=0 fires a spurious mismatch).
+    config_to_save["n_lysis_categories"] = int(n_lysis_categories)
+    config_to_save["lysis_cov_dim"] = int(args.lysis_cov_dim)
     if args.arm in ("lll", "dig", "joint"):
         ckpt_payload["protein_encoder"] = protein_enc.state_dict()
         ckpt_payload["protein_decoder"] = protein_decoder.state_dict()
@@ -578,8 +728,14 @@ def main(argv=None):
         config_to_save["n_proteins"] = int(n_proteins)
         config_to_save["protein_latent"] = int(args.protein_latent)
         config_to_save["arm"] = str(args.arm)
-        config_to_save["n_lysis_categories"] = int(n_lysis_categories)
-        config_to_save["lysis_cov_dim"] = int(args.lysis_cov_dim)
+    # PR #44 (logical): resume state — captured at end-of-training. The
+    # saved `epoch` is the LAST COMPLETED one; resume bumps to epoch+1.
+    ckpt_payload["resume_state"] = _build_resume_state(
+        optimizer=optim,
+        scheduler=scheduler,
+        epoch=args.epochs - 1,
+        global_step=global_step,
+    )
     torch.save(ckpt_payload, ckpt_path)
     print(f"[ckpt] saved -> {ckpt_path}")
 
