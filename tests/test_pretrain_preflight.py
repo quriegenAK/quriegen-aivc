@@ -168,3 +168,109 @@ def test_real_data_kill_and_resume_lll(tmp_path):
 
     print(f"\nLLL kill-and-resume cycle OK: gstep 2 -> 4, "
           f"protein_encoder + resume_state preserved")
+
+
+# --- Joint-arm regression (synthetic, monkeypatched loader) ----------------
+
+class _TinyJointDataset:
+    """Minimal joint dataset stand-in for the script's --arm joint path.
+
+    Mimics the contract `MultiomeLoader.make_dogma_joint_union()` returns:
+      - properties n_genes, n_peaks, n_proteins, n_lll, n_dig
+      - __len__ / __getitem__ yielding {"rna", "atac_peaks", "protein", "lysis_idx"}
+
+    Sized to fit in a few MB so the joint code path runs in seconds — vs the
+    real loader's ~41 GB peak dense materialization.
+    """
+    def __init__(self, n_lll=8, n_dig=8, n_genes=20, n_peaks=40, n_proteins=10):
+        import numpy as np
+        rng = np.random.default_rng(0)
+        n = n_lll + n_dig
+        self._rna = rng.standard_normal((n, n_genes)).astype("float32")
+        self._atac = rng.standard_normal((n, n_peaks)).astype("float32")
+        self._protein = rng.standard_normal((n, n_proteins)).astype("float32")
+        self.n_lll = n_lll
+        self.n_dig = n_dig
+        self._n_genes = n_genes
+        self._n_peaks = n_peaks
+        self._n_proteins = n_proteins
+
+    @property
+    def n_genes(self): return self._n_genes
+    @property
+    def n_peaks(self): return self._n_peaks
+    @property
+    def n_proteins(self): return self._n_proteins
+
+    def __len__(self): return self.n_lll + self.n_dig
+
+    def __getitem__(self, i):
+        return {
+            "rna": self._rna[i],
+            "atac_peaks": self._atac[i],
+            "protein": self._protein[i],
+            "lysis_idx": 0 if i < self.n_lll else 1,
+        }
+
+
+def test_joint_arm_no_shape_mismatch_synthetic(tmp_path, monkeypatch):
+    """REGRESSION (PR #46): script's --arm joint code path must not crash on
+    the encoder forward.
+
+    Pre-PR-#46 the inner loop did a no-covariate pre-pass
+    (``rna_enc(rna_batch)``) before the joint covariate-aware re-pass — but
+    with ``lysis_emb`` allocated (``n_lysis_categories=2``), the encoder's
+    input Linear expected ``n_genes + cov_dim`` and the pre-pass sent only
+    ``n_genes``, triggering RuntimeError on the very first forward.
+
+    PR #45's cycle test used ``--arm lll`` where ``lysis_emb`` is None, so
+    the pre-pass worked. PR #43's joint unit tests built encoders directly
+    and bypassed the script's two-pass main() structure. No test exercised
+    --arm joint through the script entry point — so the bug shipped.
+
+    This test monkeypatches ``MultiomeLoader.make_dogma_joint_union`` to
+    return a tiny synthetic joint dataset (no real h5ads, fits in a few MB)
+    and runs main() through the joint code path. If the regression returns,
+    main() raises RuntimeError before save and this test fails loudly.
+    """
+    from aivc.data.multiome_loader import MultiomeLoader
+
+    monkeypatch.setattr(
+        MultiomeLoader, "make_dogma_joint_union",
+        staticmethod(lambda: _TinyJointDataset()),
+    )
+
+    from pretrain_multiome import main
+    argv = [
+        "--arm", "joint",
+        "--no_wandb",
+        "--steps", "10",
+        "--epochs", "1",
+        "--max-steps", "2",
+        "--batch_size", "4",
+        "--rna_latent", "16",
+        "--atac_latent", "16",
+        "--proj_dim", "16",
+        "--protein_latent", "16",  # must equal rna_latent (cross-attn shares embed_dim)
+        "--lysis_cov_dim", "4",
+        "--checkpoint_dir", str(tmp_path),
+        "--seed", "0",
+    ]
+    main(argv)  # if this raises, the regression has returned
+
+    ckpt = _load_ckpt(_find_ckpt(tmp_path))
+    cfg = ckpt["config"]
+
+    # Lysis covariate must be active — the bug only surfaces when this is true
+    assert cfg.get("arm") == "joint"
+    assert cfg.get("n_lysis_categories") == 2, "covariate not wired in joint"
+    assert ckpt["resume_state"]["global_step"] == 2
+
+    # Encoder weights must be finite — if main() crashed pre-save we'd never
+    # have got here, but assert anyway as belt-and-suspenders against partial
+    # state escaping the save block.
+    for k in ("rna_encoder", "atac_encoder", "protein_encoder"):
+        sd = ckpt[k]
+        for tname, t in sd.items():
+            assert torch.is_tensor(t)
+            assert torch.isfinite(t).all(), f"{k}.{tname} non-finite"
