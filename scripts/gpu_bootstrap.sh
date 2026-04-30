@@ -23,12 +23,11 @@ set -euo pipefail
 echo "[bootstrap] AIVC GPU instance setup starting..."
 echo "[bootstrap] $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
-# --- 1. Cluster modules (TODO: fill in actual module names) ---
-# Examples for common HPC clusters:
-#   module load python/3.11
-#   module load cuda/12.1
-#   module load cudnn/8.9
-# TODO: REPLACE WITH CLUSTER-SPECIFIC MODULE LOADS
+# --- 1. BSC cluster modules (filled 2026-04-30) ---
+module load python/3.11.5-gcc
+module load cuda/12.4
+module load cudnn/8.8.0-cuda12
+echo "[bootstrap] Modules loaded: python/3.11.5-gcc + cuda/12.4 + cudnn/8.8.0-cuda12"
 
 # --- 2. W&B credentials (TODO: fill in) ---
 export WANDB_ENTITY="${WANDB_ENTITY:-quriegen}"  # TODO: confirm entity name
@@ -75,11 +74,14 @@ PY
 # --- 6. Sanity check pretrain script ---
 python scripts/pretrain_multiome.py --help > /dev/null && echo "[bootstrap] pretrain script: OK"
 
-# --- 7. Verify required artifacts (TODO: adjust paths if rsynced elsewhere) ---
+# --- 7. Verify required artifacts (BSC scratch layout) ---
+SCRATCH_BASE="${SCRATCH_BASE:-/gpfs/scratch/ehpc748/quri020505/aivc_genelink}"
 REQUIRED_ARTIFACTS=(
-    "configs/dogma_pretrain.yaml"
-    "data/phase6_5g_2/dogma_h5ads/dogma_lll_union.h5ad"
-    "data/phase6_5g_2/dogma_h5ads/dogma_dig_union.h5ad"
+    "$SCRATCH_BASE/configs/dogma_pretrain.yaml"
+    "$SCRATCH_BASE/data/phase6_5g_2/dogma_h5ads/dogma_lll_union.h5ad"
+    "$SCRATCH_BASE/data/phase6_5g_2/dogma_h5ads/dogma_dig_union.h5ad"
+    "$SCRATCH_BASE/data/calderon2019/calderon_atac_hg38.h5ad"
+    "$SCRATCH_BASE/data/calderon2019/calderon_to_dogma_lll_M.npz"
 )
 for f in "${REQUIRED_ARTIFACTS[@]}"; do
     if [ -f "$f" ]; then
