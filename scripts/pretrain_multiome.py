@@ -601,8 +601,24 @@ def main(argv=None):
             rna_mask = (torch.rand_like(rna_batch) < 0.15).float()
             atac_mask = (torch.rand_like(atac_batch) < 0.15).float()
 
-            rna_latent, rna_recon = rna_enc(rna_batch)
-            atac_latent = atac_enc(atac_batch)
+            # PR #46 (logical): thread the lysis covariate into the FIRST
+            # encoder forward instead of running a no-covariate pre-pass and
+            # then re-running with covariate. The pre-pass shape-mismatched
+            # in joint mode because encoders constructed with
+            # n_lysis_categories=2 expect n_genes + cov_dim input features;
+            # passing only n_genes triggered RuntimeError on the input Linear.
+            # Single-arm (lll/dig) and mock paths use lysis_batch=None so the
+            # encoders' lysis_emb (None at construction) and forward signature
+            # behave identically to the pre-PR-#46 code.
+            lysis_batch = (
+                lysis_all[idx].to(device) if args.arm == "joint" else None
+            )
+            enc_kwargs = (
+                {"lysis_idx": lysis_batch} if lysis_batch is not None else {}
+            )
+
+            rna_latent, rna_recon = rna_enc(rna_batch, **enc_kwargs)
+            atac_latent = atac_enc(atac_batch, **enc_kwargs)
             atac_recon = atac_decoder(atac_latent)
 
             if args.arm in ("lll", "dig", "joint"):
@@ -611,19 +627,13 @@ def main(argv=None):
                 # signature is (adt, rna_emb=None, lysis_idx=None); we pass
                 # rna_latent as the alignment query so the cross-attn block
                 # participates.
-                # PR #43 (logical): joint arm threads lysis_idx into all
-                # three encoders. Single-arm (lll/dig): no covariate (the
-                # encoders' lysis_emb is None at construction).
+                # PR #43 (logical): joint arm threads lysis_idx into all three
+                # encoders. Single-arm (lll/dig): no covariate (lysis_emb is
+                # None at construction).
                 prot_batch = prot_all[idx].to(device)
                 prot_token_mask = (torch.rand_like(prot_batch) < 0.15).float()
 
-                if args.arm == "joint":
-                    lysis_batch = lysis_all[idx].to(device)
-                    # Re-run RNA + ATAC encoders WITH covariate (the earlier
-                    # rna_latent / atac_latent were computed without it).
-                    rna_latent, rna_recon = rna_enc(rna_batch, lysis_idx=lysis_batch)
-                    atac_latent = atac_enc(atac_batch, lysis_idx=lysis_batch)
-                    atac_recon = atac_decoder(atac_latent)
+                if lysis_batch is not None:
                     protein_latent = protein_enc(
                         prot_batch, rna_emb=rna_latent, lysis_idx=lysis_batch
                     )
