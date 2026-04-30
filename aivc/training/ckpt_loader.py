@@ -265,3 +265,46 @@ def load_full_pretrain_checkpoint(
     config.setdefault("atac_attn_dim", attn_dim)
     config.setdefault("proj_dim", proj_dim)
     return rna_encoder, atac_encoder, pretrain_head, config
+
+
+# ---------------------------------------------------------------------------
+# PR #44 (logical): raw-ckpt loader for the resume code path.
+#
+# scripts/pretrain_multiome.py needs the entire ckpt dict to (a) load
+# state_dicts into already-constructed encoders, (b) validate config
+# compatibility against the current run, and (c) restore optimizer +
+# scheduler from the optional `resume_state` slot. The two existing
+# loader functions reconstruct encoders from state_dict shapes — that
+# doesn't fit the "load into pre-constructed instances" pattern resume
+# needs. Adding a thin raw-load helper here keeps the
+# tests/test_no_bare_torch_load.py invariant intact (one canonical
+# torch.load entrypoint per artifact-shape) without forcing resume
+# callers to grow ALLOWED_LEGACY_LOADERS.
+# ---------------------------------------------------------------------------
+
+def load_pretrain_ckpt_raw(
+    ckpt_path: Union[str, Path],
+    map_location: str = "cpu",
+    expected_schema_version: int = 1,
+) -> dict:
+    """Load a pretrain checkpoint as a raw dict for resume / inspection.
+
+    Performs schema_version + top-level-keys validation but NOT
+    state_dict shape validation — caller (typically scripts/pretrain_multiome.py
+    --resume) handles `strict=True` ``load_state_dict`` against its own
+    pre-constructed encoder instances. Returns the full saved dict so
+    callers can also access the optional ``resume_state`` slot.
+
+    Use ``load_full_pretrain_checkpoint`` if you want encoders auto-
+    reconstructed from state_dict shapes; this function is intentionally
+    lower-level for the resume use case.
+    """
+    ckpt_path = Path(ckpt_path)
+    ckpt = torch.load(ckpt_path, map_location=map_location, weights_only=False)
+    if not isinstance(ckpt, dict):
+        raise CheckpointSchemaError(
+            f"Pretrained checkpoint at {ckpt_path} is not a dict "
+            f"(got {type(ckpt).__name__})."
+        )
+    _validate_top_level(ckpt, expected_schema_version)
+    return ckpt
