@@ -214,6 +214,62 @@ def _apply_resume_state(ckpt: dict, optimizer, scheduler) -> tuple[int, int]:
     return int(rs["epoch"]) + 1, int(rs["global_step"])
 
 
+# PR #48: extracted from end-of-training save block so the same payload
+# structure powers periodic saves. Each ckpt is independently resume-able
+# (carries the full resume_state dict). Helper does NOT touch W&B (caller
+# decides whether/when to log sha + finish run).
+def _save_checkpoint(
+    path,
+    *,
+    schema_version: int,
+    rna_encoder,
+    atac_encoder,
+    pretrain_head,
+    optimizer,
+    scheduler,
+    epoch: int,
+    global_step: int,
+    config: dict,
+    protein_encoder=None,
+    protein_decoder=None,
+    rna_proj=None,
+    atac_proj=None,
+    protein_proj=None,
+) -> str:
+    """Save a complete checkpoint at `path`. Returns sha256 of the file."""
+    ckpt_payload = {
+        "schema_version": schema_version,
+        "rna_encoder": rna_encoder.state_dict(),
+        "atac_encoder": atac_encoder.state_dict(),
+        "pretrain_head": pretrain_head.state_dict(),
+        "rna_encoder_class": "aivc.skills.rna_encoder.SimpleRNAEncoder",
+        "atac_encoder_class": "aivc.skills.atac_peak_encoder.PeakLevelATACEncoder",
+        "pretrain_head_class": "aivc.training.pretrain_heads.MultiomePretrainHead",
+        "config": config,
+    }
+    if protein_encoder is not None:
+        ckpt_payload["protein_encoder"] = protein_encoder.state_dict()
+        ckpt_payload["protein_encoder_class"] = "aivc.skills.protein_encoder.ProteinEncoder"
+    if protein_decoder is not None:
+        ckpt_payload["protein_decoder"] = protein_decoder.state_dict()
+    if rna_proj is not None:
+        ckpt_payload["rna_proj"] = rna_proj.state_dict()
+    if atac_proj is not None:
+        ckpt_payload["atac_proj"] = atac_proj.state_dict()
+    if protein_proj is not None:
+        ckpt_payload["protein_proj"] = protein_proj.state_dict()
+    ckpt_payload["resume_state"] = _build_resume_state(
+        optimizer=optimizer, scheduler=scheduler,
+        epoch=epoch, global_step=global_step,
+    )
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    torch.save(ckpt_payload, path)
+    sha = _sha256_file(Path(path))
+    print(f"[ckpt] saved -> {path}")
+    print(f"[ckpt] sha256={sha}")
+    return sha
+
+
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--multiome_h5ad", default=None, help="Path to multiome .h5ad (optional)")
@@ -280,6 +336,14 @@ def main(argv=None):
                         "N. Existing save block fires on exit, producing a "
                         "resume-able checkpoint. Useful for compute-budget "
                         "caps and the PR #45 pre-flight kill-and-resume cycle.")
+    # PR #48: periodic checkpoint cadence override. Falls back to YAML
+    # config's checkpoint.every_n_epochs (default 5). 0 disables periodic
+    # saves entirely; only end-of-training save fires.
+    p.add_argument("--every_n_epochs", "--every-n-epochs",
+                   dest="every_n_epochs", type=int, default=None,
+                   help="Save a periodic checkpoint every N completed epochs "
+                        "(overrides config's checkpoint.every_n_epochs). Set "
+                        "to 0 to disable periodic saves.")
     args = p.parse_args(argv)
     if args.max_steps is not None and args.max_steps <= 0:
         raise ValueError(f"--max-steps must be positive, got {args.max_steps}")
@@ -306,6 +370,10 @@ def main(argv=None):
         weight_decay = 0.01
         warmup_steps = 500
         ckpt_every = 5
+
+    # PR #48: --every_n_epochs CLI override wins over the config value.
+    if args.every_n_epochs is not None:
+        ckpt_every = int(args.every_n_epochs)
 
     # Epochs supersede --steps when set; back-compat default is single epoch.
     if args.epochs is None:
@@ -726,6 +794,56 @@ def main(argv=None):
         if not hit_max_steps:
             last_completed_epoch = epoch
 
+        # PR #48: periodic checkpoint at the end of every N completed epochs.
+        # Naming: pretrain_encoders_epoch_{N:04d}.pt to keep history. End-of-
+        # training save (after the outer loop) uses pretrain_encoders.pt.
+        # Skip on a max-steps termination epoch — the unconditional final
+        # save below handles that case (avoids duplicate writes).
+        if (
+            ckpt_every > 0
+            and not hit_max_steps
+            and (epoch + 1) % ckpt_every == 0
+        ):
+            # Stamp config keys that the helper expects (mirrors the final
+            # save block; consolidated up here so periodic ckpts have the
+            # same config schema as the final ckpt).
+            config_periodic = dict(vars(args))
+            config_periodic["n_genes"] = int(n_genes)
+            config_periodic["n_peaks"] = int(n_peaks)
+            config_periodic["hidden_dim"] = int(rna_enc.hidden_dim)
+            config_periodic["latent_dim"] = int(rna_enc.latent_dim)
+            config_periodic["device"] = str(device)
+            config_periodic["peak_set_sha256"] = None  # filled below in final
+            config_periodic["n_lysis_categories"] = int(n_lysis_categories)
+            config_periodic["lysis_cov_dim"] = int(args.lysis_cov_dim)
+            if args.arm in ("lll", "dig", "joint"):
+                config_periodic["n_proteins"] = int(n_proteins)
+                config_periodic["protein_latent"] = int(args.protein_latent)
+                config_periodic["arm"] = str(args.arm)
+
+            periodic_path = (
+                Path(args.checkpoint_dir)
+                / f"pretrain_encoders_epoch_{epoch + 1:04d}.pt"
+            )
+            is_trimodal = args.arm in ("lll", "dig", "joint")
+            _save_checkpoint(
+                periodic_path,
+                schema_version=PRETRAIN_CKPT_SCHEMA_VERSION,
+                rna_encoder=rna_enc,
+                atac_encoder=atac_enc,
+                pretrain_head=head,
+                protein_encoder=protein_enc if is_trimodal else None,
+                protein_decoder=protein_decoder if is_trimodal else None,
+                rna_proj=rna_proj if is_trimodal else None,
+                atac_proj=atac_proj if is_trimodal else None,
+                protein_proj=protein_proj if is_trimodal else None,
+                optimizer=optim,
+                scheduler=scheduler,
+                epoch=epoch,
+                global_step=global_step,
+                config=config_periodic,
+            )
+
     # ---- Checkpoint ---- #
     # Phase 6.7b fix: stamp actual runtime shapes into config so the
     # ckpt_loader can reconstruct SimpleRNAEncoder correctly. Without this,
@@ -748,58 +866,38 @@ def main(argv=None):
     else:
         config_to_save["peak_set_sha256"] = None
 
-    ckpt_path = ckpt_dir / "pretrain_encoders.pt"
-    ckpt_payload = {
-        "schema_version": PRETRAIN_CKPT_SCHEMA_VERSION,
-        "rna_encoder": rna_enc.state_dict(),
-        "atac_encoder": atac_enc.state_dict(),
-        "pretrain_head": head.state_dict(),
-        "rna_encoder_class": "aivc.skills.rna_encoder.SimpleRNAEncoder",
-        "atac_encoder_class": "aivc.skills.atac_peak_encoder.PeakLevelATACEncoder",
-        "pretrain_head_class": "aivc.training.pretrain_heads.MultiomePretrainHead",
-        "config": config_to_save,
-    }
-    # PR #42 (logical): persist protein encoder + decoder + projections when
-    # the trimodal arm was active. Empty slot otherwise (back-compat).
-    # PR #43 (logical): also stamp n_lysis_categories + lysis_cov_dim into
-    # config so ckpt loaders can reconstruct encoders with the right shape.
-    # PR #44 (logical): always stamp n_lysis_categories + lysis_cov_dim into
-    # config so resume validation has consistent fields across arm and no-arm
-    # ckpts (otherwise non-arm saves leave those keys absent and resume on a
-    # non-arm run with current=0 fires a spurious mismatch).
+    # PR #42-#44 config stamps consolidated up here so they're in place for
+    # both periodic AND end-of-training saves (helper passes config through
+    # by value at call time — stamps must precede any save call).
     config_to_save["n_lysis_categories"] = int(n_lysis_categories)
     config_to_save["lysis_cov_dim"] = int(args.lysis_cov_dim)
     if args.arm in ("lll", "dig", "joint"):
-        ckpt_payload["protein_encoder"] = protein_enc.state_dict()
-        ckpt_payload["protein_decoder"] = protein_decoder.state_dict()
-        ckpt_payload["rna_proj"] = rna_proj.state_dict()
-        ckpt_payload["atac_proj"] = atac_proj.state_dict()
-        ckpt_payload["protein_proj"] = protein_proj.state_dict()
-        ckpt_payload["protein_encoder_class"] = "aivc.skills.protein_encoder.ProteinEncoder"
         config_to_save["n_proteins"] = int(n_proteins)
         config_to_save["protein_latent"] = int(args.protein_latent)
         config_to_save["arm"] = str(args.arm)
-    # PR #44 (logical): resume state — captured at end-of-training. The
-    # saved `epoch` is the LAST COMPLETED one; resume bumps to epoch+1.
-    # PR #45 (logical): use last_completed_epoch (tracked in the loop) not
-    # args.epochs - 1, so a max-steps kill mid-epoch resumes in the same
-    # epoch instead of jumping to args.epochs (which would leave the outer
-    # range empty and never advance global_step).
-    ckpt_payload["resume_state"] = _build_resume_state(
+
+    # PR #48: end-of-training save delegated to _save_checkpoint helper. The
+    # same helper powers periodic saves inside the outer loop. Either
+    # checkpoint file (periodic or final) is independently resume-able.
+    ckpt_path = ckpt_dir / "pretrain_encoders.pt"
+    is_trimodal = args.arm in ("lll", "dig", "joint")
+    ckpt_sha256 = _save_checkpoint(
+        ckpt_path,
+        schema_version=PRETRAIN_CKPT_SCHEMA_VERSION,
+        rna_encoder=rna_enc,
+        atac_encoder=atac_enc,
+        pretrain_head=head,
+        protein_encoder=protein_enc if is_trimodal else None,
+        protein_decoder=protein_decoder if is_trimodal else None,
+        rna_proj=rna_proj if is_trimodal else None,
+        atac_proj=atac_proj if is_trimodal else None,
+        protein_proj=protein_proj if is_trimodal else None,
         optimizer=optim,
         scheduler=scheduler,
         epoch=last_completed_epoch,
         global_step=global_step,
+        config=config_to_save,
     )
-    torch.save(ckpt_payload, ckpt_path)
-    print(f"[ckpt] saved -> {ckpt_path}")
-
-    # Post-save provenance: hash the checkpoint we just wrote and log
-    # it to the W&B run config. Phase 6.5's linear-probe gate will
-    # assert this value matches the ckpt it loads, so the two SHAs
-    # line up in the audit trail.
-    ckpt_sha256 = _sha256_file(ckpt_path)
-    print(f"[ckpt] sha256={ckpt_sha256}")
     if run is not None:
         try:
             run.config.update({"ckpt_sha256": ckpt_sha256}, allow_val_change=True)
