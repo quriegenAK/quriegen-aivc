@@ -5,7 +5,7 @@
 #SBATCH --partition=acc
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=20
 #SBATCH --gres=gpu:1
 #SBATCH --time=24:00:00
 #SBATCH --output=/gpfs/scratch/ehpc748/quri020505/logs/pretrain_%j.out
@@ -31,10 +31,24 @@ SMOKE_CKPT_DIR=$SCRATCH/checkpoints/smoke
 
 mkdir -p $LOGS $CKPT_DIR $SMOKE_CKPT_DIR
 
-# --- Modules (mirror gpu_bootstrap.sh) ---
+# --- Modules (mirror gpu_bootstrap.sh; BSC MareNostrum5 ACC partition) ---
+# Validated on H100 node as01r1b10 with job 39833102 (2026-04-30).
+# CUDA stack is 11.8 via nvidia-hpc-sdk; pytorch/2.4.0 supplies torch from system.
+module load gcc/11.4.0
+module load mkl/2024.0
+module load impi/2021.11
+module load hdf5/1.14.1-2-gcc
+module load openblas/0.3.27-gcc
+module load nccl/2.19.4
+module load nvidia-hpc-sdk/23.11-cuda11.8
+module load cudnn/9.0.0-cuda11
+module load tensorrt/10.0.0-cuda11
 module load python/3.11.5-gcc
-module load cuda/12.4
-module load cudnn/8.8.0-cuda12
+module load pytorch/2.4.0
+
+# --- PYTHONPATH for user-level offline-installed wheels ---
+# Project deps installed via offline wheel workflow land at ~/.local/lib/python3.11/site-packages.
+export PYTHONPATH="${HOME}/.local/lib/python3.11/site-packages:${PYTHONPATH:-}"
 
 # --- W&B credentials ---
 export WANDB_ENTITY=quriegen

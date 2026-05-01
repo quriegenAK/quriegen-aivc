@@ -23,11 +23,29 @@ set -euo pipefail
 echo "[bootstrap] AIVC GPU instance setup starting..."
 echo "[bootstrap] $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
-# --- 1. BSC cluster modules (filled 2026-04-30) ---
+# --- 1. BSC MareNostrum5 ACC partition modules (validated on H100 node 2026-04-30) ---
+# Load order is load-bearing. CUDA stack is 11.8 (via nvidia-hpc-sdk), NOT 12.4.
+# pytorch/2.4.0 module supplies torch via the system, so pip install can use
+# --no-deps for project itself and skip torch reinstall (offline wheel workflow
+# on BSC: transfer non-torch wheels from Mac, install with --no-index).
+module load gcc/11.4.0
+module load mkl/2024.0
+module load impi/2021.11
+module load hdf5/1.14.1-2-gcc
+module load openblas/0.3.27-gcc
+module load nccl/2.19.4
+module load nvidia-hpc-sdk/23.11-cuda11.8
+module load cudnn/9.0.0-cuda11
+module load tensorrt/10.0.0-cuda11
 module load python/3.11.5-gcc
-module load cuda/12.4
-module load cudnn/8.8.0-cuda12
-echo "[bootstrap] Modules loaded: python/3.11.5-gcc + cuda/12.4 + cudnn/8.8.0-cuda12"
+module load pytorch/2.4.0
+echo "[bootstrap] Modules loaded: gcc/11.4.0 + mkl/2024.0 + impi/2021.11 + hdf5/1.14.1-2-gcc + openblas/0.3.27-gcc + nccl/2.19.4 + nvidia-hpc-sdk/23.11-cuda11.8 + cudnn/9.0.0-cuda11 + tensorrt/10.0.0-cuda11 + python/3.11.5-gcc + pytorch/2.4.0"
+
+# --- 1b. PYTHONPATH for user-level offline-installed wheels ---
+# BSC login nodes lack pypi access; deps installed via wheel transfer from Mac
+# land at ~/.local/lib/python3.11/site-packages. Prepend so Python finds them.
+export PYTHONPATH="${HOME}/.local/lib/python3.11/site-packages:${PYTHONPATH:-}"
+echo "[bootstrap] PYTHONPATH includes ~/.local/lib/python3.11/site-packages"
 
 # --- 2. W&B credentials (TODO: fill in) ---
 export WANDB_ENTITY="${WANDB_ENTITY:-quriegen}"  # TODO: confirm entity name
