@@ -83,22 +83,13 @@ class TestMixedPrecision:
         arr = t.detach().cpu().float().numpy()
         assert arr.dtype == np.float32
 
-    def test_no_gradscaler_in_train_file(self):
-        with open("train_v11.py", "r") as f:
-            src = f.read()
-        assert "GradScaler" not in src, (
-            "GradScaler found in train_v11.py. "
-            "Remove it — BF16 does not need gradient scaling."
-        )
-
-    def test_set_to_none_in_zero_grad(self):
-        """optimizer.zero_grad(set_to_none=True) must be present"""
-        with open("train_v11.py", "r") as f:
-            src = f.read()
-        assert "set_to_none=True" in src, (
-            "set_to_none=True missing from optimizer.zero_grad(). "
-            "Add it — reduces memory bandwidth on H100."
-        )
+    # Note: PR #50 removed test_no_gradscaler_in_train_file and
+    # test_set_to_none_in_zero_grad — both were file-grep guards reading
+    # train_v11.py, which was deleted in PR #50 as legacy dead code. The
+    # invariants they encoded (no GradScaler with BF16; zero_grad uses
+    # set_to_none) belong against the live training script
+    # (scripts/pretrain_multiome.py); a future PR can re-add them there
+    # if those invariants matter for the production GPU run.
 
 
 class TestTrainEvalMode:
