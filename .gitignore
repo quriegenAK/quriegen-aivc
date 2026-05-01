@@ -98,3 +98,10 @@ wandb/
 # Untracked via PR #35 (2026-04-27) after they forced rebase stashes during M1.
 experiments/index.jsonl
 memory/experiments.json
+
+# PR #50: cleanup-PR-added patterns (mlflow tracking, logs, outputs, phase experiments, notebooks)
+mlruns/
+*.log
+outputs/
+experiments/phase6_5*/
+*.ipynb
