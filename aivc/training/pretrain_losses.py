@@ -239,6 +239,135 @@ def _peak_to_gene_aux(**batch) -> torch.Tensor:
 
 
 # ----------------------------------------------------------------------
+# Phase 6.5g.2 PR #54 — Supervised contrastive (Khosla 2020) +
+# VICReg variance regularizer (Bardes 2022).
+#
+# Operates on z_supcon: a per-cell joint embedding (typically the fusion
+# module's output, L2-normalized). Required because the existing triad
+# InfoNCE is unsupervised cross-modal — it pulls positive pairs that
+# are the same cell across modalities, but does not pull cells of the
+# same cell type together. SupCon adds the cell-type-aware positive set.
+#
+# VICReg's variance term hinge-penalizes per-feature std below the
+# target. Prevents the encoder from collapsing some dimensions to
+# near-constants under the SupCon pull.
+# ----------------------------------------------------------------------
+SUPCON_VICREG_TERM_NAMES = ("supcon", "vicreg_variance")
+
+
+def _supcon_loss(**batch) -> torch.Tensor:
+    """Supervised contrastive loss (Khosla 2020, NeurIPS).
+
+    For each eligible anchor i with positives P(i) = {j : y_j = y_i, j != i}:
+        L_i = -1/|P(i)| * sum_{p in P(i)} log[ exp(s_ip / tau) / sum_{a != i} exp(s_ia / tau) ]
+    Aggregated as mean over anchors that have at least one positive.
+
+    Eligibility (`supcon_eligible_mask`) lets the loader exclude:
+      - Cells with masked-out cell types (e.g. 'other', 'other_T' for DOGMA)
+      - Cells below a confidence threshold (e.g. transferred labels with
+        cell_type_confidence < 0.6 for the DIG arm)
+    Excluded cells still contribute to the *negative* set (denominator)
+    when other anchors contrast against them, which is the correct
+    behavior — they are valid as "definitely not your class" examples.
+
+    Required batch keys:
+      z_supcon : (B, D) — L2-normalized per-cell embedding
+      cell_type_idx : (B,) LongTensor — integer class IDs
+    Optional batch keys:
+      supcon_eligible_mask : (B,) bool — True = use as anchor
+      supcon_temperature : float (default 0.07; Khosla SupCon original)
+
+    Returns a scalar tensor. Returns 0 (with grad) if fewer than 2
+    eligible anchors or no anchor has a positive in the batch.
+    """
+    z = batch["z_supcon"]
+    y = batch["cell_type_idx"].long()
+    tau = float(batch.get("supcon_temperature", 0.07))
+
+    eligible = batch.get("supcon_eligible_mask")
+    if eligible is None:
+        eligible = torch.ones_like(y, dtype=torch.bool)
+    eligible = eligible.bool()
+
+    if int(eligible.sum().item()) < 2:
+        return torch.zeros((), device=z.device, requires_grad=True)
+
+    # Pairwise sim over the FULL batch — eligible cells are anchors,
+    # ineligible cells remain valid negatives.
+    sim = (z @ z.t()) / tau  # (B, B)
+    B = z.shape[0]
+
+    # Mask self from denominator with a LARGE FINITE NEGATIVE, NOT -inf.
+    # Rationale: -inf * 0 = NaN under IEEE 754, and a downstream
+    # `(log_prob * pos_mask.float()).sum()` includes the diagonal
+    # (pos_mask[i,i] = False = 0.0), which would corrupt the row sum to
+    # NaN. -1e9 is far enough below any real cosine-sim/τ value
+    # (max ≈ 1/0.07 ≈ 14.3) that exp(-1e9) underflows to 0 in
+    # logsumexp, giving the same denominator as true -inf, but
+    # (-1e9) * 0 = 0 stays finite. Matches the supcon-pytorch reference
+    # implementation pattern.
+    self_mask = torch.eye(B, dtype=torch.bool, device=z.device)
+    sim = sim.masked_fill(self_mask, -1e9)
+
+    # log-softmax over the row (denominator runs over all j != i).
+    log_prob = sim - torch.logsumexp(sim, dim=1, keepdim=True)  # (B, B)
+
+    # Positive set: same class as anchor, not self, and ANCHOR is eligible.
+    same_class = (y.unsqueeze(0) == y.unsqueeze(1)) & ~self_mask  # (B, B)
+    # We only use ELIGIBLE rows as anchors (their per-anchor loss is
+    # computed). Positive partners (columns) can be any cell with the
+    # same class, eligible or not. This matches the spec: ineligible
+    # cells contribute only as negatives or, if same-class, as positives
+    # for an eligible anchor.
+    anchor_mask = eligible.unsqueeze(1)  # (B, 1)
+    pos_mask = same_class & anchor_mask  # (B, B)
+
+    pos_count = pos_mask.sum(dim=1)  # (B,)
+    valid_anchor = pos_count > 0  # (B,)
+    valid_anchor = valid_anchor & eligible
+    if int(valid_anchor.sum().item()) == 0:
+        return torch.zeros((), device=z.device, requires_grad=True)
+
+    # Per-anchor loss: average -log_prob over positive partners. The
+    # masked_fill above guarantees no -inf in log_prob, so (log_prob *
+    # pos_mask.float()) is finite everywhere.
+    log_prob_pos_sum = (log_prob * pos_mask.float()).sum(dim=1)  # (B,)
+    per_anchor = -log_prob_pos_sum / pos_count.clamp_min(1).float()  # (B,)
+    return per_anchor[valid_anchor].mean()
+
+
+def _vicreg_variance(**batch) -> torch.Tensor:
+    """VICReg variance regularizer (Bardes 2022).
+
+        L = (1/D) * sum_d max(0, gamma - sqrt(Var(z_d) + eps))
+
+    Hinge-penalizes per-feature std below `gamma` (target_std). Encourages
+    feature diversity across the batch; works as a collapse guard against
+    SupCon's tendency to compress some embedding dimensions.
+
+    Required batch keys:
+      z_supcon : (B, D)
+    Optional:
+      vicreg_target_std : float (default 1.0)
+      vicreg_eps : float (default 1e-4)
+
+    Returns a scalar tensor. Defined for B >= 2 (variance needs >=2 samples).
+    Returns 0 if B < 2.
+    """
+    z = batch["z_supcon"]
+    if z.shape[0] < 2:
+        return torch.zeros((), device=z.device, requires_grad=True)
+
+    target = float(batch.get("vicreg_target_std", 1.0))
+    eps = float(batch.get("vicreg_eps", 1e-4))
+
+    # var with unbiased=False to keep the denominator predictable across
+    # batch-size variations; 1/N rather than 1/(N-1).
+    std = torch.sqrt(z.var(dim=0, unbiased=False) + eps)  # (D,)
+    return F.relu(target - std).mean()
+
+
+# ----------------------------------------------------------------------
 # Registration helper.
 # ----------------------------------------------------------------------
 _PRETRAIN_SPEC = (
