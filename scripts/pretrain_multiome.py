@@ -366,10 +366,15 @@ def main(argv=None):
         weight_decay = float(cfg["optimizer"].get("weight_decay", 0.01))
         warmup_steps = int(cfg["schedule"]["warmup_steps"])
         ckpt_every = int(cfg["checkpoint"].get("every_n_epochs", 5))
+        # PR #54c: optional supcon config block. None == disabled.
+        supcon_cfg = cfg.get("supcon") if isinstance(cfg.get("supcon"), dict) else None
+        if supcon_cfg is not None and not supcon_cfg.get("enabled", False):
+            supcon_cfg = None
     else:
         weight_decay = 0.01
         warmup_steps = 500
         ckpt_every = 5
+        supcon_cfg = None
 
     # PR #48: --every_n_epochs CLI override wins over the config value.
     if args.every_n_epochs is not None:
@@ -382,6 +387,15 @@ def main(argv=None):
           f"epochs={args.epochs} steps_per_epoch={args.steps} "
           f"weight_decay={weight_decay} warmup_steps={warmup_steps} "
           f"ckpt_every_n_epochs={ckpt_every}")
+    if supcon_cfg is not None:
+        print(f"[supcon] enabled: lambda_supcon={supcon_cfg['lambda_supcon']} "
+              f"lambda_vicreg={supcon_cfg['lambda_vicreg']} "
+              f"temperature={supcon_cfg['temperature']} "
+              f"masked_classes={supcon_cfg.get('masked_classes', [])} "
+              f"min_confidence={supcon_cfg.get('min_confidence', 0.0)}")
+        print(f"[supcon] manifest: {supcon_cfg['class_index_manifest']}")
+    else:
+        print("[supcon] disabled")
 
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
@@ -395,26 +409,57 @@ def main(argv=None):
     # ---- Data ---- #
     # PR #42 (logical): tri-modal DOGMA path via --arm.
     # PR #43 (logical): --arm joint adds lysis covariate threading.
+    # PR #54c: --supcon kwargs threaded to loader factories.
     prot_all = None       # populated only on the trimodal branch
     lysis_all = None      # populated only on the joint branch
+    cell_type_idx_all = None         # PR #54c — populated when supcon_cfg is not None
+    supcon_eligible_all = None       # PR #54c — populated when supcon_cfg is not None
+    n_classes = None                 # PR #54c
+    manifest_fingerprint = None      # PR #54c — for ckpt provenance
     n_proteins = None
     n_lysis_categories = 0
+
+    # PR #54c: build a single supcon kwargs dict reused across factory calls.
+    supcon_loader_kwargs = {}
+    if supcon_cfg is not None:
+        supcon_loader_kwargs = dict(
+            use_labeled=True,
+            labels_obs_col=supcon_cfg["labels_obs_col"],
+            confidence_obs_col=supcon_cfg.get("confidence_obs_col"),
+            masked_classes=supcon_cfg.get("masked_classes"),
+            min_confidence=float(supcon_cfg.get("min_confidence", 0.0)),
+            class_index_manifest=supcon_cfg["class_index_manifest"],
+        )
+
     if args.arm in ("lll", "dig"):
         from aivc.data.multiome_loader import MultiomeLoader
         factory = (MultiomeLoader.make_dogma_lll_union
                    if args.arm == "lll" else MultiomeLoader.make_dogma_dig_union)
-        ds = factory()
+        ds = factory(**supcon_loader_kwargs)
         n_genes = ds.n_genes
         n_peaks = ds.n_peaks
         n_proteins = ds.n_proteins
         rna_all = torch.stack([torch.from_numpy(ds[i]["rna"]) for i in range(len(ds))])
         atac_all = torch.stack([torch.from_numpy(ds[i]["atac_peaks"]) for i in range(len(ds))])
         prot_all = torch.stack([torch.from_numpy(ds[i]["protein"]) for i in range(len(ds))])
+        if supcon_cfg is not None:
+            cell_type_idx_all = torch.tensor(
+                [ds[i]["cell_type_idx"] for i in range(len(ds))], dtype=torch.long
+            )
+            supcon_eligible_all = torch.tensor(
+                [ds[i]["supcon_eligible"] for i in range(len(ds))], dtype=torch.bool
+            )
+            n_classes = ds.n_classes
+            manifest_fingerprint = ds.manifest_fingerprint
         print(f"[data] DOGMA {args.arm} union: n_cells={rna_all.shape[0]} "
               f"n_genes={n_genes} n_peaks={n_peaks} n_proteins={n_proteins}")
+        if supcon_cfg is not None:
+            print(f"[data] supcon: n_classes={n_classes} "
+                  f"n_eligible={int(supcon_eligible_all.sum())} "
+                  f"manifest_fingerprint={manifest_fingerprint}")
     elif args.arm == "joint":
         from aivc.data.multiome_loader import MultiomeLoader
-        ds = MultiomeLoader.make_dogma_joint_union()
+        ds = MultiomeLoader.make_dogma_joint_union(**supcon_loader_kwargs)
         n_genes = ds.n_genes
         n_peaks = ds.n_peaks
         n_proteins = ds.n_proteins
@@ -425,10 +470,28 @@ def main(argv=None):
         lysis_all = torch.tensor(
             [ds[i]["lysis_idx"] for i in range(len(ds))], dtype=torch.long
         )
+        if supcon_cfg is not None:
+            cell_type_idx_all = torch.tensor(
+                [ds[i]["cell_type_idx"] for i in range(len(ds))], dtype=torch.long
+            )
+            supcon_eligible_all = torch.tensor(
+                [ds[i]["supcon_eligible"] for i in range(len(ds))], dtype=torch.bool
+            )
+            # Both arms must agree on n_classes (they share the manifest).
+            n_classes = ds.lll.n_classes
+            manifest_fingerprint = ds.lll.manifest_fingerprint
+            assert ds.dig.manifest_fingerprint == manifest_fingerprint, (
+                "DIG and LLL arms have divergent class_index_manifest fingerprints"
+            )
         print(f"[data] DOGMA joint union: n_cells={rna_all.shape[0]} "
               f"(LLL={ds.n_lll}, DIG={ds.n_dig}) n_genes={n_genes} "
               f"n_peaks={n_peaks} n_proteins={n_proteins} "
               f"n_lysis_categories={n_lysis_categories}")
+        if supcon_cfg is not None:
+            print(f"[data] supcon: n_classes={n_classes} "
+                  f"n_eligible={int(supcon_eligible_all.sum())} / "
+                  f"{rna_all.shape[0]} "
+                  f"manifest_fingerprint={manifest_fingerprint}")
     elif args.multiome_h5ad and args.peak_set:
         from aivc.data.multiome_loader import MultiomeLoader
         ds = MultiomeLoader(
@@ -722,6 +785,33 @@ def main(argv=None):
                     [[1, 0, 1, 1]], device=device, dtype=torch.float32
                 ).expand(B, 4)
 
+                # PR #54c: build z_supcon as L2-normalized mean of L2-normalized
+                # per-modality projections. Parameter-free fusion for SupCon's
+                # cell-type-aware contrastive signal.
+                if supcon_cfg is not None:
+                    z_supcon = F.normalize(
+                        (
+                            F.normalize(z_rna, dim=-1)
+                            + F.normalize(z_atac, dim=-1)
+                            + F.normalize(z_protein, dim=-1)
+                        ) / 3.0,
+                        dim=-1,
+                    )
+                    cell_type_batch = cell_type_idx_all[idx].to(device)
+                    supcon_eligible_batch = supcon_eligible_all[idx].to(device)
+                    w_supcon = float(supcon_cfg["lambda_supcon"])
+                    w_vicreg = float(supcon_cfg["lambda_vicreg"])
+                    supcon_temperature = float(supcon_cfg["temperature"])
+                    vicreg_target_std = float(supcon_cfg.get("vicreg_target_std", 1.0))
+                else:
+                    z_supcon = None
+                    cell_type_batch = None
+                    supcon_eligible_batch = None
+                    w_supcon = 0.0
+                    w_vicreg = 0.0
+                    supcon_temperature = 0.07
+                    vicreg_target_std = 1.0
+
                 from losses import _dogma_pretrain_loss  # noqa: E402
                 total, components = _dogma_pretrain_loss(
                     rna_recon=rna_recon, rna_target=rna_batch, rna_mask=rna_mask,
@@ -731,6 +821,14 @@ def main(argv=None):
                     z_rna=z_rna, z_atac=z_atac, z_protein=z_protein,
                     modality_mask=modality_mask,
                     infonce_temperature=0.1,
+                    # PR #54c: SupCon + VICReg threaded through.
+                    z_supcon=z_supcon,
+                    cell_type_idx=cell_type_batch,
+                    supcon_eligible_mask=supcon_eligible_batch,
+                    w_supcon=w_supcon,
+                    w_vicreg=w_vicreg,
+                    supcon_temperature=supcon_temperature,
+                    vicreg_target_std=vicreg_target_std,
                 )
             else:
                 batch_dict = {

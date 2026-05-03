@@ -215,6 +215,32 @@ def test_min_confidence_filters_below_threshold(tmp_path: Path):
     assert elig == expected
 
 
+def test_min_confidence_with_missing_confidence_column_falls_back_to_max(tmp_path: Path, capsys):
+    """Confidence column requested but not in h5ad -> treat all cells as
+    max conf (no filtering on confidence axis).
+
+    This is the LLL-arm path: published Azimuth labels are gold-standard
+    so the labeled h5ad has no `cell_type_confidence` column. The joint
+    factory passes the same kwargs to both arms, so the loader must
+    gracefully fall back rather than hard-fail when the column is absent.
+    """
+    cell_types = ["CD4_T", "B", "CD4_T", "CD4_T", "DC", "NK", "CD8_T", "CD4_T"]
+    # NOTE: confidences=None -> obs column not written
+    loader = _build_loader(
+        tmp_path,
+        cell_types=cell_types,
+        labels_obs_col="cell_type",
+        confidence_obs_col="cell_type_confidence",  # absent in h5ad
+        min_confidence=0.6,
+    )
+    # All 8 should be eligible (only class mask applies; no class is masked)
+    elig = [loader[i]["supcon_eligible"] for i in range(8)]
+    assert elig == [True] * 8
+    captured = capsys.readouterr()
+    assert "not present" in captured.err
+    assert "max confidence" in captured.err
+
+
 def test_masked_classes_and_min_confidence_combined(tmp_path: Path):
     cell_types = ["CD4_T", "other", "CD4_T", "B"]
     confidences = [0.95, 0.99, 0.30, 0.85]

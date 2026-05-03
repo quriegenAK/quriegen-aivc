@@ -35,3 +35,24 @@ model:
   rna_latent: 128
   atac_latent: 64
   proj_dim: 128
+
+# PR #54: Supervised contrastive (Khosla 2020) + VICReg variance term.
+# Activates only when supcon.enabled=true. The training script will then
+# load the LABELED h5ads (dogma_*_union_labeled.h5ad) and stamp
+# z_supcon = L2_normalize(mean(L2_normalize(z_rna) + L2_normalize(z_atac)
+# + L2_normalize(z_protein))) per batch.
+supcon:
+  enabled: true
+  lambda_supcon: 0.5
+  lambda_vicreg: 0.1
+  temperature: 0.07
+  vicreg_target_std: 1.0
+  # SupCon eligibility filters (cells failing these get supcon_eligible=False
+  # and are excluded as anchors but still serve as negatives).
+  masked_classes: ["other", "other_T"]
+  min_confidence: 0.6
+  # Canonical {cell_type: int} manifest. Must be the same one used at eval
+  # time — fingerprint stamped in checkpoint metadata.
+  class_index_manifest: "data/phase6_5g_2/dogma_h5ads/cell_type_index.json"
+  labels_obs_col: "cell_type"
+  confidence_obs_col: "cell_type_confidence"

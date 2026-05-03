@@ -264,12 +264,24 @@ class MultiomeLoader(Dataset):
                 # User asked for a confidence threshold but didn't tell us
                 # which column. Treat all cells as max-confidence (1.0).
                 conf = np.ones(len(labels), dtype=np.float32)
+            elif self.confidence_obs_col not in adata.obs.columns:
+                # Column requested but not present in this h5ad. Common
+                # case for the LLL arm of DOGMA: published Azimuth labels
+                # are gold-standard so no per-cell confidence was stamped;
+                # only DIG's kNN-transferred labels carry confidence. Fall
+                # back to max-confidence (no cells dropped on this arm).
+                # This is a graceful no-op rather than a hard error so the
+                # joint factory can pass the same kwargs to both arms.
+                import sys as _sys
+                print(
+                    f"  [supcon] confidence_obs_col {self.confidence_obs_col!r} "
+                    f"not present in {self.h5ad_path}; treating all cells as "
+                    f"max confidence (1.0). This is the expected path for the "
+                    f"LLL arm of DOGMA.",
+                    file=_sys.stderr,
+                )
+                conf = np.ones(len(labels), dtype=np.float32)
             else:
-                if self.confidence_obs_col not in adata.obs.columns:
-                    raise ValueError(
-                        f"confidence_obs_col {self.confidence_obs_col!r} "
-                        f"not in obs. Available: {list(adata.obs.columns)}"
-                    )
                 conf = adata.obs[self.confidence_obs_col].fillna(1.0).values.astype(np.float32)
             eligible &= (conf >= self.min_confidence)
         self._supcon_eligible = eligible
@@ -394,20 +406,27 @@ class MultiomeLoader(Dataset):
         base_path: str = "data/phase6_5g_2/dogma_h5ads",
         peak_set_path: str = "data/phase6_5g_2/dogma_h5ads/UNION_MANIFEST.json",
         lazy: bool = False,
+        # PR #54c: use the labeled h5ad and thread SupCon kwargs through.
+        use_labeled: bool = False,
+        labels_obs_col: Optional[str] = None,
+        confidence_obs_col: Optional[str] = None,
+        masked_classes: Optional[list] = None,
+        min_confidence: float = 0.0,
+        class_index_manifest: Optional[str] = None,
     ) -> "MultiomeLoader":
         """Factory for DOGMA-LLL arm in union peak space (PR #41a).
 
         Use this for joint LLL+DIG training where both arms must share
         the encoder's input dim. Arm-unique peaks are zero-filled in
-        the other arm's cells. Expects ``{base_path}/dogma_lll_union.h5ad``
-        produced by scripts/build_dogma_peak_union.py.
+        the other arm's cells.
 
-        Defaults match the canonical Path A artifact layout from the
-        production union run (PROMPT 41a-PRODUCTION). Override paths
-        only for off-canon layouts (tests, alt root, etc.).
+        File selection: ``dogma_lll_union.h5ad`` by default; flip
+        ``use_labeled=True`` to load ``dogma_lll_union_labeled.h5ad``
+        which includes obs['cell_type'] for SupCon training (PR #54c).
         """
+        filename = "dogma_lll_union_labeled.h5ad" if use_labeled else "dogma_lll_union.h5ad"
         return cls(
-            h5ad_path=os.path.join(base_path, "dogma_lll_union.h5ad"),
+            h5ad_path=os.path.join(base_path, filename),
             schema="obsm_atac",
             peak_set_path=peak_set_path,
             atac_key="atac_peaks",
@@ -415,6 +434,11 @@ class MultiomeLoader(Dataset):
             lysis_protocol="LLL",
             protein_panel_id="totalseq_a_210",
             lazy=lazy,
+            labels_obs_col=labels_obs_col,
+            confidence_obs_col=confidence_obs_col,
+            masked_classes=masked_classes,
+            min_confidence=min_confidence,
+            class_index_manifest=class_index_manifest,
         )
 
     @classmethod
@@ -423,13 +447,22 @@ class MultiomeLoader(Dataset):
         base_path: str = "data/phase6_5g_2/dogma_h5ads",
         peak_set_path: str = "data/phase6_5g_2/dogma_h5ads/UNION_MANIFEST.json",
         lazy: bool = False,
+        # PR #54c: parallel to make_dogma_lll_union — same supcon plumbing.
+        use_labeled: bool = False,
+        labels_obs_col: Optional[str] = None,
+        confidence_obs_col: Optional[str] = None,
+        masked_classes: Optional[list] = None,
+        min_confidence: float = 0.0,
+        class_index_manifest: Optional[str] = None,
     ) -> "MultiomeLoader":
         """Factory for DOGMA-DIG arm in union peak space (PR #41a).
 
-        See make_dogma_lll_union. Expects ``{base_path}/dogma_dig_union.h5ad``.
+        See make_dogma_lll_union. ``use_labeled=True`` switches to
+        ``dogma_dig_union_labeled.h5ad`` for SupCon training (PR #54c).
         """
+        filename = "dogma_dig_union_labeled.h5ad" if use_labeled else "dogma_dig_union.h5ad"
         return cls(
-            h5ad_path=os.path.join(base_path, "dogma_dig_union.h5ad"),
+            h5ad_path=os.path.join(base_path, filename),
             schema="obsm_atac",
             peak_set_path=peak_set_path,
             atac_key="atac_peaks",
@@ -437,6 +470,11 @@ class MultiomeLoader(Dataset):
             lysis_protocol="DIG",
             protein_panel_id="totalseq_a_210",
             lazy=lazy,
+            labels_obs_col=labels_obs_col,
+            confidence_obs_col=confidence_obs_col,
+            masked_classes=masked_classes,
+            min_confidence=min_confidence,
+            class_index_manifest=class_index_manifest,
         )
 
     # ------------------------------------------------------------------
@@ -447,19 +485,36 @@ class MultiomeLoader(Dataset):
         cls,
         base_path: str = "data/phase6_5g_2/dogma_h5ads",
         peak_set_path: str = "data/phase6_5g_2/dogma_h5ads/UNION_MANIFEST.json",
+        # PR #54c: thread SupCon kwargs to both child arm factories.
+        use_labeled: bool = False,
+        labels_obs_col: Optional[str] = None,
+        confidence_obs_col: Optional[str] = None,
+        masked_classes: Optional[list] = None,
+        min_confidence: float = 0.0,
+        class_index_manifest: Optional[str] = None,
     ) -> "DogmaJointLoader":
         """Construct a joint LLL+DIG loader over the union peak space.
 
         Cells are concatenated; ``lysis_idx`` is stamped per cell
         (LLL=0, DIG=1 — matching ``aivc.data.collate.LYSIS_PROTOCOL_CODES``).
         Use ``--arm joint`` in scripts/pretrain_multiome.py to invoke.
+
+        ``use_labeled=True`` + supcon kwargs propagate to both child arms.
+        Both arms MUST be either-labeled-or-not (the alternative would be
+        an asymmetric label space which DogmaJointLoader cannot represent
+        cleanly). The kwargs are threaded as-is.
         """
-        lll = cls.make_dogma_lll_union(
+        kwargs = dict(
             base_path=base_path, peak_set_path=peak_set_path,
+            use_labeled=use_labeled,
+            labels_obs_col=labels_obs_col,
+            confidence_obs_col=confidence_obs_col,
+            masked_classes=masked_classes,
+            min_confidence=min_confidence,
+            class_index_manifest=class_index_manifest,
         )
-        dig = cls.make_dogma_dig_union(
-            base_path=base_path, peak_set_path=peak_set_path,
-        )
+        lll = cls.make_dogma_lll_union(**kwargs)
+        dig = cls.make_dogma_dig_union(**kwargs)
         return DogmaJointLoader(lll, dig)
 
 
