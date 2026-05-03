@@ -70,6 +70,75 @@ class MockEncoder(nn.Module):
         return self.linear(x)
 
 
+def load_atac_encoder_from_ckpt(
+    ckpt_path,
+    expected_n_peaks: int = None,
+    map_location: str = "cpu",
+):
+    """Load PeakLevelATACEncoder from a pretrain checkpoint.
+
+    Used by scripts/eval_calderon_linear_probe.py when --encoder_ckpt is
+    provided. Replaces MockEncoder with the trained encoder.
+
+    Parameters
+    ----------
+    ckpt_path : str or Path
+        Path to checkpoint produced by scripts/pretrain_multiome.py.
+    expected_n_peaks : int, optional
+        If provided, asserts ckpt's n_peaks matches. Catches coordinate-
+        system / peak-set mismatches at load time instead of at encoder
+        forward where shape errors are cryptic.
+    map_location : str
+        torch.load map_location. Default 'cpu'.
+
+    Returns
+    -------
+    encoder : PeakLevelATACEncoder (in eval mode)
+    config : dict (training config from ckpt for provenance)
+    """
+    from pathlib import Path
+    from aivc.skills.atac_peak_encoder import PeakLevelATACEncoder
+    from aivc.training.ckpt_loader import load_pretrain_ckpt_raw
+
+    ckpt_path = Path(ckpt_path)
+    if not ckpt_path.exists():
+        raise FileNotFoundError(f"Checkpoint not found: {ckpt_path}")
+
+    ckpt = load_pretrain_ckpt_raw(ckpt_path, map_location=map_location)
+    config = ckpt.get("config", {})
+
+    n_peaks = int(config.get("n_peaks", 0))
+    if n_peaks == 0 and "atac_encoder" in ckpt:
+        # Recover from LSI weight matrix shape if config didn't stamp it
+        lsi_w = ckpt["atac_encoder"].get("lsi.weight")
+        if lsi_w is not None:
+            n_peaks = int(lsi_w.shape[1])
+    if n_peaks == 0:
+        raise ValueError(f"Could not determine n_peaks from {ckpt_path}")
+
+    if expected_n_peaks is not None and expected_n_peaks != n_peaks:
+        raise ValueError(
+            f"n_peaks mismatch: ckpt={n_peaks}, expected={expected_n_peaks}. "
+            "Likely coordinate-system or peak-set mismatch between trained "
+            "encoder and the projection target. Verify projection M was "
+            "rebuilt against the same DOGMA peak set as the trained encoder."
+        )
+
+    attn_dim = int(config.get("atac_latent", 64))
+    n_lysis_categories = int(config.get("n_lysis_categories", 0))
+    lysis_cov_dim = int(config.get("lysis_cov_dim", 8))
+
+    encoder = PeakLevelATACEncoder(
+        n_peaks=n_peaks,
+        attn_dim=attn_dim,
+        n_lysis_categories=n_lysis_categories,
+        lysis_cov_dim=lysis_cov_dim,
+    )
+    encoder.load_state_dict(ckpt["atac_encoder"], strict=True)
+    encoder.eval()
+    return encoder, config
+
+
 def encode_samples(
     X: sp.spmatrix | np.ndarray | torch.Tensor,
     encoder: nn.Module,
