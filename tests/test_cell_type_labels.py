@@ -27,6 +27,40 @@ def test_clr_normalize_rows_sum_to_zero():
     np.testing.assert_allclose(row_sums, 0.0, atol=1e-9)
 
 
+def test_clr_normalize_passthrough_when_input_already_clr(capsys):
+    """If input has negative values it's assumed pre-CLR; pass through.
+
+    Regression for PR #53 production failure 2026-05-03 where DOGMA h5ad
+    obsm['protein'] is already CLR-normalized at write time and a second
+    log(x+1) call produced NaN for x < -1, sending 9415/13763 cells to
+    Unknown via NaN propagation.
+    """
+    pre_clr = np.array(
+        [
+            [1.5, -2.0, 0.3, -0.5],
+            [-1.0, 2.0, -0.3, 0.5],
+        ],
+        dtype=np.float64,
+    )
+    out = clr_normalize(pre_clr)
+    np.testing.assert_array_equal(out, pre_clr)
+    captured = capsys.readouterr()
+    assert "Assuming pre-CLR-normalized" in captured.err
+    assert "skipping in-script CLR" in captured.err
+    assert not np.isnan(out).any()
+
+
+def test_clr_normalize_no_nan_on_already_normalized():
+    """Hard regression: no NaN on pre-CLR input (the production bug)."""
+    rng = np.random.RandomState(1)
+    pre_clr = rng.normal(loc=0.0, scale=1.5, size=(50, 30)).astype(np.float64)
+    # ensure some values are < -1 (would produce NaN under log(x+1))
+    assert (pre_clr < -1).any(), "test setup: need values < -1 to be a real regression"
+    out = clr_normalize(pre_clr)
+    assert not np.isnan(out).any(), "pre-CLR passthrough must not produce NaN"
+    assert not np.isinf(out).any()
+
+
 def test_assign_labels_basic_cd4_t():
     """A cell with high CD3-1 + CD4-1 + low CD8/CD19/CD56(NCAM) -> CD4_T."""
     antibody_names = ["CD3-1", "CD4-1", "CD8", "CD8a", "CD19", "CD56(NCAM)"]

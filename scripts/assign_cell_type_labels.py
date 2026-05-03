@@ -49,8 +49,26 @@ def clr_normalize(adt_matrix: np.ndarray, eps: float = 1.0) -> np.ndarray:
     """Centered log-ratio per cell: log(x+eps) - mean(log(x+eps)) per row.
 
     Rows sum to ~0 by construction. Stable for low-count antibodies.
+
+    Pre-normalization detection: if the input contains any negative values,
+    we assume it has already been CLR-normalized at write time (DOGMA h5ad
+    convention; see assemble_dogma_h5ad.py) and pass through unchanged.
+    Re-applying log(x+1) on already-CLR data produces NaN for x < -1
+    (cf. PR #53 production failure 2026-05-03: 9415/13763 cells -> Unknown
+    via NaN propagation).
     """
-    log_x = np.log(adt_matrix + eps)
+    arr = np.asarray(adt_matrix, dtype=np.float64)
+    if (arr < 0).any():
+        n_neg = int((arr < 0).sum())
+        total = arr.size
+        print(
+            f"  [clr_normalize] input already contains {n_neg}/{total} negative values "
+            f"(min={arr.min():.4f}, max={arr.max():.4f}). "
+            f"Assuming pre-CLR-normalized; skipping in-script CLR.",
+            file=sys.stderr,
+        )
+        return arr
+    log_x = np.log(arr + eps)
     per_cell_mean = log_x.mean(axis=1, keepdims=True)
     return log_x - per_cell_mean
 
@@ -132,8 +150,26 @@ def main():
             f"protein dim {adt.shape[1]} != n_antibodies {len(antibody_names)}"
         )
 
-    print(f"CLR-normalizing protein matrix...")
+    print(
+        f"  ADT input stats: min={adt.min():.4f}, max={adt.max():.4f}, "
+        f"mean={adt.mean():.4f}, median={np.median(adt):.4f}"
+    )
+
+    print(f"CLR-normalizing protein matrix (or passing through if pre-CLR)...")
     clr = clr_normalize(adt)
+
+    n_nan = int(np.isnan(clr).sum())
+    n_inf = int(np.isinf(clr).sum())
+    if n_nan > 0 or n_inf > 0:
+        raise ValueError(
+            f"Post-CLR matrix has {n_nan} NaN and {n_inf} Inf values "
+            f"-- gating will silently send affected cells to Unknown. "
+            f"Investigate input distribution before re-running."
+        )
+    print(
+        f"  Post-CLR stats: min={clr.min():.4f}, max={clr.max():.4f}, "
+        f"mean={clr.mean():.4f}, median={np.median(clr):.4f}"
+    )
 
     print(f"Applying {len(GATING_RULES)} gating rules at threshold={args.threshold}")
     labels = assign_labels(clr, antibody_names, threshold=args.threshold)
