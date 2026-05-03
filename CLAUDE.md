@@ -26,30 +26,96 @@ data/              # Gitignored datasets + peak_sets/ (with committed README)
 .github/           # PR bodies, REAL_DATA_BLOCKERS.md, phase results
 ```
 
-## Current phase: 6.5g.2 — DOGMA multi-modal implementation
+## Current phase: 6.5g.2 — DOGMA pretrain TRAINING LIVE
 Phase 6.5 closed 2026-04-20 (tag `phase-6.5-closed`).
 Phase 6.5g.1 closed 2026-04-23 via PR #20 squash (`c6551ab`) with EMPTY
 outcome per external wet-lab evidence + C1–C8 catalog audit.
 
-Phase 6.5g.2 (E2-iextended) in progress. DOGMA-seq (GSE156478, Mimitou 2021,
-*Nat Biotechnol*) is the modality-expansion corpus:
+**Phase 6.5g.2 production training running on BSC MareNostrum5** as of 2026-04-30:
+- **Job 39934660**, --arm joint, 50 epochs, H100 single-GPU, 24h time budget
+- Smoke (--max-steps 100) passed: loss 11.1 → 6.1 (45% drop)
+- W&B offline mode (sync logs to remote post-run)
+- Pre-registered success: ≥0.70 Calderon cell-type accuracy on linear probe
+- Failure handling locked: sub-0.70 → architecture-class pivot, no recipe tuning
+
+DOGMA-seq corpus (GSE156478, Mimitou 2021, *Nat Biotechnol*):
 - **31,874 cells total** (DIG 18,111 + LLL 13,763), barcode-set fidelity-gated
   against `pairs_of_wnn.tsv` (caleblareau/asap_reproducibility repo).
 - Protocol: RNA + ATAC + Protein (210-D TotalSeq-A).
-- Batch covariate: `lysis_protocol ∈ {DIG, LLL}` with 5% divergence tripwire.
+- Batch covariate: `lysis_protocol ∈ {DIG, LLL}`; PR #44 wires it as
+  scVI-style nn.Embedding(2, 8) into RNA+ATAC encoders + additive shift
+  in Protein encoder.
+- Peak space: union (323,500 peaks; LLL=198,947 + DIG=124,619 - shared=66).
 - CD3/CD28 stim → **metadata-only** (run × stim full aliasing in single-donor
   aliquot-split design; cannot deconfound).
-- Phospho + mtDNA explicitly out-of-scope.
+- Phospho + mtDNA explicitly out-of-scope (QuRIE-seq June 2026).
 
-Implementation status (4-day DOGMA arc):
-- PR #21 (merged): fusion.py modality_mask hotfix
-- PR #22 (merged): Day 1 — `modality_mask.py` contract + tri-modal
-  `MultiomeLoader` + `make_dogma_seq()` pairing cert
-- PR #23 (merged): Day 2 — mask-aware losses + 3-way InfoNCE triad +
-  `_dogma_pretrain_loss`
-- PR #24 (merged): Day 3 — `dogma_collate` + DD4 `has_*` tagging +
-  `mask_from_obs`
-- PR #25 (this PR): Day 4 — tests/ root consolidation + CLAUDE.md update
+Pretrain readiness PR sequence (all merged to main):
+- spec amendment (`d0925ce`) — pre-registered ≥0.70 threshold
+- PR #41 (`e9b9871`) — peak union harmonization
+- PR #42 (`8499844`) — config + AdamW + LR schedule
+- PR #43 (`65d2a04`) — tri-modal pretrain wiring (Protein + `_dogma_pretrain_loss`)
+- PR #44 (`eccff9e`) — lysis covariate + joint LLL+DIG loader
+- PR #45 (`9ffbdd7`) — resume mechanism (approximate granularity)
+- PR #46 (`4280bda`) — pre-flight smoke + `--max-steps`
+- PR #47 (`e9cde69`) — joint-arm encoder forward shape-mismatch fix
+- PR #48 (`6ef02ac`) — periodic checkpointing + bootstrap placeholder
+- PR #49 (`5b2af59`) — BSC cluster deployment scripts
+- direct (`c813773`) — BSC MareNostrum5 module stack validated on H100
+
+Earlier 4-day DOGMA infrastructure arc (PRs #21-#25): modality_mask
+contract + tri-modal MultiomeLoader + mask-aware losses + dogma_collate
++ tests root consolidation. All merged.
+
+## BSC MareNostrum5 production deployment
+
+Reference: [`docs/cluster/BSC_LAUNCH_GUIDE.md`](docs/cluster/BSC_LAUNCH_GUIDE.md)
+for full step-by-step (Mac → transfer node → login node → compute node).
+
+**Production CUDA stack on BSC differs from local Mac:**
+- Local Mac dev: torch 2.2.2 (requirements.txt pin), MPS device
+- BSC compute: pytorch/2.4.0 (system module), CUDA 11.8 (via nvidia-hpc-sdk/23.11-cuda11.8)
+- pip install on BSC compute uses `--no-deps` to avoid reinstalling torch over the system module
+
+**Module load sequence (order is load-bearing)**:
+```
+gcc/11.4.0 → mkl/2024.0 → impi/2021.11 → hdf5/1.14.1-2-gcc →
+openblas/0.3.27-gcc → nccl/2.19.4 → nvidia-hpc-sdk/23.11-cuda11.8 →
+cudnn/9.0.0-cuda11 → tensorrt/10.0.0-cuda11 → python/3.11.5-gcc →
+pytorch/2.4.0
+```
+
+**SLURM resource requirements**:
+- `--account=ehpc748 --qos=acc_ehpc --partition=acc`
+- `--gres=gpu:1 --cpus-per-task=20` (BSC ACC partition requires 20 CPUs per GPU)
+- `--time=24:00:00` (spec section 9 budget)
+
+**Offline pip install workflow (BSC has no pypi)**:
+- pip download wheels on Mac for `manylinux2014_x86_64 + python 3.11`
+- rsync wheels to scratch `/gpfs/scratch/ehpc748/quri020505/aivc_wheels/`
+- `salloc` interactive compute node with full module stack
+- `pip install --user --no-deps --no-index --find-links=<wheels_dir> -r requirements.txt`
+- User packages land at `~/.local/lib/python3.11/site-packages`
+- `PYTHONPATH=$HOME/.local/lib/python3.11/site-packages:$PYTHONPATH` in SLURM script
+
+**h5ad write-time compatibility**: write with `compression=None` for HDF5
+attribute compatibility on BSC (system HDF5 + offline-installed h5py wheel
+mismatch on compressed sparse-group attributes). Re-run `build_dogma_peak_union.py`
++ `assemble_dogma_h5ad.py` with `compression=None` if regenerating.
+
+**W&B mode**: `WANDB_MODE=offline` for production runs (no outbound on
+compute nodes). Logs sync via `wandb sync <run_dir>` post-run from a
+node with internet (login or local).
+
+**Launch command (steady-state)**:
+```bash
+ssh quri020505@alogin1.bsc.es
+cd /gpfs/scratch/ehpc748/quri020505/aivc_genelink
+export WANDB_API_KEY=<key>; export WANDB_MODE=offline
+sbatch scripts/submit_pretrain.slurm
+squeue -u quri020505
+tail -f /gpfs/scratch/ehpc748/quri020505/logs/pretrain_<JOBID>.out
+```
 
 ## DOGMA batch contract
 All multi-modal data flow MUST use canonical keys from
