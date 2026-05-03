@@ -155,3 +155,110 @@ def test_real_data_smoke_calderon_probe_pipeline():
         "or non-mock encoder. Empirical mock baseline ≈ 0.64."
     )
     assert out["n_folds"] >= 2  # at least 2 donors in any sane Calderon
+
+
+def _minimal_pretrain_ckpt_dict(atac_state, config):
+    """Build a synthetic ckpt dict satisfying ckpt_loader's strict schema.
+
+    ckpt_loader._validate_top_level requires all 8 top-level keys; the
+    encoder loader only consumes 'atac_encoder' + 'config'. Other slots
+    are set to placeholder values whose only job is to clear validation.
+    """
+    return {
+        "schema_version": 1,
+        "rna_encoder": {},
+        "atac_encoder": atac_state,
+        "pretrain_head": {},
+        "rna_encoder_class": "aivc.skills.rna_encoder.SimpleRNAEncoder",
+        "atac_encoder_class": "aivc.skills.atac_peak_encoder.PeakLevelATACEncoder",
+        "pretrain_head_class": "aivc.training.pretrain_heads.MultiomePretrainHead",
+        "config": config,
+    }
+
+
+def test_load_atac_encoder_from_ckpt_synthetic(tmp_path):
+    """Round-trip: build fake ckpt, load it back, verify forward identical."""
+    import torch
+    from aivc.skills.atac_peak_encoder import PeakLevelATACEncoder
+    from aivc.eval.calderon_probe import load_atac_encoder_from_ckpt
+
+    n_peaks = 100
+    attn_dim = 8
+    enc = PeakLevelATACEncoder(n_peaks=n_peaks, attn_dim=attn_dim)
+    ckpt_path = tmp_path / "fake_pretrain.pt"
+    torch.save(
+        _minimal_pretrain_ckpt_dict(
+            enc.state_dict(),
+            {
+                "arm": "joint",
+                "n_peaks": n_peaks,
+                "atac_latent": attn_dim,
+                "n_lysis_categories": 0,
+            },
+        ),
+        ckpt_path,
+    )
+
+    loaded, cfg = load_atac_encoder_from_ckpt(ckpt_path)
+    assert loaded.attn_dim == attn_dim
+    enc.eval()  # match loaded.eval() so dropout doesn't desync the forward
+    x = torch.rand(4, n_peaks)
+    with torch.no_grad():
+        z_orig = enc(x)
+        z_loaded = loaded(x)
+    torch.testing.assert_close(z_orig, z_loaded, atol=1e-6, rtol=1e-6)
+
+
+def test_load_atac_encoder_n_peaks_mismatch_raises(tmp_path):
+    """Mismatched expected_n_peaks surfaces a clear error."""
+    import torch
+    import pytest
+    from aivc.skills.atac_peak_encoder import PeakLevelATACEncoder
+    from aivc.eval.calderon_probe import load_atac_encoder_from_ckpt
+
+    enc = PeakLevelATACEncoder(n_peaks=100, attn_dim=8)
+    ckpt_path = tmp_path / "fake.pt"
+    torch.save(
+        _minimal_pretrain_ckpt_dict(
+            enc.state_dict(),
+            {"n_peaks": 100, "atac_latent": 8},
+        ),
+        ckpt_path,
+    )
+
+    with pytest.raises(ValueError, match="n_peaks mismatch"):
+        load_atac_encoder_from_ckpt(ckpt_path, expected_n_peaks=99999)
+
+
+def test_load_atac_encoder_recovers_n_peaks_from_lsi_weight(tmp_path):
+    """If config lacks n_peaks, recover from LSI weight shape."""
+    import torch
+    from aivc.skills.atac_peak_encoder import PeakLevelATACEncoder
+    from aivc.eval.calderon_probe import load_atac_encoder_from_ckpt
+
+    enc = PeakLevelATACEncoder(n_peaks=200, attn_dim=4)
+    ckpt_path = tmp_path / "no_n_peaks.pt"
+    torch.save(
+        _minimal_pretrain_ckpt_dict(
+            enc.state_dict(),
+            {"atac_latent": 4},
+        ),
+        ckpt_path,
+    )
+
+    loaded, cfg = load_atac_encoder_from_ckpt(ckpt_path)
+    assert loaded.n_peaks == 200
+
+
+def test_eval_script_default_projection_is_union(tmp_path):
+    """Default --projection points at union M, not LLL-only.
+
+    Source-text grep — fails if the default ever reverts.
+    """
+    from pathlib import Path
+    SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "eval_calderon_linear_probe.py"
+    src = SCRIPT.read_text()
+    assert "calderon_to_dogma_union_M.npz" in src, (
+        "Default --projection must point at union peak-set M (323,500 peaks). "
+        "LLL-only M (198,947 peaks) shape-mismatches with union-trained encoder."
+    )

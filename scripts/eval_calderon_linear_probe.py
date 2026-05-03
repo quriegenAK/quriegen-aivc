@@ -37,11 +37,23 @@ from aivc.eval.calderon_probe import (
 def main():
     p = argparse.ArgumentParser(__doc__)
     p.add_argument("--calderon", required=True, type=Path)
-    p.add_argument("--projection", required=True, type=Path)
+    p.add_argument("--projection", type=Path,
+                   default=Path("data/calderon2019/calderon_to_dogma_union_M.npz"),
+                   help="Sparse projection matrix M. Default points at union "
+                        "peak-set M (323,500 DOGMA peaks; matches union-trained "
+                        "encoder). LLL-only M (198,947 peaks) is incompatible.")
     p.add_argument("--out", required=True, type=Path)
     p.add_argument("--latent-dim", type=int, default=64)
+    p.add_argument("--encoder_ckpt", type=Path, default=None,
+                   help="Path to a pretrain checkpoint. When set, loads "
+                        "PeakLevelATACEncoder.atac_encoder from the ckpt "
+                        "instead of MockEncoder. Required for the headline "
+                        "accuracy result.")
     p.add_argument("--cv", choices=["leave-one-donor-out", "stratified-kfold"],
-                   default="leave-one-donor-out")
+                   default="stratified-kfold",
+                   help="CV strategy. stratified-kfold (default) is more "
+                        "statistically powerful at Calderon's 175 samples. "
+                        "leave-one-donor-out is the donor-generalization metric.")
     p.add_argument("--cv-folds", type=int, default=5,
                    help="Used only when --cv=stratified-kfold")
     p.add_argument("--label-col", default="cell_type")
@@ -61,8 +73,30 @@ def main():
     X_dogma_space = project_calderon_to_dogma_space(calderon.X, M)
     print(f"Projected: {X_dogma_space.shape}, nnz: {X_dogma_space.nnz}")
 
-    # Encode (mock)
-    encoder = MockEncoder(n_peaks=X_dogma_space.shape[1], latent_dim=args.latent_dim, seed=args.seed)
+    # Encode
+    if args.encoder_ckpt is not None:
+        from aivc.eval.calderon_probe import load_atac_encoder_from_ckpt
+        encoder, ckpt_config = load_atac_encoder_from_ckpt(
+            args.encoder_ckpt,
+            expected_n_peaks=X_dogma_space.shape[1],
+        )
+        encoder_label = "PeakLevelATACEncoder"
+        encoder_provenance = {
+            "ckpt_path": str(args.encoder_ckpt),
+            "ckpt_arm": ckpt_config.get("arm"),
+            "n_peaks": ckpt_config.get("n_peaks"),
+            "attn_dim": ckpt_config.get("atac_latent", 64),
+            "n_lysis_categories": ckpt_config.get("n_lysis_categories", 0),
+        }
+        args.latent_dim = encoder.attn_dim
+    else:
+        encoder = MockEncoder(
+            n_peaks=X_dogma_space.shape[1],
+            latent_dim=args.latent_dim,
+            seed=args.seed,
+        )
+        encoder_label = "MockEncoder"
+        encoder_provenance = {"seed": args.seed}
     embeddings = encode_samples(X_dogma_space, encoder)
     print(f"Embeddings: {embeddings.shape}")
 
@@ -74,7 +108,8 @@ def main():
     else:
         metrics = run_linear_probe(embeddings, labels, cv_folds=args.cv_folds, random_state=args.seed)
 
-    metrics["encoder"] = "MockEncoder"
+    metrics["encoder"] = encoder_label
+    metrics["encoder_provenance"] = encoder_provenance
     metrics["latent_dim"] = args.latent_dim
     metrics["cv_strategy"] = args.cv
     metrics["n_samples"] = int(embeddings.shape[0])
