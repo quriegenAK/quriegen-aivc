@@ -105,3 +105,5 @@ mlruns/
 outputs/
 experiments/phase6_5*/
 *.ipynb
+# Phase 6.5g.2 — published Azimuth labels (fetched, not committed)
+data/phase6_5g_2/external_evidence/asap_repro_labels_*/LLL_module_scores.csv
