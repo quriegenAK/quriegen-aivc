@@ -144,11 +144,49 @@ def encode_samples(
     encoder: nn.Module,
     batch_size: int = 64,
     device: str = "cpu",
+    lysis_idx=None,
 ) -> np.ndarray:
-    """Encode samples through encoder in batches; return numpy (n, latent_dim)."""
+    """Encode samples through encoder in batches; return numpy (n, latent_dim).
+
+    If the encoder was constructed with `n_lysis_categories > 0` (joint-arm
+    training), the forward path requires `lysis_idx`. For cross-corpus eval
+    (e.g., Calderon) where the source dataset has no lysis_protocol info,
+    we default to all-zeros (category 0) — lysis is a batch effect for
+    DOGMA's LLL/DIG split, not a cell-type signal, so the constant offset
+    is acceptable for downstream cell-type probing.
+
+    Parameters
+    ----------
+    lysis_idx : array-like, optional
+        Per-sample lysis category (0 = LLL, 1 = DIG). If None and encoder
+        has n_lysis_categories > 0, defaults to all-zeros. If None and
+        encoder has no covariate, no lysis_idx is passed.
+    """
     encoder = encoder.to(device).eval()
     n = X.shape[0]
     out = []
+
+    # Detect whether the encoder has lysis covariate (PR #43+ encoders).
+    n_lysis_categories = getattr(encoder, "n_lysis_categories", 0)
+    if n_lysis_categories > 0:
+        if lysis_idx is None:
+            # Default: assume LLL (category 0) for the entire batch.
+            # Cross-corpus eval doesn't have lysis info; this constant
+            # offset is the cleanest no-info default.
+            lysis_idx_full = torch.zeros(n, dtype=torch.long, device=device)
+        else:
+            if isinstance(lysis_idx, np.ndarray):
+                lysis_idx_full = torch.from_numpy(lysis_idx).long().to(device)
+            elif isinstance(lysis_idx, torch.Tensor):
+                lysis_idx_full = lysis_idx.long().to(device)
+            else:
+                lysis_idx_full = torch.tensor(lysis_idx, dtype=torch.long, device=device)
+            assert lysis_idx_full.shape[0] == n, (
+                f"lysis_idx length {lysis_idx_full.shape[0]} != n_samples {n}"
+            )
+    else:
+        lysis_idx_full = None
+
     with torch.no_grad():
         for i in range(0, n, batch_size):
             batch = X[i:i + batch_size]
@@ -157,7 +195,11 @@ def encode_samples(
             elif isinstance(batch, torch.Tensor):
                 batch = batch.cpu().numpy()
             t = torch.from_numpy(np.asarray(batch, dtype=np.float32)).to(device)
-            z = encoder(t)
+            if lysis_idx_full is not None:
+                lysis_batch = lysis_idx_full[i:i + batch_size]
+                z = encoder(t, lysis_idx=lysis_batch)
+            else:
+                z = encoder(t)
             out.append(z.cpu().numpy())
     return np.concatenate(out, axis=0)
 
