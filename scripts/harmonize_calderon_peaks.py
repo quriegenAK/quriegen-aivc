@@ -157,13 +157,23 @@ def compute_projection_matrix(
     # PR #38: real DOGMA peak sets are NOT partitions of the genome -- 78% of
     # peaks overlap another peak (nested/border). When two DOGMA peaks both
     # cover the same Calderon peak, weights legitimately sum > 1. Track the
-    # redundancy as a stat instead of raising. Hard cap at 2.0 still flags
-    # actual data-corruption (e.g. duplicate Calderon coordinates).
+    # redundancy as a stat instead of raising.
     row_sum_pre_clamp = np.asarray(M.sum(axis=1)).ravel()
-    if (row_sum_pre_clamp > 2.0 + 1e-3).any():
-        raise RuntimeError(
-            f"Row sums exceed 2.0 (max={row_sum_pre_clamp.max():.6f}) -- "
-            "indicates duplicate Calderon peak coordinates or join bug"
+    max_row_sum = float(row_sum_pre_clamp.max())
+    # PR #52: removed hard guard. Real peak sets with significant DOGMA
+    # self-overlap (e.g., union of LLL+DIG = 323,500 peaks) can produce
+    # row sums up to N where N = number of DOGMA peaks overlapping a
+    # single Calderon peak. Empirical max on union: 4.0. Soft warning
+    # at 5.0 catches genuinely unusual cases without blocking production.
+    if max_row_sum > 5.0:
+        import warnings
+        warnings.warn(
+            f"Row sums unusually high (max={max_row_sum:.4f}). "
+            "This is acceptable for highly-overlapping peak sets but "
+            "worth investigating if unexpected. Check stats output for "
+            "n_calderon_with_dogma_redundancy and mean_overlaps_per_calderon.",
+            RuntimeWarning,
+            stacklevel=2,
         )
     has_overlap = row_sum_pre_clamp > 0
     n_redundant = int((row_sum_pre_clamp > 1.0 + 1e-5).sum())
