@@ -433,14 +433,31 @@ def _dogma_pretrain_loss(
     w_atac: float = 1.0,
     w_protein: float = 1.0,
     w_triad: float = 0.5,
+    # PR #54b2: optional supervised-contrastive + VICReg variance terms.
+    # All three of {z_supcon, cell_type_idx} must be provided to enable
+    # SupCon. supcon_eligible_mask defaults to all-True if absent.
+    z_supcon: torch.Tensor = None,
+    cell_type_idx: torch.Tensor = None,
+    supcon_eligible_mask: torch.Tensor = None,
+    w_supcon: float = 0.0,
+    w_vicreg: float = 0.0,
+    supcon_temperature: float = 0.07,
+    vicreg_target_std: float = 1.0,
+    vicreg_eps: float = 1e-4,
 ) -> tuple:
-    """DOGMA pretrain loss — 3-modal reconstruction + 3-way InfoNCE.
+    """DOGMA pretrain loss — 3-modal reconstruction + 3-way InfoNCE
+    (+ optional supervised-contrastive + VICReg variance).
 
-    Composition:
+    Base composition (always active when weight > 0):
       w_rna     * masked_rna_recon
     + w_atac    * masked_atac_recon
     + w_protein * masked_protein_recon       (D2 mask-gated)
     + w_triad   * cross_modal_infonce_triad  (D1 pairwise-average)
+
+    PR #54b2 additive terms (only added to the spec when caller passes
+    the required tensors and a non-zero weight):
+    + w_supcon  * supcon            (Khosla 2020, on z_supcon, cell_type_idx)
+    + w_vicreg  * vicreg_variance   (Bardes 2022, on z_supcon)
 
     NO Neumann L1 (DOGMA is pretrain, not causal).
     NO causal_ordering term (same reason).
@@ -448,6 +465,11 @@ def _dogma_pretrain_loss(
     Registers under stage="pretrain" via LossRegistry. Each term name
     passes _guard_pretrain_name (causal-adjacent substring guard) at
     registration — defense-in-depth per the Phase 5 PR contract.
+
+    Backward compat: callers that don't pass z_supcon / cell_type_idx
+    (e.g. existing pretrain runs without labels) get the original 4-term
+    composition unchanged. The default w_supcon=0 / w_vicreg=0 also
+    short-circuits the SupCon/VICReg additions.
     """
     from aivc.training.loss_registry import LossRegistry, LossTerm
     from aivc.training.pretrain_losses import (
@@ -455,15 +477,32 @@ def _dogma_pretrain_loss(
         _masked_atac_recon,
         _masked_protein_recon,
         _cross_modal_infonce_triad,
+        _supcon_loss,
+        _vicreg_variance,
         _guard_pretrain_name,
     )
 
-    spec = (
+    spec = [
         ("masked_rna_recon",          _masked_rna_recon,          w_rna),
         ("masked_atac_recon",         _masked_atac_recon,         w_atac),
         ("masked_protein_recon",      _masked_protein_recon,      w_protein),
         ("cross_modal_infonce_triad", _cross_modal_infonce_triad, w_triad),
+    ]
+    # SupCon + VICReg only enabled when caller threads label tensors AND
+    # gives a non-zero weight. If caller passes z_supcon=None or w=0, we
+    # skip the registry registration entirely so registry.compute() never
+    # invokes the term — avoids materializing an unused gradient path.
+    supcon_active = (
+        z_supcon is not None
+        and cell_type_idx is not None
+        and w_supcon > 0
     )
+    vicreg_active = z_supcon is not None and w_vicreg > 0
+    if supcon_active:
+        spec.append(("supcon", _supcon_loss, w_supcon))
+    if vicreg_active:
+        spec.append(("vicreg_variance", _vicreg_variance, w_vicreg))
+
     registry = LossRegistry()
     for name, fn, weight in spec:
         _guard_pretrain_name(name)
@@ -479,6 +518,14 @@ def _dogma_pretrain_loss(
         z_rna=z_rna, z_atac=z_atac, z_protein=z_protein,
         modality_mask=modality_mask,
         infonce_temperature=infonce_temperature,
+        # SupCon/VICReg kwargs: passed through always (registry will only
+        # invoke them if their term is active in the spec above).
+        z_supcon=z_supcon,
+        cell_type_idx=cell_type_idx,
+        supcon_eligible_mask=supcon_eligible_mask,
+        supcon_temperature=supcon_temperature,
+        vicreg_target_std=vicreg_target_std,
+        vicreg_eps=vicreg_eps,
     )
     components["total"] = total.item() if isinstance(total, torch.Tensor) else float(total)
     return total, components
