@@ -95,6 +95,14 @@ class MultiomeLoader(Dataset):
         protein_path: Optional[str] = None,
         lysis_protocol: str = "unknown",
         protein_panel_id: str = "dogma_adt",
+        # PR #54b1: optional supervised-label loading for SupCon.
+        # If labels_obs_col is None, no label loading happens — preserves
+        # backward compat with all existing factory callers.
+        labels_obs_col: Optional[str] = None,
+        confidence_obs_col: Optional[str] = None,
+        masked_classes: Optional[list] = None,
+        min_confidence: float = 0.0,
+        class_index_manifest: Optional[str] = None,
     ):
         if peak_set_path is None:
             raise ValueError(_PEAK_SET_ERR)
@@ -121,6 +129,17 @@ class MultiomeLoader(Dataset):
         self._rna = None
         self._atac = None
         self._protein = None  # None if bimodal; ndarray if tri-modal
+
+        # PR #54b1: SupCon label state. None if labels_obs_col not set.
+        self.labels_obs_col = labels_obs_col
+        self.confidence_obs_col = confidence_obs_col
+        self.masked_classes = set(masked_classes) if masked_classes else set()
+        self.min_confidence = float(min_confidence)
+        self.class_index_manifest_path = class_index_manifest
+        self._cell_type_idx = None      # (N,) np.int64 or None
+        self._supcon_eligible = None    # (N,) np.bool_ or None
+        self._class_to_idx = None       # dict[str, int] or None
+        self._manifest_fingerprint = None  # SHA-256 from manifest, or None
 
         # Modality presence set — populated during _load
         self._present = {ModalityKey.RNA, ModalityKey.ATAC}
@@ -188,6 +207,73 @@ class MultiomeLoader(Dataset):
                 )
             self._present.add(ModalityKey.PROTEIN)
 
+        # PR #54b1: optional supervised-label loading. Only fires when
+        # labels_obs_col is configured. The h5ad reload is wasteful but
+        # avoids an additional path through the schema branches above —
+        # acceptable for the small obs read.
+        if self.labels_obs_col is not None:
+            import anndata
+            adata_for_labels = anndata.read_h5ad(self.h5ad_path)
+            self._load_supcon_labels(adata_for_labels)
+
+    def _load_supcon_labels(self, adata) -> None:
+        """Read cell_type + cell_type_confidence from obs and build SupCon
+        eligibility mask. Called from _load() when labels_obs_col is set."""
+        import json
+        import numpy as np
+
+        if self.labels_obs_col not in adata.obs.columns:
+            raise ValueError(
+                f"labels_obs_col {self.labels_obs_col!r} not in obs. "
+                f"Available: {list(adata.obs.columns)}"
+            )
+
+        # --- Class index manifest (canonical {class_name: int}) ---
+        if self.class_index_manifest_path is None:
+            # In-memory fallback for tests: build from this h5ad alone.
+            classes = sorted(adata.obs[self.labels_obs_col].astype(str).unique())
+            self._class_to_idx = {cls: i for i, cls in enumerate(classes)}
+            self._manifest_fingerprint = None
+        else:
+            mp = self.class_index_manifest_path
+            with open(mp) as f:
+                manifest = json.load(f)
+            self._class_to_idx = dict(manifest["class_to_idx"])
+            self._manifest_fingerprint = manifest.get("fingerprint_sha256")
+
+        # --- Map per-cell label to integer ---
+        labels = adata.obs[self.labels_obs_col].astype(str).values
+        unknown_classes = set(labels) - set(self._class_to_idx)
+        if unknown_classes:
+            raise ValueError(
+                f"Cells in {self.h5ad_path} have classes {sorted(unknown_classes)} "
+                f"absent from class_index_manifest. Either rebuild the manifest "
+                f"to cover both arms or check the labeled h5ad."
+            )
+        self._cell_type_idx = np.array(
+            [self._class_to_idx[c] for c in labels], dtype=np.int64
+        )
+
+        # --- Build supcon_eligible_mask ---
+        eligible = np.ones(len(labels), dtype=np.bool_)
+        if self.masked_classes:
+            class_mask_set = set(self.masked_classes)
+            eligible &= ~np.isin(labels, list(class_mask_set))
+        if self.min_confidence > 0.0:
+            if self.confidence_obs_col is None:
+                # User asked for a confidence threshold but didn't tell us
+                # which column. Treat all cells as max-confidence (1.0).
+                conf = np.ones(len(labels), dtype=np.float32)
+            else:
+                if self.confidence_obs_col not in adata.obs.columns:
+                    raise ValueError(
+                        f"confidence_obs_col {self.confidence_obs_col!r} "
+                        f"not in obs. Available: {list(adata.obs.columns)}"
+                    )
+                conf = adata.obs[self.confidence_obs_col].fillna(1.0).values.astype(np.float32)
+            eligible &= (conf >= self.min_confidence)
+        self._supcon_eligible = eligible
+
     def __len__(self) -> int:
         return 0 if self._rna is None else self._rna.shape[0]
 
@@ -213,6 +299,22 @@ class MultiomeLoader(Dataset):
         """None if protein modality absent."""
         return None if self._protein is None else int(self._protein.shape[1])
 
+    # PR #54b1: SupCon label accessors.
+    @property
+    def n_classes(self) -> int | None:
+        """Number of distinct cell_type classes, or None if labels not loaded."""
+        return None if self._class_to_idx is None else len(self._class_to_idx)
+
+    @property
+    def class_to_idx(self) -> dict | None:
+        """Class-name → integer mapping, or None if labels not loaded."""
+        return self._class_to_idx if self._class_to_idx is None else dict(self._class_to_idx)
+
+    @property
+    def manifest_fingerprint(self) -> str | None:
+        """SHA-256 of the class_index_manifest, or None if not loaded from a manifest."""
+        return self._manifest_fingerprint
+
     def __getitem__(self, idx: int) -> dict:
         item = {
             RNA_KEY: self._rna[idx],
@@ -225,6 +327,11 @@ class MultiomeLoader(Dataset):
             item[PROTEIN_KEY] = self._protein[idx]
         # (4,) per-cell mask; collate stacks to (batch, 4)
         item[MASK_KEY] = build_mask(self._present, 1).squeeze(0)
+        # PR #54b1: supervised labels (only present when labels_obs_col was set)
+        if self._cell_type_idx is not None:
+            item["cell_type_idx"] = int(self._cell_type_idx[idx])
+        if self._supcon_eligible is not None:
+            item["supcon_eligible"] = bool(self._supcon_eligible[idx])
         return item
 
     # ------------------------------------------------------------------

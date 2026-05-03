@@ -135,4 +135,24 @@ def dogma_collate(batch: List[Dict[str, Any]]) -> Dict[str, Any]:
         )
     out["dataset_kind"] = kinds.pop() if kinds else None
 
+    # PR #54b1: SupCon label pass-through. Optional — only stacked when ALL
+    # items have the key (homogeneous batch). Mixed presence raises (DD2
+    # strict-raise pattern, consistent with Protein presence handling).
+    has_label_idx = "cell_type_idx" in first
+    for i, item in enumerate(batch[1:], start=1):
+        if ("cell_type_idx" in item) != has_label_idx:
+            raise ValueError(
+                f"Heterogeneous cell_type_idx presence in batch: item 0 "
+                f"has={has_label_idx}, item {i} has={'cell_type_idx' in item}. "
+                f"Upstream sampler must segregate labeled from unlabeled cells."
+            )
+    if has_label_idx:
+        out["cell_type_idx"] = torch.tensor(
+            [int(it["cell_type_idx"]) for it in batch], dtype=torch.long,
+        )
+        # supcon_eligible defaults to True if individual items don't set it
+        out["supcon_eligible_mask"] = torch.tensor(
+            [bool(it.get("supcon_eligible", True)) for it in batch], dtype=torch.bool,
+        )
+
     return out
