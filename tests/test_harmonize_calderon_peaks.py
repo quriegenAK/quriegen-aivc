@@ -131,23 +131,24 @@ def test_dogma_self_overlapping_peaks_row_sum_above_one():
     assert stats["frac_calderon_with_dogma_redundancy"] == 1.0
 
 
-def test_compute_projection_raises_only_on_extreme_overcount(tmp_path):
-    """The defensive raise still fires on truly absurd overcount (>2.0),
-    which only happens with duplicate Calderon coordinates or a join bug.
+def test_compute_projection_max_row_sum_finite(tmp_path):
+    """PR #52: hard guard at row_sum > 2.0 removed (replaced with soft
+    warning at > 5.0). Verify the function still returns finite, non-negative
+    max_row_sum on a moderately overlapping case (5 fully-overlapping DOGMA
+    peaks -> row_sum = 5.0, exactly at threshold so no warning).
     """
-    # 5 DOGMA peaks each fully covering Calderon -> sum = 5.0 > 2.0 cap
-    dogma = _var([("chr1", 100, 200)] * 5)
-    # Note: _var() builds duplicate index strings; pyranges still works.
-    calderon = _var([("chr1", 100, 200)])
-    # Need to give DOGMA distinct rows; rebuild with offset that all still cover
+    import math
     dogma = pd.DataFrame({
         "chrom": ["chr1"] * 5,
         "start": [100, 100, 100, 100, 100],
         "end":   [200, 200, 200, 200, 200],
     })
     dogma.index = [f"d{i}" for i in range(5)]
-    with pytest.raises(RuntimeError, match="exceed 2.0"):
-        compute_projection_matrix(dogma, calderon)
+    calderon = _var([("chr1", 100, 200)])
+    M, stats = compute_projection_matrix(dogma, calderon)
+    assert math.isfinite(stats["max_row_sum"])
+    assert stats["max_row_sum"] >= 0
+    assert stats["max_row_sum"] == pytest.approx(5.0, abs=1e-6)
 
 
 # --- PR #38: extract_peaks_to_var_format tests -------------------------------
@@ -258,8 +259,59 @@ def test_real_data_smoke_dogma_calderon():
         f"frac_overlap below 5% canary: {stats['frac_calderon_with_any_overlap']:.4%}. "
         "Likely cause: hg19/hg38 mismatch worsened or DOGMA peak set changed."
     )
-    # PR #38: real DOGMA peak sets contain self-overlapping peaks; row sums
-    # legitimately exceed 1.0 in those regions. Hard cap is at 2.0 (above which
-    # we'd suspect duplicate Calderon coordinates / join bug).
-    assert stats["max_row_sum"] <= 2.0 + 1e-3
+    # PR #52: hard cap removed; just sanity that it's finite and non-negative.
+    # Real peak sets with significant DOGMA self-overlap can produce row sums
+    # > 2.0 (union peak set empirical max ~4.0).
+    import math
+    assert math.isfinite(stats["max_row_sum"])
+    assert stats["max_row_sum"] >= 0
     print(f"Real-data smoke stats: {stats}")
+
+
+# --- PR #52: high-overlap row-sum regression tests ---------------------------
+
+def test_high_overlap_dogma_peaks_no_raise():
+    """REGRESSION (PR #52): when many DOGMA peaks heavily overlap a single
+    Calderon peak (e.g., union peak set), row sums can exceed 2.0. The
+    earlier hard guard at 2.0 blocked production rebuilds; PR #52 replaced
+    with a soft warning. This test verifies no raise, with row_sum=4.0."""
+    import warnings
+    # 1 Calderon peak (chr1:100-200, length 100) covered by 4 fully-overlapping
+    # DOGMA peaks -> each weight=1.0 -> row_sum=4.0
+    dogma = pd.DataFrame({
+        "chrom": ["chr1"] * 4,
+        "start": [100] * 4,
+        "end":   [200] * 4,
+    })
+    dogma.index = [f"d{i}" for i in range(4)]
+    calderon = _var([("chr1", 100, 200)])
+
+    # Should NOT raise; should emit no RuntimeWarning (4.0 < 5.0 threshold).
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)
+        M, stats = compute_projection_matrix(dogma, calderon)
+
+    assert stats["max_row_sum"] == pytest.approx(4.0, abs=1e-6)
+    assert M.shape == (1, 4)
+
+
+def test_extreme_overlap_emits_warning():
+    """Row sum > 5.0 (the soft threshold) emits RuntimeWarning."""
+    import warnings
+    # 6 fully-overlapping DOGMA peaks -> row_sum=6.0
+    dogma = pd.DataFrame({
+        "chrom": ["chr1"] * 6,
+        "start": [100] * 6,
+        "end":   [200] * 6,
+    })
+    dogma.index = [f"d{i}" for i in range(6)]
+    calderon = _var([("chr1", 100, 200)])
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        M, stats = compute_projection_matrix(dogma, calderon)
+        runtime_warnings = [x for x in w if issubclass(x.category, RuntimeWarning)]
+        assert len(runtime_warnings) >= 1, "Expected RuntimeWarning at row_sum > 5.0"
+        assert "Row sums unusually high" in str(runtime_warnings[0].message)
+
+    assert stats["max_row_sum"] == pytest.approx(6.0, abs=1e-6)
