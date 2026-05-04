@@ -139,6 +139,195 @@ def load_atac_encoder_from_ckpt(
     return encoder, config
 
 
+# --- PR Phase 6.5g.3 Pivot A: joint-fusion eval -----------------------------
+
+def load_full_encoders_from_ckpt(
+    ckpt_path,
+    expected_n_peaks: int = None,
+    map_location: str = "cpu",
+) -> dict:
+    """Load all three encoders + projections from a pretrain ckpt.
+
+    Required for Pivot A (joint-fusion Calderon eval): forward Calderon
+    ATAC through the full encoder stack (with zero-padded RNA/Protein)
+    to extract z_supcon — the same joint embedding SupCon was trained on.
+
+    Returns dict with keys:
+        rna_encoder, atac_encoder, protein_encoder,
+        rna_proj, atac_proj, protein_proj,
+        config, n_genes, n_peaks, n_proteins, proj_dim
+    All encoders/projections in eval mode, on `map_location`.
+    """
+    from pathlib import Path
+    import torch.nn as nn
+    from aivc.skills.atac_peak_encoder import PeakLevelATACEncoder
+    from aivc.skills.rna_encoder import SimpleRNAEncoder
+    from aivc.skills.protein_encoder import ProteinEncoder
+    from aivc.training.ckpt_loader import load_pretrain_ckpt_raw
+
+    ckpt_path = Path(ckpt_path)
+    if not ckpt_path.exists():
+        raise FileNotFoundError(f"Checkpoint not found: {ckpt_path}")
+
+    ckpt = load_pretrain_ckpt_raw(ckpt_path, map_location=map_location)
+    config = ckpt.get("config", {})
+
+    n_peaks = int(config.get("n_peaks", 0))
+    if n_peaks == 0 and "atac_encoder" in ckpt:
+        lsi_w = ckpt["atac_encoder"].get("lsi.weight")
+        if lsi_w is not None:
+            n_peaks = int(lsi_w.shape[1])
+    n_genes = int(config.get("n_genes", 0))
+    n_proteins = int(config.get("n_proteins", 0))
+    rna_latent = int(config.get("rna_latent", 128))
+    atac_latent = int(config.get("atac_latent", 64))
+    protein_latent = int(config.get("protein_latent", rna_latent))
+    proj_dim = int(config.get("proj_dim", 128))
+    n_lysis_categories = int(config.get("n_lysis_categories", 0))
+    lysis_cov_dim = int(config.get("lysis_cov_dim", 8))
+
+    if expected_n_peaks is not None and expected_n_peaks != n_peaks:
+        raise ValueError(
+            f"n_peaks mismatch: ckpt={n_peaks}, expected={expected_n_peaks}."
+        )
+
+    rna_enc = SimpleRNAEncoder(
+        n_genes=n_genes,
+        latent_dim=rna_latent,
+        n_lysis_categories=n_lysis_categories,
+        lysis_cov_dim=lysis_cov_dim,
+    )
+    atac_enc = PeakLevelATACEncoder(
+        n_peaks=n_peaks,
+        attn_dim=atac_latent,
+        n_lysis_categories=n_lysis_categories,
+        lysis_cov_dim=lysis_cov_dim,
+    )
+    protein_enc = ProteinEncoder(
+        n_proteins=n_proteins,
+        embed_dim=protein_latent,
+        n_lysis_categories=n_lysis_categories,
+        lysis_cov_dim=lysis_cov_dim,
+    )
+
+    missing = [k for k in ("rna_encoder", "atac_encoder", "protein_encoder",
+                            "rna_proj", "atac_proj", "protein_proj")
+               if k not in ckpt]
+    if missing:
+        raise ValueError(
+            f"ckpt {ckpt_path} missing keys {missing}. The joint-fusion "
+            f"eval requires all three encoders + projections. "
+            f"Available keys: {sorted(ckpt.keys())}"
+        )
+
+    rna_enc.load_state_dict(ckpt["rna_encoder"], strict=True)
+    atac_enc.load_state_dict(ckpt["atac_encoder"], strict=True)
+    protein_enc.load_state_dict(ckpt["protein_encoder"], strict=True)
+
+    rna_proj = nn.Linear(rna_latent, proj_dim)
+    atac_proj = nn.Linear(atac_latent, proj_dim)
+    protein_proj = nn.Linear(protein_latent, proj_dim)
+    rna_proj.load_state_dict(ckpt["rna_proj"], strict=True)
+    atac_proj.load_state_dict(ckpt["atac_proj"], strict=True)
+    protein_proj.load_state_dict(ckpt["protein_proj"], strict=True)
+
+    for m in (rna_enc, atac_enc, protein_enc, rna_proj, atac_proj, protein_proj):
+        m.eval().to(map_location)
+
+    return {
+        "rna_encoder": rna_enc,
+        "atac_encoder": atac_enc,
+        "protein_encoder": protein_enc,
+        "rna_proj": rna_proj,
+        "atac_proj": atac_proj,
+        "protein_proj": protein_proj,
+        "config": config,
+        "n_genes": n_genes,
+        "n_peaks": n_peaks,
+        "n_proteins": n_proteins,
+        "proj_dim": proj_dim,
+    }
+
+
+def encode_samples_via_joint_fusion(
+    X_atac_dogma: sp.spmatrix | np.ndarray,
+    encoders: dict,
+    batch_size: int = 64,
+    device: str = "cpu",
+    lysis_idx=None,
+) -> np.ndarray:
+    """Forward ATAC-only inputs through the FULL encoder stack with
+    zero-padded RNA/Protein; return z_supcon (Pivot A diagnostic).
+
+    z_supcon = L2_normalize(mean(L2(z_rna) + L2(z_atac) + L2(z_protein)))
+
+    Same fusion formula used at training time (PR #54c). For Calderon
+    eval, only ATAC is observed — RNA + Protein are zero-padded. This
+    tests whether the cross-modal alignment learned during DOGMA
+    pretrain helps at inference when only ATAC is available.
+
+    Returns: (n_samples, proj_dim) numpy array.
+    """
+    import torch.nn.functional as F
+
+    rna_enc = encoders["rna_encoder"].to(device).eval()
+    atac_enc = encoders["atac_encoder"].to(device).eval()
+    protein_enc = encoders["protein_encoder"].to(device).eval()
+    rna_proj = encoders["rna_proj"].to(device).eval()
+    atac_proj = encoders["atac_proj"].to(device).eval()
+    protein_proj = encoders["protein_proj"].to(device).eval()
+    n_genes = encoders["n_genes"]
+    n_proteins = encoders["n_proteins"]
+
+    n = X_atac_dogma.shape[0]
+    n_lysis_categories = int(encoders["config"].get("n_lysis_categories", 0))
+    pass_lysis = n_lysis_categories > 0
+
+    if pass_lysis:
+        if lysis_idx is None:
+            lysis_full = torch.zeros(n, dtype=torch.long, device=device)
+        else:
+            lysis_full = torch.as_tensor(lysis_idx, dtype=torch.long).to(device)
+            assert lysis_full.shape[0] == n
+
+    out = []
+    with torch.no_grad():
+        for i in range(0, n, batch_size):
+            atac_b = X_atac_dogma[i:i + batch_size]
+            if sp.issparse(atac_b):
+                atac_b = atac_b.toarray()
+            atac_t = torch.from_numpy(np.asarray(atac_b, dtype=np.float32)).to(device)
+            B = atac_t.shape[0]
+
+            rna_t = torch.zeros(B, n_genes, dtype=torch.float32, device=device)
+            prot_t = torch.zeros(B, n_proteins, dtype=torch.float32, device=device)
+
+            kw = {"lysis_idx": lysis_full[i:i + batch_size]} if pass_lysis else {}
+
+            rna_latent, _ = rna_enc(rna_t, **kw)
+            atac_latent = atac_enc(atac_t, **kw)
+            protein_latent = protein_enc(prot_t, rna_emb=rna_latent, **kw)
+
+            z_rna = rna_proj(rna_latent)
+            z_atac = atac_proj(atac_latent)
+            z_protein = protein_proj(protein_latent)
+
+            z_supcon = F.normalize(
+                (
+                    F.normalize(z_rna, dim=-1)
+                    + F.normalize(z_atac, dim=-1)
+                    + F.normalize(z_protein, dim=-1)
+                ) / 3.0,
+                dim=-1,
+            )
+            out.append(z_supcon.cpu().numpy())
+
+    return np.concatenate(out, axis=0)
+
+
+# --- end Pivot A additions --------------------------------------------------
+
+
 def encode_samples(
     X: sp.spmatrix | np.ndarray | torch.Tensor,
     encoder: nn.Module,
