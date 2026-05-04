@@ -29,6 +29,7 @@ set -euo pipefail
 
 CKPT_PATH="${1:?ABORT: pass ckpt path as first arg}"
 [[ -f "$CKPT_PATH" ]] || { echo "ABORT: ckpt not found: $CKPT_PATH"; exit 1; }
+EXCLUDE_CLASSES="${2:-}"  # optional: comma-sep cell_type names to drop from centroids
 
 SCRATCH=/gpfs/scratch/ehpc748/quri020505
 PROJECT=$SCRATCH/aivc_genelink
@@ -36,6 +37,12 @@ LOGS=$SCRATCH/logs
 RESULTS_DIR=$SCRATCH/results/calderon_eval
 
 CKPT_BASENAME=$(basename "$CKPT_PATH" .pt)
+# When --exclude is set, suffix the result file so Test 1 and Test 1.5 don't clobber
+RESULT_SUFFIX="test1"
+if [[ -n "$EXCLUDE_CLASSES" ]]; then
+    SAFE=$(echo "$EXCLUDE_CLASSES" | tr ',' '_')
+    RESULT_SUFFIX="test1_excl_${SAFE}"
+fi
 mkdir -p "$RESULTS_DIR" "$LOGS"
 
 # --- Modules ---
@@ -70,15 +77,16 @@ for f in "$DOGMA_LABELED" "$CALDERON" "$PROJECTION"; do
     [[ -f "$f" ]] || { echo "ABORT: missing $f"; exit 2; }
 done
 
-# --- Run Test 1 ---
-OUT_JSON=$RESULTS_DIR/${CKPT_BASENAME}_pseudobulk_test1.json
-echo "[pseudobulk $SLURM_JOB_ID] Running Test 1..."
+# --- Run Test 1 / Test 1.5 ---
+OUT_JSON=$RESULTS_DIR/${CKPT_BASENAME}_pseudobulk_${RESULT_SUFFIX}.json
+echo "[pseudobulk $SLURM_JOB_ID] Running Test 1 (exclude='${EXCLUDE_CLASSES}')..."
 python scripts/eval_pseudobulk_compatibility.py \
     --dogma_labeled "$DOGMA_LABELED" \
     --calderon "$CALDERON" \
     --projection "$PROJECTION" \
     --encoder_ckpt "$CKPT_PATH" \
     --out "$OUT_JSON" \
+    --exclude_centroid_classes "$EXCLUDE_CLASSES" \
     --device cuda
 echo
 

@@ -98,6 +98,11 @@ def main():
                    help="JSON output: similarity matrix + accuracy + provenance")
     p.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
     p.add_argument("--label_col", default="cell_type")
+    p.add_argument("--exclude_centroid_classes", default="",
+                   help="Comma-separated DOGMA cell_type values to exclude from "
+                        "the centroid set. Default '' = include all 8. Use "
+                        "'other,other_T' to remove Azimuth-uncertain catch-alls "
+                        "from the comparison (Test 1.5).")
     args = p.parse_args()
 
     import torch
@@ -122,10 +127,16 @@ def main():
     print(f"  per-class counts: {pd.Series(labels).value_counts().to_dict()}")
 
     # --- 2. Aggregate per cell_type → pseudo-bulk profiles ---
+    excluded = {c.strip() for c in args.exclude_centroid_classes.split(",") if c.strip()}
+    if excluded:
+        print(f"\n  EXCLUDING centroid classes: {sorted(excluded)}")
     print(f"\nAggregating pseudo-bulk per cell_type (sum)...")
     centroids_X = []
     centroid_labels = []
     for cls in classes:
+        if cls in excluded:
+            print(f"  {cls:<12s}: SKIPPED (in --exclude_centroid_classes)")
+            continue
         mask = labels == cls
         n = int(mask.sum())
         # Sum counts across cells of this class → 1 row of (n_peaks,)
@@ -135,8 +146,10 @@ def main():
         print(f"  {cls:<12s}: aggregated from {n:>5d} cells, "
               f"sum_counts={bulk_row.sum():.0f}, "
               f"nnz={int((bulk_row > 0).sum())}")
+    if not centroids_X:
+        raise ValueError("No centroids left after exclusion")
     centroids_X = sp.csr_matrix(np.vstack(centroids_X))
-    print(f"  pseudo-bulk shape: {centroids_X.shape}")
+    print(f"  pseudo-bulk shape: {centroids_X.shape} ({len(centroid_labels)} centroids)")
 
     # --- 3. Load Calderon + projection ---
     print(f"\nLoading Calderon: {args.calderon}")
