@@ -158,7 +158,9 @@ if [[ "$SYNC_BSC" -eq 1 ]]; then
     echo
     echo "=== rsync to BSC ==="
     echo "  destination: ${BSC_USER}@${BSC_LOGIN_HOST}:${BSC_PATH}/"
-    rsync -avz --progress "$TARGET_DIR/" \
+    # --mkpath creates missing parent dirs on the remote (rsync 3.2.3+).
+    # Without it, rsync fails if e.g. ${BSC_PATH%/*}/ doesn't exist yet.
+    rsync -avz --progress --mkpath "$TARGET_DIR/" \
         "${BSC_USER}@${BSC_LOGIN_HOST}:${BSC_PATH}/"
     echo
     echo "  Done. On BSC, contents at: $BSC_PATH"

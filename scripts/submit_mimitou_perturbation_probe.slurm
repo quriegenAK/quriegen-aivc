@@ -52,13 +52,18 @@ H5AD_DIR=$PROJECT/data/phase6_5g_2/dogma_h5ads
 
 mkdir -p "$RESULTS_DIR" "$LOGS"
 
-# Verify required files exist in the raw dir
+# Verify required files exist in the raw dir.
+# Layout matches scripts/download_mimitou_crispr.sh output (asap_reproducibility
+# repo): Cell Ranger ATAC h5 at top + kite-format ADT (protein) + kite-format
+# HTO (encodes per-cell sgRNA target via TotalSeq hashtag multiplexing).
 REQUIRED_FILES=(
     filtered_peak_bc_matrix.h5
-    protein_counts.mtx
-    protein_barcodes.tsv
-    protein_features.tsv
-    guide_demux.csv
+    adt/featurecounts.mtx
+    adt/featurecounts.barcodes.txt
+    adt/featurecounts.genes.txt
+    hto/featurecounts.mtx
+    hto/featurecounts.barcodes.txt
+    hto/featurecounts.genes.txt
 )
 for f in "${REQUIRED_FILES[@]}"; do
     [[ -f "$MIMITOU_DIR/$f" ]] || {
