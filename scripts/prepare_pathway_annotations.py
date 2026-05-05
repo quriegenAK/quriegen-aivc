@@ -24,9 +24,14 @@ Outputs:
   data/pathway_annotations/pathway_metadata.json        # provenance + stats
 
 Usage:
-    pip install gseapy>=1.0 requests --break-system-packages
+    pip install requests --break-system-packages    # only dep needed
     python scripts/prepare_pathway_annotations.py \\
         --output_dir data/pathway_annotations
+
+Note: MSigDB Hallmark is fetched directly via HTTP from the Broad's
+public mirror (https://data.broadinstitute.org/gsea-msigdb/...). gseapy
+is intentionally NOT a dependency to avoid its Rust build requirement
+on Python 3.9 / Homebrew installs.
 """
 from __future__ import annotations
 
@@ -53,33 +58,60 @@ KEGG_IMMUNE_PATHWAYS = {
 }
 
 
+MSIGDB_HALLMARK_URLS = [
+    # Broad's primary mirror — direct GMT download, no auth needed for hallmark
+    "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/2023.2.Hs/h.all.v2023.2.Hs.symbols.gmt",
+    "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/2024.1.Hs/h.all.v2024.1.Hs.symbols.gmt",
+    # Fallback mirrors if Broad rejects the request
+    "https://raw.githubusercontent.com/igordot/genomics/master/files/msigdb/h.all.v2023.2.Hs.symbols.gmt",
+]
+
+
+def parse_gmt_text(text: str) -> dict:
+    """Parse GMT text into {pathway_name: [gene_symbols]}.
+
+    GMT format: each line is "name\\tdescription\\tgene1\\tgene2\\t..."
+    """
+    result = {}
+    for line in text.splitlines():
+        parts = line.rstrip("\n").split("\t")
+        if len(parts) < 3:
+            continue
+        name = parts[0]
+        genes = [g for g in parts[2:] if g]
+        if genes:
+            result[name] = genes
+    return result
+
+
 def fetch_msigdb_hallmark(out_dir: Path) -> dict:
-    """Fetch MSigDB Hallmark gene sets via gseapy.
+    """Fetch MSigDB Hallmark (h.all) directly via HTTP from the Broad's
+    public mirror. Skips gseapy to avoid its Rust build dependency.
     Returns {pathway_name: [gene_symbols]} dict.
     """
-    try:
-        from gseapy import Msigdb
-    except ImportError:
-        print("ERROR: gseapy not installed. Run: pip install gseapy", file=sys.stderr)
-        sys.exit(1)
+    print("Fetching MSigDB Hallmark (h.all) via direct HTTP...")
+    last_err = None
+    text = None
+    for url in MSIGDB_HALLMARK_URLS:
+        try:
+            print(f"  trying {url}")
+            r = requests.get(url, timeout=30, headers={"User-Agent": "aivc-stage3-prep/1.0"})
+            r.raise_for_status()
+            text = r.text
+            print(f"  OK ({len(text)} bytes)")
+            break
+        except requests.RequestException as e:
+            print(f"  failed: {e}", file=sys.stderr)
+            last_err = e
+    if text is None:
+        raise RuntimeError(f"All MSigDB Hallmark mirrors failed; last error: {last_err}")
 
-    print("Fetching MSigDB Hallmark (h.all)...")
-    msig = Msigdb()
-    # gseapy's Msigdb wrapper. dbver defaults to latest; pin if needed for reproducibility.
-    hallmark = msig.get_gmt(category="h.all", dbver="2023.2.Hs")
-    if not hallmark:
-        print("WARN: hallmark dict is empty; trying alternate dbver", file=sys.stderr)
-        hallmark = msig.get_gmt(category="h.all", dbver="2024.1.Hs")
-    print(f"  {len(hallmark)} hallmark sets fetched")
+    hallmark = parse_gmt_text(text)
+    print(f"  {len(hallmark)} hallmark sets parsed")
 
-    # Write GMT
     gmt_path = out_dir / "msigdb_hallmark.gmt"
-    with open(gmt_path, "w") as f:
-        for name, genes in hallmark.items():
-            line = f"{name}\thttp://www.gsea-msigdb.org/gsea/msigdb/cards/{name}\t" + "\t".join(genes) + "\n"
-            f.write(line)
+    gmt_path.write_text(text)
     print(f"  Wrote {gmt_path}")
-
     return hallmark
 
 
