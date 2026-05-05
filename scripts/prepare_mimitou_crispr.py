@@ -32,18 +32,24 @@ Usage (BSC):
       --union_manifest data/phase6_5g_2/dogma_h5ads/UNION_MANIFEST.json \\
       --out data/phase6_5g_2/dogma_h5ads/mimitou_crispr_union.h5ad
 
-Expected input directory contents (from GSE156478 supplementary or
-asap_reproducibility/CD4_CRISPR_asapseq/data/):
-  filtered_peak_bc_matrix.h5         # cellranger ATAC output
-  fragments.tsv.gz                   # ATAC fragments (optional, for QC)
-  protein_counts.mtx                 # kite-format protein counts
-  protein_barcodes.tsv               # cell barcodes for protein
-  protein_features.tsv               # antibody names
-  guide_demux.csv                    # per-cell guide assignment
-                                     # columns: barcode, guide_RNA, n_guides
+Expected input directory contents (produced by
+scripts/download_mimitou_crispr.sh from caleblareau/asap_reproducibility):
+  filtered_peak_bc_matrix.h5             # cellranger ATAC output
+  adt/featurecounts.mtx                  # kite-format ADT (protein) counts
+  adt/featurecounts.barcodes.txt
+  adt/featurecounts.genes.txt
+  hto/featurecounts.mtx                  # kite-format HTO counts
+                                         # (encodes per-cell sgRNA target via
+                                         #  TotalSeq hashtag multiplexing)
+  hto/featurecounts.barcodes.txt
+  hto/featurecounts.genes.txt
+  hashtag_list.txt                       # HTO → sgRNA target map (reference)
 
-If file names differ in your download, override via flags or pass paths
-directly via --atac_h5, --protein_mtx, --guide_csv.
+Per-cell perturbation labels are DERIVED from the HTO matrix using a
+top-target-HTO call with min-count threshold + CD3E+CD4 double-detection
+rule (see derive_perturbation_from_hto). There is no per-cell guide CSV
+in the source data — the experimental design encodes target identity in
+the HTO reads themselves.
 """
 from __future__ import annotations
 
@@ -64,20 +70,10 @@ import scipy.sparse as sp
 PEAK_RE = re.compile(r"^(?P<chrom>[\w.]+)[_:](?P<start>\d+)[_-](?P<end>\d+)$")
 
 
-# Guide-RNA → target-gene mapping (per Mimitou 2021 §"Multiplexed CRISPR"
-# and asap_reproducibility/CD4_CRISPR_asapseq/code/ harmonization scripts).
-# Each target has multiple sgRNA variants; we collapse to target gene name
-# for the perturbation label.
-GUIDE_TO_TARGET = {
-    # Non-targeting controls
-    "NTC1": "NTC", "NTC2": "NTC", "sgNTC": "NTC",
-    "Non-targeting": "NTC", "Non-targeting_1": "NTC", "Non-targeting_2": "NTC",
-    # Targeting guides (Mimitou's panel)
-    "sgCD3E_1": "CD3E", "sgCD3E_2": "CD3E", "sgCD3E": "CD3E",
-    "sgCD4_1": "CD4", "sgCD4_2": "CD4", "sgCD4": "CD4",
-    "sgZAP70_1": "ZAP70", "sgZAP70_2": "ZAP70", "sgZAP70": "ZAP70",
-    "sgNFKB2_1": "NFKB2", "sgNFKB2_2": "NFKB2", "sgNFKB2": "NFKB2",
-}
+# NOTE: Guide-RNA assignments are NOT direct in Mimitou's design — they
+# are encoded as TotalSeq HTO multiplexing (see derive_perturbation_from_hto
+# below). The mapping table HTO → sgRNA target is in the data dir's
+# kallisto/hashtag_list.txt (downloaded by scripts/download_mimitou_crispr.sh).
 
 
 def parse_peak_string(s: str) -> Optional[tuple[str, int, int]]:
@@ -131,72 +127,147 @@ def load_atac_peaks(atac_h5_path: Path):
     return counts, barcodes, peaks
 
 
-def load_protein_counts(mtx_path: Path, barcodes_path: Path, features_path: Path):
-    """Load kite-format protein counts (matrix.mtx + barcodes + features)."""
-    print(f"Loading protein counts: {mtx_path}")
+# load_protein_counts removed — use load_kite_mtx (defined below) for both
+# the ADT (protein) and HTO matrices since they share the kite output format.
+
+
+# --- HTO-based guide demux (Mimitou's actual experimental design) ---
+#
+# Mimitou 2021 CD4 CRISPR ASAP-seq encodes sgRNA target identity as
+# TotalSeq HTO (hashtag oligo) reads, not direct guide capture. From
+# kallisto/hashtag_list.txt:
+#
+#   Hashtag01 → sgNTC      (target HTO)
+#   Hashtag02 → sgCD4      (target HTO)
+#   Hashtag03 → sgNFKB2    (target HTO)
+#   Hashtag04 → sgCD3E     (target HTO)
+#   Hashtag05 → sgZAP70    (target HTO)
+#   Hashtag12 → sgGuide1   (guide-variant HTO; one of the 2 sgRNA designs)
+#   Hashtag13 → sgGuide2   (guide-variant HTO; the other sgRNA design)
+#
+# Per-cell expected pattern: 1 target HTO + 1 guide-variant HTO. The
+# CD3E+CD4 double KO is created by intentional co-tagging — cells that
+# receive BOTH Hashtag02 (sgCD4) AND Hashtag04 (sgCD3E) are the doubles.
+# It is NOT a separate sgRNA construct.
+#
+# Calling rule (top-2-target with min-count threshold):
+#   - Compute per-cell target-HTO counts (5 targets only)
+#   - Top target HTO count must be >= MIN_TARGET_HTO_COUNT
+#   - If top target / total_target >= SINGLE_DOMINANCE → single perturbation
+#   - Else if top-2 are sgCD3E + sgCD4 (in either order) and their sum
+#     dominates total target counts → CD3E_CD4_double
+#   - Else: drop (multiplet of unhandled combination)
+
+TARGET_HTO_TO_PERT = {
+    "TotalSeq_Human_Hashtag01": "NTC",
+    "TotalSeq_Human_Hashtag02": "CD4",
+    "TotalSeq_Human_Hashtag03": "NFKB2",
+    "TotalSeq_Human_Hashtag04": "CD3E",
+    "TotalSeq_Human_Hashtag05": "ZAP70",
+}
+
+# Tuning knobs — defaults match conservative HTODemux convention.
+# Lower thresholds = more cells kept at expense of label noise.
+MIN_TARGET_HTO_COUNT = 5      # cell must have >=5 reads on top target HTO
+SINGLE_DOMINANCE = 0.70       # top target / total_target >= 0.70 -> single
+DOUBLE_PAIR_DOMINANCE = 0.85  # (top2_targets) / total_target >= 0.85 -> double
+
+
+def load_kite_mtx(mtx_path: Path, barcodes_path: Path, features_path: Path):
+    """Load kite-format featurecounts (matrix.mtx + barcodes + genes).
+    Same loader signature as load_protein_counts for symmetry.
+    """
     from scipy.io import mmread
-    mat = mmread(str(mtx_path)).tocsr()  # likely (n_features, n_cells)
-    barcodes = pd.read_csv(barcodes_path, header=None)[0].tolist()
-    features = pd.read_csv(features_path, header=None)[0].tolist()
+    print(f"Loading kite mtx: {mtx_path}")
+    mat = mmread(str(mtx_path)).tocsr()
+    barcodes = pd.read_csv(barcodes_path, header=None)[0].astype(str).tolist()
+    features = pd.read_csv(features_path, header=None)[0].astype(str).tolist()
     if mat.shape[0] == len(features) and mat.shape[1] == len(barcodes):
         mat = mat.T.tocsr()  # → (cells, features)
-    print(f"  protein shape: {mat.shape} ({len(barcodes)} cells × {len(features)} features)")
+    print(f"  shape: {mat.shape} ({len(barcodes)} cells × {len(features)} features)")
     return mat, barcodes, features
 
 
-def load_guide_demux(guide_csv_path: Path) -> pd.DataFrame:
-    """Load per-cell guide-RNA assignments. Expected columns:
-    barcode, guide_RNA, n_guides (some variants: 'cell', 'sgRNA', 'guide').
+def derive_perturbation_from_hto(
+    hto_mtx, hto_barcodes, hto_features,
+):
+    """Call per-cell perturbation labels from HTO matrix using top-target
+    + double-detection logic. Returns pd.Series indexed by barcode.
+
+    Stages:
+      1. Identify target-HTO columns via TARGET_HTO_TO_PERT mapping
+      2. For each cell: take target-HTO counts, find top-1 and top-2
+      3. Apply MIN_TARGET_HTO_COUNT + SINGLE_DOMINANCE thresholds
+      4. CD3E+CD4 double rule (top-2 are exactly sgCD3E + sgCD4)
     """
-    print(f"Loading guide demux: {guide_csv_path}")
-    df = pd.read_csv(guide_csv_path)
-    # Normalize column names
-    barcode_col = next((c for c in df.columns if c.lower() in ("barcode", "cell", "cell_barcode", "cell_id")), None)
-    guide_col = next((c for c in df.columns if c.lower() in ("guide_rna", "sgrna", "guide", "guide_id")), None)
-    if barcode_col is None or guide_col is None:
-        raise ValueError(f"Could not identify barcode/guide columns in "
-                         f"{guide_csv_path}; got columns {list(df.columns)}")
-    df = df.rename(columns={barcode_col: "barcode", guide_col: "guide_RNA"})
-    n_guides_col = next((c for c in df.columns if c.lower() in ("n_guides", "num_guides", "n_perts")), None)
-    if n_guides_col is None:
-        df["n_guides"] = 1  # assume single-guide if not specified
-    else:
-        df = df.rename(columns={n_guides_col: "n_guides"})
-    print(f"  {len(df)} guide-cell rows; columns: {list(df.columns)}")
-    return df[["barcode", "guide_RNA", "n_guides"]]
+    print(f"Deriving per-cell perturbation labels from HTO matrix...")
+    print(f"  {len(hto_features)} HTO features detected:")
+    for i, f in enumerate(hto_features):
+        target = TARGET_HTO_TO_PERT.get(f, "(non-target)")
+        print(f"    [{i}] {f}  → {target}")
 
+    target_idx = [i for i, f in enumerate(hto_features) if f in TARGET_HTO_TO_PERT]
+    target_pert = [TARGET_HTO_TO_PERT[hto_features[i]] for i in target_idx]
+    if len(target_idx) < 5:
+        print(f"  WARN: only {len(target_idx)} target HTOs found; expected 5")
+        if len(target_idx) == 0:
+            raise ValueError("No target HTOs match TARGET_HTO_TO_PERT keys. "
+                             "HTO feature names may differ from expected.")
 
-def map_guides_to_perturbation(guides_df: pd.DataFrame) -> pd.Series:
-    """Collapse per-cell guide assignments to a single perturbation label.
+    # Per-cell target counts: shape (n_cells, n_target_HTOs)
+    target_counts = np.asarray(hto_mtx[:, target_idx].todense())
+    n_cells = target_counts.shape[0]
 
-    Single-guide cells: target gene of that guide (or 'NTC').
-    Double-guide cells: 'CD3E_CD4_double' if matches the Mimitou double KO;
-    otherwise drop (we only have CD3E+CD4 as a clean double in the panel).
-    """
-    # Determine target per row
-    targets = guides_df["guide_RNA"].map(GUIDE_TO_TARGET)
-    unmapped = guides_df.loc[targets.isna(), "guide_RNA"].unique()
-    if len(unmapped) > 0:
-        print(f"  WARNING: {len(unmapped)} unmapped guide names "
-              f"(first 10: {list(unmapped[:10])}); these cells will be dropped.")
+    # Sort each cell's targets by count descending
+    sorted_idx = np.argsort(target_counts, axis=1)[:, ::-1]
+    top1_count = target_counts[np.arange(n_cells), sorted_idx[:, 0]]
+    top2_count = target_counts[np.arange(n_cells), sorted_idx[:, 1]] if target_counts.shape[1] > 1 else np.zeros(n_cells)
+    total = target_counts.sum(axis=1)
 
-    # Group by barcode → set of targets
-    df = guides_df.copy()
-    df["target"] = targets
-    df = df.dropna(subset=["target"])
-    grouped = df.groupby("barcode")["target"].agg(lambda x: tuple(sorted(set(x))))
+    # Avoid division by zero
+    total_safe = np.where(total > 0, total, 1)
+    top1_share = top1_count / total_safe
+    top2_share = (top1_count + top2_count) / total_safe
 
-    # Map target tuples → perturbation label
-    def _label(target_tuple):
-        if target_tuple == ("NTC",):
-            return "NTC"
-        if len(target_tuple) == 1:
-            return target_tuple[0]
-        if target_tuple == ("CD3E", "CD4"):
-            return "CD3E_CD4_double"
-        return None  # other multi-guide combos: drop
+    # Classify
+    labels = []
+    pert_array = np.array(target_pert)
+    n_dropped_low = 0
+    n_dropped_multiplet = 0
+    n_double = 0
+    for i in range(n_cells):
+        if top1_count[i] < MIN_TARGET_HTO_COUNT:
+            labels.append(None)
+            n_dropped_low += 1
+            continue
+        top1_pert = pert_array[sorted_idx[i, 0]]
+        top2_pert = pert_array[sorted_idx[i, 1]] if target_counts.shape[1] > 1 else None
 
-    return grouped.map(_label).dropna()
+        # Single perturbation
+        if top1_share[i] >= SINGLE_DOMINANCE:
+            labels.append(top1_pert)
+            continue
+
+        # CD3E+CD4 double KO
+        pair = tuple(sorted([top1_pert, top2_pert]))
+        if pair == ("CD3E", "CD4") and top2_share[i] >= DOUBLE_PAIR_DOMINANCE:
+            labels.append("CD3E_CD4_double")
+            n_double += 1
+            continue
+
+        # Other multiplets — drop
+        labels.append(None)
+        n_dropped_multiplet += 1
+
+    print(f"  HTO calling stats:")
+    print(f"    cells low-count (<{MIN_TARGET_HTO_COUNT}):       {n_dropped_low}")
+    print(f"    cells multiplet (other):           {n_dropped_multiplet}")
+    print(f"    cells called CD3E_CD4_double:      {n_double}")
+    print(f"    cells called single perturbation:  "
+          f"{n_cells - n_dropped_low - n_dropped_multiplet - n_double}")
+
+    series = pd.Series(labels, index=hto_barcodes, name="perturbation")
+    return series.dropna()
 
 
 def project_atac_to_union(atac_counts, atac_peaks, union_peaks):
@@ -253,11 +324,15 @@ def main():
                    help="kite barcodes file (.txt or .tsv)")
     p.add_argument("--protein_features", type=Path,
                    help="kite feature names file (.txt or .tsv)")
-    p.add_argument("--guide_csv", type=Path,
-                   help="Per-cell guide_RNA assignment CSV")
+    p.add_argument("--hto_mtx", type=Path,
+                   help="kite-format HTO count matrix (encodes per-cell sgRNA target)")
+    p.add_argument("--hto_barcodes", type=Path)
+    p.add_argument("--hto_features", type=Path)
     p.add_argument("--donor_csv", type=Path, default=None,
                    help="Optional: per-cell donor_id CSV (barcode, donor_id). "
-                        "If absent, all cells get donor_id='unknown'.")
+                        "If absent, all cells get donor_id='unknown'. "
+                        "(Mimitou CD4 CRISPR sub-study is single-donor; "
+                        "leaving unset is fine.)")
     p.add_argument("--union_manifest", required=True, type=Path,
                    help="DOGMA union peak manifest (UNION_MANIFEST.json or peaks.tsv)")
     p.add_argument("--out", required=True, type=Path,
@@ -265,15 +340,22 @@ def main():
     args = p.parse_args()
 
     # --- Resolve input paths ---
+    # Default layout matches scripts/download_mimitou_crispr.sh output:
+    #   <dir>/filtered_peak_bc_matrix.h5
+    #   <dir>/adt/featurecounts.{mtx,barcodes.txt,genes.txt}
+    #   <dir>/hto/featurecounts.{mtx,barcodes.txt,genes.txt}
     if args.mimitou_crispr_dir is not None:
         d = args.mimitou_crispr_dir
         args.atac_h5 = args.atac_h5 or d / "filtered_peak_bc_matrix.h5"
-        args.protein_mtx = args.protein_mtx or d / "protein_counts.mtx"
-        args.protein_barcodes = args.protein_barcodes or d / "protein_barcodes.tsv"
-        args.protein_features = args.protein_features or d / "protein_features.tsv"
-        args.guide_csv = args.guide_csv or d / "guide_demux.csv"
+        args.protein_mtx = args.protein_mtx or d / "adt" / "featurecounts.mtx"
+        args.protein_barcodes = args.protein_barcodes or d / "adt" / "featurecounts.barcodes.txt"
+        args.protein_features = args.protein_features or d / "adt" / "featurecounts.genes.txt"
+        args.hto_mtx = args.hto_mtx or d / "hto" / "featurecounts.mtx"
+        args.hto_barcodes = args.hto_barcodes or d / "hto" / "featurecounts.barcodes.txt"
+        args.hto_features = args.hto_features or d / "hto" / "featurecounts.genes.txt"
     for fld in ("atac_h5", "protein_mtx", "protein_barcodes",
-                "protein_features", "guide_csv", "union_manifest"):
+                "protein_features", "hto_mtx", "hto_barcodes",
+                "hto_features", "union_manifest"):
         path = getattr(args, fld)
         if path is None or not path.exists():
             raise FileNotFoundError(f"--{fld} not found: {path}")
@@ -302,14 +384,18 @@ def main():
     # --- Load ATAC ---
     atac_counts, atac_barcodes, atac_peaks = load_atac_peaks(args.atac_h5)
 
-    # --- Load Protein ---
-    prot_counts, prot_barcodes, prot_features = load_protein_counts(
+    # --- Load Protein (kite ADT) ---
+    prot_counts, prot_barcodes, prot_features = load_kite_mtx(
         args.protein_mtx, args.protein_barcodes, args.protein_features,
     )
 
-    # --- Load guide demux ---
-    guides_df = load_guide_demux(args.guide_csv)
-    perturbation_labels = map_guides_to_perturbation(guides_df)
+    # --- Load HTO + derive perturbation labels ---
+    hto_counts, hto_barcodes, hto_features = load_kite_mtx(
+        args.hto_mtx, args.hto_barcodes, args.hto_features,
+    )
+    perturbation_labels = derive_perturbation_from_hto(
+        hto_counts, hto_barcodes, hto_features,
+    )
     print(f"\nPerturbation distribution (across {len(perturbation_labels)} cells):")
     print(perturbation_labels.value_counts().to_string())
 
@@ -319,7 +405,7 @@ def main():
         donor_df = pd.read_csv(args.donor_csv)
         donor_map = dict(zip(donor_df["barcode"], donor_df["donor_id"]))
 
-    # --- Intersect barcodes across ATAC + Protein + guide ---
+    # --- Intersect barcodes across ATAC + Protein + HTO-derived guide ---
     atac_set = set(atac_barcodes)
     prot_set = set(prot_barcodes)
     guide_set = set(perturbation_labels.index)
@@ -331,12 +417,16 @@ def main():
     print(f"  COMMON:  {len(common)}")
     if len(common) == 0:
         raise ValueError("Zero shared barcodes — check barcode-suffix consistency "
-                         "between ATAC, protein, and guide files.")
+                         "between ATAC, protein, and HTO files. Common gotcha: "
+                         "Cell Ranger appends '-1' suffix; kite output may not.")
 
     # Sort common barcodes deterministically
     common_sorted = sorted(common)
-    atac_idx = np.array([atac_barcodes.index(b) for b in common_sorted])
-    prot_idx = np.array([prot_barcodes.index(b) for b in common_sorted])
+    # Use dicts for O(1) barcode lookup (was O(n) per barcode → 32K^2)
+    atac_pos = {b: i for i, b in enumerate(atac_barcodes)}
+    prot_pos = {b: i for i, b in enumerate(prot_barcodes)}
+    atac_idx = np.array([atac_pos[b] for b in common_sorted])
+    prot_idx = np.array([prot_pos[b] for b in common_sorted])
 
     atac_kept = atac_counts[atac_idx]
     prot_kept = prot_counts[prot_idx]
@@ -354,10 +444,6 @@ def main():
         ]),
         "lysis_protocol": pd.Categorical(["LLL"] * len(common_sorted)),
         "donor_id": donors,
-        "guide_RNA": [
-            ",".join(sorted(guides_df.query("barcode == @b")["guide_RNA"].unique()))
-            for b in common_sorted
-        ],
         "has_rna": False,    # CRISPR arm has no RNA in DOGMA-compatible form
         "has_atac": True,
         "has_protein": True,

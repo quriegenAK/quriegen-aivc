@@ -145,6 +145,36 @@ eval_pre_registration:
     - leave_one_donor_out
 ```
 
+## Known limitation — B-lineage depression under cross-corpus pseudo-bulk
+
+**Symptom**: Calderon B-lineage accuracy comes in at 4/22 = 0.18 even
+when the encoder achieves overall 0.7308 on the other 5 lineages.
+
+**Diagnosis (Stage 3 Part 1 Report 5, 2026-05-05)**: B-lineage accuracy
+is depressed under cross-corpus pseudo-bulk eval due to **subtype-coverage
+mismatch**; cell-level discrimination is intact (silhouette 0.354 for B
+vs 0.129 for CD4_T — B clusters MORE tightly than CD4_T at the
+single-cell level).
+
+**Mechanism**: Calderon's "B" label = bulk-sorted naive/memory B from
+healthy donors. DOGMA's "B" centroid = CD3/CD28-stimulated PBMC B cells,
+likely plasmablast-leaning with elevated antigen-presentation markers
+(HLA-DR, CD86). The two B definitions encode to different latent regions,
+shifting B → DC neighborhood (13 of 18 misclassified cells go to DC,
+5 to NK, ZERO to T-cell centroids — lineage hierarchy is respected).
+
+**Implication for THIS spec**: B-lineage accuracy under cross-corpus
+pseudo-bulk eval is a known artifact and SHOULD NOT be re-litigated as
+an encoder weakness without explicit single-cell-level diagnostic data.
+When reporting per-lineage accuracy, footnote B's value with this caveat.
+
+**Remediation**: Do NOT retrain the encoder. For B-cell-disease contexts
+(CLL, BCR signaling perturbations), the perturbation predictor's output
+head should include B-vs-DC-aware fine-grained disambiguation — this is
+decoder-level work, not encoder-level. See memory entry
+`project_aivc_bcell_diagnosis_2026_05_05.md` for full diagnostic
+breakdown (D1 + D2 + D3 numerics).
+
 ## Implementation reference
 
 The canonical implementation lives in:
