@@ -101,11 +101,18 @@ def load_atac_peaks(atac_h5_path: Path):
         indices = mtx["indices"][:]
         indptr = mtx["indptr"][:]
         shape = mtx["shape"][:]
-        # Cell Ranger packs as (n_features, n_cells) — transpose to (cells, peaks)
-        counts = sp.csr_matrix(
+        # Cell Ranger ATAC h5 layout: shape=(n_features, n_cells), data
+        # serialized in CSC order (indptr indexes COLUMNS=cells, indices
+        # contain FEATURE indices). Previous version constructed a
+        # csr_matrix with these CSC-style arrays, which mis-sizes indptr
+        # (cell+1 vs feature+1) and crashes:
+        #   ValueError: index pointer size (9152) should be (94839)
+        # Fix: construct as csc_matrix, then .T.tocsr() to get cells × peaks.
+        counts_csc = sp.csc_matrix(
             (data, indices, indptr),
-            shape=(int(shape[0]), int(shape[1])),
-        ).T.tocsr()
+            shape=(int(shape[0]), int(shape[1])),  # (n_features, n_cells)
+        )
+        counts = counts_csc.T.tocsr()  # → (n_cells, n_features) for downstream
         barcodes = [b.decode() for b in mtx["barcodes"][:]]
         # Peak names: in Cell Ranger ATAC, features/name are usually "chr:start-end"
         # but can also be at features/id. Try both.
@@ -175,16 +182,36 @@ DOUBLE_PAIR_DOMINANCE = 0.85  # (top2_targets) / total_target >= 0.85 -> double
 
 def load_kite_mtx(mtx_path: Path, barcodes_path: Path, features_path: Path):
     """Load kite-format featurecounts (matrix.mtx + barcodes + genes).
-    Same loader signature as load_protein_counts for symmetry.
+    Returns (counts, barcodes, features) with counts shape (n_cells, n_features).
+
+    Orientation detection is EXPLICIT — kite writes features × cells by
+    convention, but we defensively check both layouts and raise if neither
+    matches. Silent pass-through here would surface as a downstream barcode-
+    intersection failure with zero cells in common.
     """
     from scipy.io import mmread
     print(f"Loading kite mtx: {mtx_path}")
     mat = mmread(str(mtx_path)).tocsr()
     barcodes = pd.read_csv(barcodes_path, header=None)[0].astype(str).tolist()
     features = pd.read_csv(features_path, header=None)[0].astype(str).tolist()
-    if mat.shape[0] == len(features) and mat.shape[1] == len(barcodes):
-        mat = mat.T.tocsr()  # → (cells, features)
-    print(f"  shape: {mat.shape} ({len(barcodes)} cells × {len(features)} features)")
+    n_b, n_f = len(barcodes), len(features)
+
+    if mat.shape == (n_f, n_b):
+        # kite default: features × cells. Transpose.
+        mat = mat.T.tocsr()
+        layout = "features×cells (kite default; transposed)"
+    elif mat.shape == (n_b, n_f):
+        layout = "cells×features (already oriented)"
+    else:
+        raise ValueError(
+            f"Kite mtx shape {mat.shape} matches neither expected layout:\n"
+            f"  features × cells = ({n_f}, {n_b})\n"
+            f"  cells × features = ({n_b}, {n_f})\n"
+            f"Mismatch likely indicates: (a) {mtx_path} doesn't pair with "
+            f"the supplied barcodes/features files, (b) barcodes/features "
+            f"file is truncated, or (c) kite output is corrupt."
+        )
+    print(f"  shape: {mat.shape} ({n_b} cells × {n_f} features); layout: {layout}")
     return mat, barcodes, features
 
 
