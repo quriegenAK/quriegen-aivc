@@ -76,6 +76,27 @@ PEAK_RE = re.compile(r"^(?P<chrom>[\w.]+)[_:](?P<start>\d+)[_-](?P<end>\d+)$")
 # kallisto/hashtag_list.txt (downloaded by scripts/download_mimitou_crispr.sh).
 
 
+# Barcode-lane-suffix normalization.
+#
+# CRITICAL CONVENTION DIFFERENCE between Mimitou's ATAC and ADT/HTO sources:
+#   - filtered_peak_bc_matrix.h5 uses Cell Ranger barcode convention with
+#     a "-1" lane suffix appended (e.g., "AAACGAAAGAAACGCC-1")
+#   - asap_reproducibility kite outputs (adt/, hto/) use raw 16-mer
+#     barcodes WITHOUT the lane suffix
+# Without normalization, the cross-modality barcode intersection is empty
+# even though the cells are physically the same, which surfaces as
+# "Zero shared barcodes" with COMMON=0 in main(). Normalize all three
+# barcode lists by stripping any "-N" suffix BEFORE set intersection.
+LANE_SUFFIX_RE = re.compile(r"-\d+$")
+
+
+def strip_lane_suffix(bc: str) -> str:
+    """Strip "-N" lane index from a 10x barcode string. Idempotent —
+    safe to apply to barcodes that lack a lane suffix.
+    """
+    return LANE_SUFFIX_RE.sub("", bc)
+
+
 def parse_peak_string(s: str) -> Optional[tuple[str, int, int]]:
     m = PEAK_RE.match(str(s))
     if m is None:
@@ -425,6 +446,22 @@ def main():
     )
     print(f"\nPerturbation distribution (across {len(perturbation_labels)} cells):")
     print(perturbation_labels.value_counts().to_string())
+
+    # --- Normalize barcodes across modalities (strip Cell Ranger "-N" lane
+    # suffix from ATAC; kite ADT/HTO are already raw). Sanity-print 3 raw
+    # barcodes per modality before/after so format mismatches surface
+    # immediately on log inspection.
+    print(f"\nBarcode normalization (strip '-N' lane suffix):")
+    print(f"  ATAC raw[:3]:      {atac_barcodes[:3]}")
+    print(f"  ADT raw[:3]:       {prot_barcodes[:3]}")
+    print(f"  HTO raw[:3]:       {hto_barcodes[:3]}")
+    atac_barcodes = [strip_lane_suffix(b) for b in atac_barcodes]
+    prot_barcodes = [strip_lane_suffix(b) for b in prot_barcodes]
+    hto_barcodes_norm = [strip_lane_suffix(b) for b in hto_barcodes]
+    perturbation_labels.index = [strip_lane_suffix(b) for b in perturbation_labels.index]
+    print(f"  ATAC norm[:3]:     {atac_barcodes[:3]}")
+    print(f"  ADT norm[:3]:      {prot_barcodes[:3]}")
+    print(f"  HTO norm[:3]:      {hto_barcodes_norm[:3]}")
 
     # --- Optional: load donor_id ---
     donor_map = {}
