@@ -319,43 +319,126 @@ def derive_perturbation_from_hto(
 
 
 def project_atac_to_union(atac_counts, atac_peaks, union_peaks):
-    """Project arm-local ATAC peaks to the union peak set.
+    """Project arm-local ATAC peaks to the union peak set via GENOMIC
+    INTERVAL OVERLAP (not exact-string match).
+
+    Why this is needed: different peak callers (Cell Ranger ATAC for the
+    Mimitou arm, MACS2-style for the DOGMA union) emit peaks at slightly
+    different positions even on the same regulatory elements. Exact-string
+    matching produced 68/94838 = 0.1% overlap (essentially noise in the
+    encoder input). Interval-overlap matching should produce 60-90% by
+    biology (typical for cross-corpus ATAC).
+
+    Algorithm (pure stdlib, no PyRanges dep):
+      For each arm peak A with count c, find all union peaks U_k that
+      overlap A genomically. Distribute c to each U_k proportional to
+      overlap_length / arm_peak_length. Total counts per cell are
+      conserved (modulo arm peaks with zero union overlap).
+
+      Implementation: per-chromosome two-pointer sweep. Both arm and
+      union peak lists are sorted by (chrom, start). For each arm peak
+      we maintain an "active" union-peak window (u.start < a.end AND
+      u.end > a.start) and check overlap against each active u.
 
     atac_counts: (n_cells, n_arm_peaks) sparse CSR
     atac_peaks: list of (chrom, start, end) for arm-local columns
     union_peaks: list of (chrom, start, end) for union (e.g., 323,500)
 
-    Returns: (n_cells, n_union) sparse CSR with zero-fill at peaks not in arm
+    Returns: (n_cells, n_union) sparse CSR
     """
-    print(f"Projecting ATAC: {atac_counts.shape[1]} arm-local peaks → "
+    from collections import defaultdict
+    print(f"Projecting ATAC via genomic interval overlap: "
+          f"{atac_counts.shape[1]} arm-local peaks → "
           f"{len(union_peaks)} union peaks")
-    union_idx = {p: i for i, p in enumerate(union_peaks)}
-    # Build per-arm-local → union-global mapping; -1 = peak not in union
-    local_to_union = np.array(
-        [union_idx.get(p, -1) for p in atac_peaks], dtype=np.int64
-    )
-    n_in_union = int((local_to_union != -1).sum())
-    print(f"  {n_in_union}/{len(atac_peaks)} arm peaks present in union "
-          f"({100*n_in_union/len(atac_peaks):.1f}%)")
-    if n_in_union == 0:
-        raise ValueError("ZERO arm peaks overlap union — peak set mismatch. "
-                         "Check that union manifest came from same hg38 reference.")
 
-    # Filter arm-local peaks to those in union
-    keep = local_to_union != -1
-    arm_kept = atac_counts[:, keep]
-    union_dest = local_to_union[keep]
+    # --- Group union peaks by chrom, sorted by start ---
+    union_by_chrom: dict[str, list[tuple[int, int, int]]] = defaultdict(list)
+    for k, (chrom, start, end) in enumerate(union_peaks):
+        union_by_chrom[chrom].append((start, end, k))
+    for chrom in union_by_chrom:
+        union_by_chrom[chrom].sort()
 
-    # Scatter into union space (sparse)
-    n_cells = arm_kept.shape[0]
-    n_union = len(union_peaks)
-    # Convert to COO for scatter, then back to CSR
-    arm_coo = arm_kept.tocoo()
-    new_cols = union_dest[arm_coo.col]
-    union_counts = sp.csr_matrix(
-        (arm_coo.data, (arm_coo.row, new_cols)),
-        shape=(n_cells, n_union),
+    # --- Group arm peaks by chrom, preserve original index ---
+    arm_by_chrom: dict[str, list[tuple[int, int, int]]] = defaultdict(list)
+    for i, (chrom, start, end) in enumerate(atac_peaks):
+        arm_by_chrom[chrom].append((start, end, i))
+    for chrom in arm_by_chrom:
+        arm_by_chrom[chrom].sort()
+
+    # --- Two-pointer sweep per chrom ---
+    rows: list[int] = []
+    cols: list[int] = []
+    vals: list[float] = []
+    n_arm_matched = 0
+    n_arm_no_chrom = 0
+
+    for chrom, arm_list in arm_by_chrom.items():
+        if chrom not in union_by_chrom:
+            n_arm_no_chrom += len(arm_list)
+            continue
+        union_list = union_by_chrom[chrom]
+        union_ptr = 0
+        active: list[tuple[int, int, int]] = []  # (u_start, u_end, k)
+
+        for a_start, a_end, i in arm_list:
+            a_len = a_end - a_start
+            if a_len <= 0:
+                continue
+            # Add union peaks where u.start < a_end (candidates to overlap)
+            while union_ptr < len(union_list) and union_list[union_ptr][0] < a_end:
+                active.append(union_list[union_ptr])
+                union_ptr += 1
+            # Prune: drop union peaks whose end <= a_start (passed permanently,
+            # since arm peaks are sorted and future arm peaks have a_start' >= a_start)
+            active = [u for u in active if u[1] > a_start]
+            # For each remaining active, compute overlap → emit weighted entry
+            matched = False
+            for u_start, u_end, k in active:
+                ov = min(a_end, u_end) - max(a_start, u_start)
+                if ov > 0:
+                    rows.append(i)
+                    cols.append(k)
+                    vals.append(ov / a_len)
+                    matched = True
+            if matched:
+                n_arm_matched += 1
+
+    n_arm = len(atac_peaks)
+    print(f"  {n_arm_matched}/{n_arm} arm peaks overlap ≥1 union peak "
+          f"({100*n_arm_matched/n_arm:.1f}%)")
+    if n_arm_no_chrom:
+        print(f"  {n_arm_no_chrom} arm peaks on chroms absent from union "
+              f"(likely chrM/decoy/contig variants)")
+    print(f"  total (arm, union) overlap pairs: {len(rows)}")
+    print(f"  mean overlaps per matched arm peak: "
+          f"{len(rows)/max(n_arm_matched,1):.2f}")
+
+    if n_arm_matched == 0:
+        raise ValueError(
+            "ZERO arm peaks overlap union — possible causes:\n"
+            "  (a) chromosome naming mismatch (chr1 vs 1)\n"
+            "  (b) different genome build (hg19 vs hg38)\n"
+            "  (c) corrupt peak coordinates\n"
+            f"Arm chroms: {sorted(arm_by_chrom.keys())[:5]}...\n"
+            f"Union chroms: {sorted(union_by_chrom.keys())[:5]}..."
+        )
+    overlap_pct = 100 * n_arm_matched / n_arm
+    if overlap_pct < 50:
+        print(f"  WARN: only {overlap_pct:.1f}% of arm peaks find union overlap; "
+              f"typical cross-corpus ATAC is 60-90%. Investigate if probe verdict "
+              f"is unexpectedly low.")
+
+    # --- Build sparse projection matrix P: (n_arm, n_union) ---
+    P = sp.csr_matrix(
+        (np.array(vals, dtype=np.float32),
+         (np.array(rows, dtype=np.int64), np.array(cols, dtype=np.int64))),
+        shape=(n_arm, len(union_peaks)),
     )
+
+    # --- Apply: (n_cells × n_arm) @ (n_arm × n_union) = (n_cells × n_union) ---
+    union_counts = (atac_counts @ P).tocsr()
+    print(f"  output: {union_counts.shape}, nnz={union_counts.nnz}, "
+          f"mean nnz/cell={union_counts.nnz/union_counts.shape[0]:.1f}")
     return union_counts
 
 
