@@ -392,6 +392,20 @@ Penalizes high-frequency oscillations in the trajectory. Helps the ODE solver co
 | Random-projection synergy head sanity               | < chance  | If random projection beats the real synergy head, the architecture is broken. |
 | Per-arm accuracy on Mimitou full-cycle reconstruction (NTC, CD3E, CD4) | ≥ 0.70    | Adapter has degraded encoder's discrimination; investigate. |
 
+#### Bootstrap CI interpretation (pre-committed)
+
+The held-out double-KO arm has only 97 cells, splitting to ~49 train / ~48 test under the 50/50 split. Bootstrap CI on the synergy cosine sim metric is expected to be approximately ±0.10 at n=48. To avoid post-hoc threshold litigation, the verdict mapping below is **pre-committed**:
+
+| Reported metric           | CI behavior                       | Verdict          |
+|---------------------------|-----------------------------------|------------------|
+| ≥ 0.75                    | regardless                        | **GREEN — pass**     |
+| 0.65 – 0.75               | bootstrap 95% CI includes 0.70    | **GREEN — pass**     |
+| 0.65 – 0.75               | bootstrap 95% CI excludes 0.70    | **AMBER — re-run** with full Mimitou-corpus expanded test set (~32K cells across all 6 arms; lowers per-arm CI but loses true zero-shot purity) |
+| 0.55 – 0.65               | regardless                        | **AMBER — re-run** with λ_zero reduced from 1.0 → 0.5 (Risk #3 banked mitigation) |
+| < 0.55                    | regardless                        | **RED — architecture-class pivot** to single conditional head + zero-shot regularization. Do NOT continue Stage 3a-as-designed. |
+
+Computational eval procedure: 1000-iteration bootstrap, sampling test cells with replacement, recompute centroid + cosine sim, report mean + 2.5/97.5 percentile bounds. Random seed pinned for reproducibility (seed=0 by spec convention).
+
 ### 5.2 Stage 3b gate (placeholders pending QurieSeq finalization)
 
 | Metric                                              | Threshold | Failure → |
@@ -465,6 +479,45 @@ All paths relative to `aivc_genelink/`. Estimated LOC (lines of code) for each n
 3. **The zero-arm constraint may be too rigid.** Real biology has some "leakage" — a stim-only cell does have *some* baseline inhibitor pathway activity. Hard-zero on Δ_i for stim-only cells may over-penalize. Mitigation: use a soft L2 penalty (λ_zero = 1.0 initial; tunable) rather than hard zero. If Stage 3a converges with degraded recon, reduce λ_zero to 0.3.
 4. **The 4-bug pattern in `prepare_mimitou_crispr.py` (2 days, 6 distinct bugs) suggests insufficient test coverage** for the data loader stack. Stage 3a needs a real-data integration test gated on `AIVC_RUN_REAL_DATA_SMOKE=1` before merging. Already banked in feedback memory.
 5. **Pathway pool matrix size** at (58, 36601) sparse with ~30K non-zeros is fine, but a future expansion to Reactome (~2000 pathways, ~10K genes) blows up to ~10M non-zeros — would need a different matrix structure. Defer until Phase 3c.
+
+### 7.1 SDE fallback contingency (Stage 3b)
+
+Neural ODE is the primary backbone choice. If it fails on Stage 3b QurieSeq training, the fallback is **latent SDE via `torchsde.sdeint_adjoint`**. Trigger conditions and switch procedure are pre-registered here so the decision isn't litigated mid-run.
+
+**Trigger any one of**:
+- **NaN loss** in training: gradient explosion or stiff ODE behavior. Single NaN is OK (auto-skip); >3 NaN batches in 100 → trigger.
+- **Validation loss plateau >5 epochs** with training loss still decreasing: ODE is overfitting trajectory means while losing variance structure (deterministic bottleneck).
+- **Eigenvalue drift** in the Jacobian `∂f/∂z` exceeding spectral radius 5.0 averaged over validation cells: indicates the ODE is becoming numerically unstable.
+- **Trajectory variance collapse**: per-timepoint output variance across donors/perturbations drops below 0.1× the input variance — the deterministic ODE is averaging out biologically meaningful cell-to-cell heterogeneity.
+
+**Switch procedure (no architecture change beyond `f_θ` wrapper)**:
+
+```python
+# Before (Neural ODE):
+from torchdiffeq import odeint_adjoint
+z_traj = odeint_adjoint(f_theta, z_dyn_0, t_grid, method='rk4', adjoint_method='dopri5')
+
+# After (latent SDE):
+import torchsde
+class LatentSDE(torchsde.SDEIto):
+    def __init__(self, f_theta, g_diffusion):
+        self.f = f_theta             # reuse the trained drift function
+        self.g = g_diffusion         # NEW: small diffusion network, init close to zero
+    def f_step(self, t, y): return self.f(t, y)
+    def g_step(self, t, y): return self.g(t, y) * 0.1  # bounded diffusion scale
+z_traj = torchsde.sdeint_adjoint(
+    LatentSDE(f_theta, g_diff), z_dyn_0, t_grid,
+    method='euler', dt=1e-2
+)
+```
+
+The drift function `f_θ` is reused as-is — only a small diffusion network `g_diffusion` is added (~50K params at d=256). Initialize `g` close to zero so the SDE starts near the ODE solution, then anneal upward. This preserves trained ODE state and avoids a from-scratch retrain.
+
+**Dep**: `torchsde` is a separate pip install. Pre-stage BSC wheels for `manylinux2014_x86_64 + py3.11` before Stage 3b training kickoff (`pip download torchsde --platform manylinux2014_x86_64 --python-version 3.11`).
+
+**Decision authority**: trigger conditions monitored automatically in training loop; fallback switch requires explicit human authorization (single bash flag flip `--use_sde`). Not auto-triggered.
+
+If SDE fallback also fails, the next escalation is RSSM (discrete-time state-space model with stochastic latents), but that's a deeper architecture-class pivot and would require its own spec amendment.
 
 ---
 
