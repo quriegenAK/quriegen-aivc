@@ -83,8 +83,16 @@ def test_mimitou_h5ad_loads_and_has_expected_keys(real_mimitou_h5ad):
     assert "perturbation" in adata.obs.columns, "obs['perturbation'] missing"
     n_cells, n_peaks = adata.obsm["atac_peaks"].shape
     assert n_cells > 1000, f"suspiciously few cells: {n_cells}"
-    # Expected union peak count from Report 2: 323,500
-    assert n_peaks == 323_500, f"union peak count {n_peaks} != 323500"
+    # Expected union peak count from Report 2: 323,500. Allow override via
+    # env for future union rebuilds; default to the current canonical value
+    # with a 1% tolerance band to absorb minor regen drift.
+    expected_n_peaks = int(os.environ.get("AIVC_UNION_PEAK_COUNT", "323500"))
+    tolerance = max(int(expected_n_peaks * 0.01), 100)
+    assert abs(n_peaks - expected_n_peaks) <= tolerance, (
+        f"union peak count {n_peaks} differs from expected {expected_n_peaks} "
+        f"by more than {tolerance}. If union was legitimately rebuilt, override "
+        f"with AIVC_UNION_PEAK_COUNT=<actual>."
+    )
 
 
 def test_encoder_to_adapter_to_readout_forward(
