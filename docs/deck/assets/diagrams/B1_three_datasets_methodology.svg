@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC methodology rigor: three datasets, pre-registered evals">
+<rect width="1920" height="1080" fill="#070A14"/>
+<defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
+<text x="96" y="78" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX B1 · VALIDATION EVIDENCE</text>
+<line x1="476" y1="72" x2="696" y2="72" stroke="#4ADE80" stroke-opacity="0.4" stroke-width="1"/>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">Three Datasets · Pre-Registered Evals · No Cherry-Picking</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Pretraining, validation, and perturbation data come from three independently produced public datasets · evaluation methodology registered before results were generated</text>
+<text x="96" y="232" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">THREE INDEPENDENT DATASETS · ROLE-SEPARATED</text>
+<line x1="456" y1="226" x2="1824" y2="226" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="248" width="560" height="408" rx="14" fill="#0F1428" stroke="#00F2FF" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="120" y="288" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">01</text>
+<line x1="120" y1="300" x2="160" y2="300" stroke="#00F2FF" stroke-width="1.5"/>
+<text x="120" y="340" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">DOGMA-seq</text>
+<text x="120" y="366" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">MIMITOU 2021 · NAT BIOTECH</text>
+<text x="120" y="400" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="700">RNA + ATAC + Protein</text>
+<text x="120" y="428" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  6 healthy donors</text>
+<text x="120" y="450" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  ≈30K cells</text>
+<text x="120" y="472" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Same-cell measurement</text>
+<rect x="120" y="514" width="512" height="56" rx="8" fill="#00F2FF" fill-opacity="0.10" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.5"/>
+<text x="132" y="536" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">ROLE</text>
+<text x="132" y="558" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">Encoder pretraining</text>
+<text x="120" y="588" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">RESULT</text>
+<text x="120" y="610" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">Encoder produces</text>
+<text x="120" y="630" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">256-D latent · frozen</text>
+<rect x="680" y="248" width="560" height="408" rx="14" fill="#0F1428" stroke="#4ADE80" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="704" y="288" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">02</text>
+<line x1="704" y1="300" x2="744" y2="300" stroke="#4ADE80" stroke-width="1.5"/>
+<text x="704" y="340" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">Calderon 2019</text>
+<text x="704" y="366" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">IMMUNE CELL ATLAS</text>
+<text x="704" y="400" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="700">Bulk + scATAC · stim-driven PBMCs</text>
+<text x="704" y="428" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Different donors</text>
+<text x="704" y="450" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Different protocol</text>
+<text x="704" y="472" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Independent study</text>
+<rect x="704" y="514" width="512" height="56" rx="8" fill="#4ADE80" fill-opacity="0.10" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.5"/>
+<text x="716" y="536" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">ROLE</text>
+<text x="716" y="558" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">Cross-corpus validation</text>
+<text x="704" y="588" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">RESULT</text>
+<text x="704" y="610" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">73% cell-type</text>
+<text x="704" y="630" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">accuracy · zero retraining</text>
+<rect x="1264" y="248" width="560" height="408" rx="14" fill="#0F1428" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="1288" y="288" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">03</text>
+<line x1="1288" y1="300" x2="1328" y2="300" stroke="#B47DF0" stroke-width="1.5"/>
+<text x="1288" y="340" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">Mimitou ASAP-seq</text>
+<text x="1288" y="366" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">CRISPR SUB-STUDY</text>
+<text x="1288" y="400" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="700">ATAC + Protein + HTO</text>
+<text x="1288" y="428" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  CRISPR-perturbed</text>
+<text x="1288" y="450" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  CD4 T cells</text>
+<text x="1288" y="472" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Mimitou lab pipeline</text>
+<rect x="1288" y="514" width="512" height="56" rx="8" fill="#B47DF0" fill-opacity="0.10" stroke="#B47DF0" stroke-width="1" stroke-opacity="0.5"/>
+<text x="1300" y="536" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">ROLE</text>
+<text x="1300" y="558" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">Perturbation adapter probe</text>
+<text x="1288" y="588" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">RESULT</text>
+<text x="1288" y="610" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">0.57 synergy 4-class</text>
+<text x="1288" y="630" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">→ ADAPTER_RECOMMENDED</text>
+<line x1="336" y1="692" x2="1584" y2="692" stroke="#4ADE80" stroke-width="1.5" stroke-opacity="0.6"/>
+<rect x="740" y="674" width="440" height="36" rx="18" fill="#070A14" stroke="#4ADE80" stroke-width="1.5" stroke-opacity="0.75"/>
+<text x="960" y="698" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3" text-anchor="middle">NO DATA OVERLAP BETWEEN ROLES</text>
+<text x="96" y="748" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">PRE-REGISTRATION WORKFLOW — METHODOLOGY LOCKED BEFORE RESULTS</text>
+<line x1="676" y1="742" x2="1824" y2="742" stroke="#1A2235" stroke-width="1"/>
+<rect x="116" y="760" width="380" height="110" rx="12" fill="#0F1428" stroke="#4ADE80" stroke-width="1.2" stroke-opacity="0.55"/>
+<circle cx="144" cy="790" r="14" fill="#4ADE80" fill-opacity="0.20" stroke="#4ADE80" stroke-width="1.5"/>
+<text x="144" y="795" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">1</text>
+<text x="172" y="796" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">Spec written</text>
+<text x="140" y="828" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400">Architecture spec v1.1 (May 2026)</text>
+<line x1="500" y1="815" x2="542" y2="815" stroke="#4ADE80" stroke-width="2.0" stroke-opacity="0.7" stroke-linecap="round"/>
+<path d="M 540 810 L 548 815 L 540 820" fill="none" stroke="#4ADE80" stroke-width="2.0" stroke-opacity="0.8999999999999999" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="552" y="760" width="380" height="110" rx="12" fill="#0F1428" stroke="#4ADE80" stroke-width="1.2" stroke-opacity="0.55"/>
+<circle cx="580" cy="790" r="14" fill="#4ADE80" fill-opacity="0.20" stroke="#4ADE80" stroke-width="1.5"/>
+<text x="580" y="795" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">2</text>
+<text x="608" y="796" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">Eval defined</text>
+<text x="576" y="828" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400">Pseudo-bulk centroid-NN methodology</text>
+<line x1="936" y1="815" x2="978" y2="815" stroke="#4ADE80" stroke-width="2.0" stroke-opacity="0.7" stroke-linecap="round"/>
+<path d="M 976 810 L 984 815 L 976 820" fill="none" stroke="#4ADE80" stroke-width="2.0" stroke-opacity="0.8999999999999999" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="988" y="760" width="380" height="110" rx="12" fill="#0F1428" stroke="#4ADE80" stroke-width="1.2" stroke-opacity="0.55"/>
+<circle cx="1016" cy="790" r="14" fill="#4ADE80" fill-opacity="0.20" stroke="#4ADE80" stroke-width="1.5"/>
+<text x="1016" y="795" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">3</text>
+<text x="1044" y="796" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">Results generated</text>
+<text x="1012" y="828" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400">Pretrained encoder on Calderon + Mimitou CRISPR</text>
+<line x1="1372" y1="815" x2="1414" y2="815" stroke="#4ADE80" stroke-width="2.0" stroke-opacity="0.7" stroke-linecap="round"/>
+<path d="M 1412 810 L 1420 815 L 1412 820" fill="none" stroke="#4ADE80" stroke-width="2.0" stroke-opacity="0.8999999999999999" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1424" y="760" width="380" height="110" rx="12" fill="#0F1428" stroke="#4ADE80" stroke-width="1.2" stroke-opacity="0.55"/>
+<circle cx="1452" cy="790" r="14" fill="#4ADE80" fill-opacity="0.20" stroke="#4ADE80" stroke-width="1.5"/>
+<text x="1452" y="795" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">4</text>
+<text x="1480" y="796" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">Verdict applied</text>
+<text x="1448" y="828" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400">ADAPTER_RECOMMENDED · per pre-registered threshold</text>
+<text x="960" y="902" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic" text-anchor="middle">← methodology pre-registered BEFORE any results were observed · no post-hoc threshold adjustment, no goalpost moving →</text>
+<line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Architecture spec v1.1 · Phase 6.5g.2 closure (2026-05-04, 73% Calderon pre-registered) · Stage 3 Part 1 verdict (2026-05-11, 0.57 ADAPTER_RECOMMENDED) · Eval methodology docs/eval_methodology/cross_corpus_pseudobulk_centroid_nn.md</text>
+<text x="1824" y="980" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">B1 / 12</text>
+</svg>

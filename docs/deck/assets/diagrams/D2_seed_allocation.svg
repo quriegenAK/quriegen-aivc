@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC D2 seed allocation $10M to 10 quarters of platform execution">
+<rect width="1920" height="1080" fill="#070A14"/>
+<defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
+<text x="96" y="78" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX D2 · ROADMAP · BUDGET</text>
+<line x1="476" y1="72" x2="696" y2="72" stroke="#B47DF0" stroke-opacity="0.4" stroke-width="1"/>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">$10M Seed → 10 Quarters of Platform Execution</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Every dollar mapped to a milestone · wet lab + AI/ML team together = the data engine and the modeling engine that make QurieSeq the moat</text>
+<text x="96" y="224" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">$10M SEED ROUND · LINE-ITEM ALLOCATION</text>
+<line x1="516" y1="218" x2="1824" y2="218" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="276" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" dominant-baseline="middle">Wet Lab · Phase 1 + 2 prep</text>
+<text x="96" y="294" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic" dominant-baseline="middle">QurieSeq data delivery, CITE-seq, inhibitor procurement</text>
+<rect x="592" y="264" width="880" height="32" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="0.8"/>
+<rect x="592" y="264" width="352" height="32" rx="6" fill="#26DDF9" fill-opacity="0.22" stroke="#26DDF9" stroke-width="1.2" stroke-opacity="0.85"/>
+<text x="1508" y="282" fill="#26DDF9" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" dominant-baseline="middle">40%</text>
+<text x="1618" y="282" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">$4.0M</text>
+<text x="96" y="332" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" dominant-baseline="middle">AI/ML Team + Compute</text>
+<text x="96" y="350" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic" dominant-baseline="middle">Stage 3a/b/c + Stage 4/5 + BSC compute</text>
+<rect x="592" y="320" width="880" height="32" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="0.8"/>
+<rect x="592" y="320" width="220" height="32" rx="6" fill="#B47DF0" fill-opacity="0.32" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.85"/>
+<text x="1508" y="338" fill="#B47DF0" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" dominant-baseline="middle">25%</text>
+<text x="1618" y="338" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">$2.5M</text>
+<text x="1728" y="338" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" dominant-baseline="middle">◆ THE MODEL</text>
+<text x="96" y="388" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" dominant-baseline="middle">Wet Lab Team</text>
+<text x="96" y="406" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic" dominant-baseline="middle">scientists, technicians, lab management</text>
+<rect x="592" y="376" width="880" height="32" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="0.8"/>
+<rect x="592" y="376" width="132" height="32" rx="6" fill="#26DDF9" fill-opacity="0.22" stroke="#26DDF9" stroke-width="1.2" stroke-opacity="0.85"/>
+<text x="1508" y="394" fill="#26DDF9" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" dominant-baseline="middle">15%</text>
+<text x="1618" y="394" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">$1.5M</text>
+<text x="96" y="444" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" dominant-baseline="middle">Business Development</text>
+<text x="96" y="462" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic" dominant-baseline="middle">pharma BD pipeline, regulatory readiness</text>
+<rect x="592" y="432" width="880" height="32" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="0.8"/>
+<rect x="592" y="432" width="88" height="32" rx="6" fill="#4ADE80" fill-opacity="0.22" stroke="#4ADE80" stroke-width="1.2" stroke-opacity="0.85"/>
+<text x="1508" y="450" fill="#4ADE80" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" dominant-baseline="middle">10%</text>
+<text x="1618" y="450" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">$1.0M</text>
+<text x="96" y="500" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" dominant-baseline="middle">G&amp;A + IP + Legal</text>
+<text x="96" y="518" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic" dominant-baseline="middle">IP filings, office, regulatory legal</text>
+<rect x="592" y="488" width="880" height="32" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="0.8"/>
+<rect x="592" y="488" width="88" height="32" rx="6" fill="#A8B4C2" fill-opacity="0.22" stroke="#A8B4C2" stroke-width="1.2" stroke-opacity="0.85"/>
+<text x="1508" y="506" fill="#A8B4C2" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" dominant-baseline="middle">10%</text>
+<text x="1618" y="506" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">$1.0M</text>
+<line x1="96" y1="534" x2="1818" y2="534" stroke="#1A2235" stroke-width="1.5"/>
+<text x="96" y="556" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">TOTAL</text>
+<text x="1508" y="556" fill="#EAF6FF" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700">100%</text>
+<text x="1618" y="556" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700">$10M</text>
+<text x="96" y="588" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">STRATEGIC GROUPING · WHAT THE SEED BUYS</text>
+<line x1="536" y1="582" x2="1824" y2="582" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="600" width="560" height="256" rx="14" fill="#0F1428" stroke="#26DDF9" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="116" y="630" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">DATA ENGINE</text>
+<text x="116" y="670" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700">$5.5M (55%)</text>
+<text x="116" y="696" fill="#26DDF9" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700">Wet Lab Phase 1+2 + Team</text>
+<text x="116" y="716" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">compounding moat</text>
+<text x="116" y="744" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#26DDF9" font-weight="700">›</tspan>  Phase 1 delivery Q3 2026</text>
+<text x="116" y="768" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#26DDF9" font-weight="700">›</tspan>  Phase 2 phospho + VDJ Q1-Q2 2027</text>
+<text x="116" y="792" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#26DDF9" font-weight="700">›</tspan>  Phase 3 wet lab Q3 2027+</text>
+<text x="116" y="816" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#26DDF9" font-weight="700">›</tspan>  CITE-seq + inhibitor procurement</text>
+<rect x="680" y="600" width="560" height="256" rx="14" fill="#0F1428" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="700" y="630" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">MODEL ENGINE</text>
+<text x="700" y="670" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700">$2.5M (25%)</text>
+<text x="700" y="696" fill="#B47DF0" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700">AI/ML Team + Compute</text>
+<text x="700" y="716" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">executing platform</text>
+<text x="700" y="744" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Stage 3a/3b/3c training (3 stages)</text>
+<text x="700" y="768" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  BTK+JAK demo Q4 2026</text>
+<text x="700" y="792" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Stage 4 + 5 extensions</text>
+<text x="700" y="816" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  BSC compute + cloud burst infra</text>
+<rect x="1264" y="600" width="560" height="256" rx="14" fill="#0F1428" stroke="#4ADE80" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="1284" y="630" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">COMMERCIAL BACKBONE</text>
+<text x="1284" y="670" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700">$2.0M (20%)</text>
+<text x="1284" y="696" fill="#4ADE80" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700">BD + G&amp;A + IP + Legal</text>
+<text x="1284" y="716" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">supporting infra</text>
+<text x="1284" y="744" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Pharma BD pipeline 2027+</text>
+<text x="1284" y="768" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  IP filings · architecture + protocol</text>
+<text x="1284" y="792" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Regulatory readiness</text>
+<text x="1284" y="816" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Office + G&amp;A</text>
+<text x="960" y="888" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400" font-style="italic" text-anchor="middle"><tspan fill="#26DDF9" font-weight="700">$5.5M</tspan> + <tspan fill="#B47DF0" font-weight="700">$2.5M</tspan> + <tspan fill="#4ADE80" font-weight="700">$2.0M</tspan> = <tspan fill="#F7FAFF" font-weight="700">$10M</tspan>  ·  estimates pending CEO confirmation · see speaker notes for budget assumptions</text>
+<line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Draft seed allocation aligned to D1 quarterly roadmap (this deck) · Pending Kinga (CEO) final confirmation · Strategic re-grouping reflects the platform thesis: data engine + model engine compound the moat, commercial backbone supports execution</text>
+<text x="1824" y="980" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">D2 / 12</text>
+</svg>

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC E1 five-year trajectory 2026 to 2031">
+<rect width="1920" height="1080" fill="#070A14"/>
+<defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
+<text x="96" y="78" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX E1 · 5-YEAR HORIZON</text>
+<line x1="476" y1="72" x2="696" y2="72" stroke="#EAF6FF" stroke-opacity="0.4" stroke-width="1"/>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">From Validated Platform to First-in-Class Candidates · 2026 → 2031</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Three distinct phases · platform validation (2026-27) → extension + early pipelines (2027-28) → maturation + clinical translation (2029-31) · each phase compounds on the last</text>
+<text x="96" y="232" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">4-PHASE PROGRESSION · DECREASING VISIBILITY AS HORIZON EXTENDS</text>
+<line x1="796" y1="226" x2="1824" y2="226" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="256" width="414" height="368" rx="14" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="2.0" stroke-opacity="0.95"/>
+<text x="120" y="294" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">2026</text>
+<line x1="120" y1="304" x2="176" y2="304" stroke="#00F2FF" stroke-width="1.5" stroke-opacity="0.95"/>
+<text x="120" y="334" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">PHASE 1</text>
+<text x="120" y="372" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">VALIDATION</text>
+<text x="120" y="412" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  BTK+JAK zero-shot demo (Q4 2026)</text>
+<text x="120" y="440" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Stage 3 ships against QurieSeq Phase 1</text>
+<text x="120" y="468" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Encoder + adapter + readout validated</text>
+<text x="120" y="496" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  BSC compute infrastructure proven</text>
+<text x="120" y="596" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2">◆ HIGH CONFIDENCE</text>
+<rect x="534" y="256" width="414" height="368" rx="14" fill="#B47DF0" fill-opacity="0.14" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.85"/>
+<text x="558" y="294" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">2027</text>
+<line x1="558" y1="304" x2="614" y2="304" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.85"/>
+<text x="558" y="334" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">PHASE 2</text>
+<text x="558" y="372" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">EXTENSION</text>
+<text x="558" y="412" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Phospho integration (Phase 2 data)</text>
+<text x="558" y="440" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  VDJ + 20-donor scale-up</text>
+<text x="558" y="468" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Pipeline 1 starts (target ID)</text>
+<text x="558" y="496" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Pipeline 2 starts (parallel)</text>
+<text x="558" y="524" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Stage 4 wraps</text>
+<text x="558" y="596" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2">◆ HIGH CONFIDENCE</text>
+<rect x="972" y="256" width="414" height="368" rx="14" fill="#8B5CF6" fill-opacity="0.08" stroke="#8B5CF6" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="8 5"/>
+<text x="996" y="294" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">2028</text>
+<line x1="996" y1="304" x2="1052" y2="304" stroke="#8B5CF6" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="996" y="334" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">PHASE 3</text>
+<text x="996" y="372" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">MATURATION</text>
+<text x="996" y="412" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#8B5CF6" font-weight="700">›</tspan>  Causal-readiness layer (Stage 5)</text>
+<text x="996" y="440" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#8B5CF6" font-weight="700">›</tspan>  Pipeline 1 target validation</text>
+<text x="996" y="468" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#8B5CF6" font-weight="700">›</tspan>  Clinical framework groundwork</text>
+<text x="996" y="496" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#8B5CF6" font-weight="700">›</tspan>  Pharma partnership conversations</text>
+<text x="996" y="596" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2">◆ PLANNED · CONTINGENT</text>
+<rect x="1410" y="256" width="414" height="368" rx="14" fill="#EAF6FF" fill-opacity="0.04" stroke="#EAF6FF" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="8 5"/>
+<text x="1434" y="294" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">2029–2031</text>
+<line x1="1434" y1="304" x2="1490" y2="304" stroke="#EAF6FF" stroke-width="1.5" stroke-opacity="0.35"/>
+<text x="1434" y="334" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">PHASE 4</text>
+<text x="1434" y="372" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">TRANSLATION</text>
+<text x="1434" y="412" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#EAF6FF" font-weight="700">›</tspan>  First-in-class candidates emerge</text>
+<text x="1434" y="440" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#EAF6FF" font-weight="700">›</tspan>  Pharma partnerships scale</text>
+<text x="1434" y="468" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#EAF6FF" font-weight="700">›</tspan>  Pipeline 1 target validated</text>
+<text x="1434" y="496" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#EAF6FF" font-weight="700">›</tspan>  Pipeline 2 lead selection</text>
+<text x="1434" y="524" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#EAF6FF" font-weight="700">›</tspan>  Platform = OS for immune drug discovery</text>
+<text x="1434" y="596" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2">◆ DIRECTIONAL</text>
+<text x="96" y="640" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">WHY THE PLATFORM COMPOUNDS</text>
+<line x1="456" y1="634" x2="1824" y2="634" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="652" width="560" height="224" rx="14" fill="#0F1428" stroke="#00F2FF" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="116" y="682" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5">DATA COMPOUNDS</text>
+<text x="116" y="712" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic">Every quarter adds wet-lab data to the training corpus</text>
+<text x="116" y="752" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Phase 1 · 5 donors × 3 modalities</text>
+<text x="116" y="782" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Phase 2 · 20 donors × 5 modalities</text>
+<text x="116" y="812" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Phase 3 · B-cell lines + disease samples</text>
+<rect x="680" y="652" width="560" height="224" rx="14" fill="#0F1428" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="700" y="682" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5">MODEL COMPOUNDS</text>
+<text x="700" y="712" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic">Every stage adds capability without re-architecting</text>
+<text x="700" y="752" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  3 modalities → 5 modalities</text>
+<text x="700" y="782" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Single donor → 20-donor scale</text>
+<text x="700" y="812" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Static → temporal Neural ODE</text>
+<text x="700" y="842" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Correlation → causal-readiness</text>
+<rect x="1264" y="652" width="560" height="224" rx="14" fill="#0F1428" stroke="#4ADE80" stroke-width="1.5" stroke-opacity="0.6"/>
+<text x="1284" y="682" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5">CLINICAL INFRA COMPOUNDS</text>
+<text x="1284" y="712" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic">Every milestone adds clinical-partnership readiness</text>
+<text x="1284" y="752" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Regulatory-grade provenance</text>
+<text x="1284" y="782" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Computational diligence package</text>
+<text x="1284" y="812" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Audit trails + version control</text>
+<line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Architecture spec v1.1 (Stage 3/4/5 sequencing) · QurieSeq Phase 1/2/3 plan · D1 quarterly roadmap (this deck) · Pipeline starts contingent on Stage 3 verdict + Phase 2 data quality · 2029-2031 directional, not committed</text>
+<text x="1824" y="980" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">E1 / 12</text>
+</svg>
