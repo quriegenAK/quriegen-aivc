@@ -52,10 +52,15 @@ START_X = (W - TOTAL_BLOCK_W) // 2  # 96
 
 BLOCKS = [
     dict(step="01", color=CYAN_HI,  title="INPUT",    sub="Multi-omics, per cell",
-         body=["RNA · 36,601 genes", "ATAC · 323,500 peaks", "Protein · 210-D panel"],
+         # Fix 3 (v2): "210-D panel" → "30–210 surface markers" — honest range.
+         # 210-D was unverified for QurieSeq (Mimitou uses 37 markers); C1 speaker
+         # notes flagged this as pending Kinga confirmation.
+         body=["RNA · 36,601 genes", "ATAC · 323,500 peaks", "Protein · 30–210 surface markers"],
          foot="Mimitou · DOGMA-seq · QurieSeq"),
     dict(step="02", color=LAVENDER, title="ENCODER",  sub="Frozen + adapter",   lock=True,
-         body=["Trimodal → 256-D latent", "≈130K-param adapter", "LayerNorm + GELU"],
+         # Fix 2 (v2): "Trimodal" → "Multi-omics" — keeps 5-modality platform
+         # framing alive on A1 (per A2 v4 decision, commit 1b61964).
+         body=["Multi-omics → 256-D latent", "≈130K-param adapter", "LayerNorm + GELU"],
          foot="Pretrained on DOGMA-seq"),
     dict(step="03", color=CYAN,     title="TEMPORAL", sub="Neural ODE",
          body=["z(t₀) → z(t)", "Continuous-time state", "0 → 180 min"],
@@ -72,7 +77,10 @@ STATUS = [
     dict(icon="●",   color=OK_GREEN,   label="Real data",                  sub="Mimitou + DOGMA"),
     dict(icon="●●", color=OK_GREEN, label="Pretrain ✓  Adapter ✓", sub="Stages 1+2 · S3 Part 1"),
     dict(icon="○",   color=PENDING,    label="Stage 3b",                   sub="Q3 2026 · QurieSeq"),
-    dict(icon="◐",   color=WARN_AMBER, label="Stage 3a",                   sub="In-flight training"),
+    # Fix 4 (v2): "In-flight training" → "Infra ready · training May" — more
+    # honest: Stage 3a code is shipped (87 tests green) but the BSC training
+    # run hasn't kicked off yet. Amber color preserved (between green and grey).
+    dict(icon="◐",   color=WARN_AMBER, label="Stage 3a",                   sub="Infra ready · training May"),
     dict(icon="○",   color=PENDING,    label="Stage 3c",                   sub="Q1 2027 · phospho"),
 ]
 
@@ -166,11 +174,10 @@ def build_svg() -> str:
             f'font-size="30" font-weight="700">{b["title"]}</text>'
         )
         if b.get("lock"):
-            parts.append(lock_icon(x + 22 + 158, y + 80, color))
-            parts.append(
-                f'<text x="{x+22+148}" y="{y+106}" fill="{color}" font-family="{FONT}" '
-                f'font-size="9" font-weight="700" letter-spacing="2">FROZEN</text>'
-            )
+            # Fix 1 (v2): lock icon moved to upper-right corner of the card,
+            # mirroring the step number on the upper-left. FROZEN text label
+            # removed — subtitle ("FROZEN + ADAPTER") + visual lock = two signals.
+            parts.append(lock_icon(x + BLOCK_W - 30, y + 34, color))
         parts.append(
             f'<text x="{x+22}" y="{y+122}" fill="{color}" font-family="{FONT}" '
             f'font-size="13" font-weight="600" letter-spacing="1.5">{b["sub"].upper()}</text>'
@@ -205,7 +212,9 @@ def build_svg() -> str:
             )
 
     # Status row
-    status_y = BLOCK_Y + BLOCK_H + 36
+    # Fix 5 (v2): tightened vertical layout (Option A from prompt).
+    # Was +36 → +28: pulls VALIDATION STATUS eyebrow ~8px closer to cards.
+    status_y = BLOCK_Y + BLOCK_H + 28
     parts.append(
         f'<text x="{START_X}" y="{status_y}" fill="{TEXT_MUTED}" font-family="{FONT}" '
         f'font-size="12" font-weight="700" letter-spacing="3">VALIDATION STATUS</text>'
@@ -217,22 +226,24 @@ def build_svg() -> str:
     for i, s in enumerate(STATUS):
         x = START_X + i * (BLOCK_W + GAP)
         cx = x + BLOCK_W // 2
-        sy = status_y + 36
+        # Fix 5 (v2): tighten internal status spacing (was +36/+30/+50)
+        sy = status_y + 32
         parts.append(
             f'<text x="{cx}" y="{sy}" fill="{s["color"]}" font-family="{FONT}" '
             f'font-size="24" font-weight="700" text-anchor="middle">{s["icon"]}</text>'
         )
         parts.append(
-            f'<text x="{cx}" y="{sy+30}" fill="{TEXT_BODY}" font-family="{FONT}" '
+            f'<text x="{cx}" y="{sy+28}" fill="{TEXT_BODY}" font-family="{FONT}" '
             f'font-size="14" font-weight="700" text-anchor="middle">{s["label"]}</text>'
         )
         parts.append(
-            f'<text x="{cx}" y="{sy+50}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
+            f'<text x="{cx}" y="{sy+48}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
             f'font-size="12" font-weight="400" text-anchor="middle">{s["sub"]}</text>'
         )
 
     # Invariant row
-    inv_y = status_y + 140
+    # Fix 5 (v2): tighten gap above invariants (was status_y + 140).
+    inv_y = status_y + 120
     parts.append(
         f'<text x="{START_X}" y="{inv_y}" fill="{TEXT_MUTED}" font-family="{FONT}" '
         f'font-size="12" font-weight="700" letter-spacing="3">INVARIANT GUARANTEES</text>'
@@ -258,19 +269,24 @@ def build_svg() -> str:
         )
 
     # Footer
+    # Fix 5 (v2): pull footer up from y=H-60/H-28 (1020/1052) to ~y=948/980.
+    # Closes ~72px of empty band below the invariant pills while preserving
+    # the ~100px bottom margin called for in the prompt.
+    footer_line_y = H - 132   # was H - 60
+    footer_text_y = H - 100   # was H - 28  (bottom margin 100px from baseline)
     parts.append(
-        f'<line x1="{START_X}" y1="{H - 60}" x2="{W - START_X}" y2="{H - 60}" '
+        f'<line x1="{START_X}" y1="{footer_line_y}" x2="{W - START_X}" y2="{footer_line_y}" '
         f'stroke="{DIVIDER}" stroke-width="1"/>'
     )
     parts.append(
-        f'<text x="{START_X}" y="{H - 28}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
+        f'<text x="{START_X}" y="{footer_text_y}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
         f'font-size="11" font-weight="400" font-style="italic">'
         f'Source: AIVC architecture spec v1.1 · Phase 6.5g.2 closure (2026-05-04) · '
         f'Stage 3 Part 1 verdict (2026-05-11) · 73% Calderon cross-corpus · 0.57 synergy 4-class (2.27× chance)'
         f'</text>'
     )
     parts.append(
-        f'<text x="{W - START_X}" y="{H - 28}" fill="{CYAN}" font-family="{FONT}" '
+        f'<text x="{W - START_X}" y="{footer_text_y}" fill="{CYAN}" font-family="{FONT}" '
         f'font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">A1 / 12</text>'
     )
     parts.append('</svg>')
