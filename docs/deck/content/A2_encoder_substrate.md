@@ -2,8 +2,8 @@
 
 - **Maps to Kinga's deck**: Slide 8 (5-layer regulatory cascade) — zooms into the "Represent" layer
 - **Section**: A — Architecture Depth
-- **Visual lead**: Encoder schematic + cross-corpus accuracy
-- **Status**: Draft v2 — incorporates Ash feedback (aggregate B-cell, multi-omics framing)
+- **Visual lead**: Encoder schematic + cross-corpus accuracy + DOGMA-seq sidebar
+- **Status**: Draft v4 — strips "trimodal" from our voice; reserved only for direct Mimitou 2021 protocol reference
 
 ---
 
@@ -23,7 +23,7 @@ A modality-extensible foundation pretrained on RNA + ATAC + Protein today; Phosp
 
 ## Body content (3 bullets max)
 
-- **Multi-omics by design, currently validated on 3 modalities**: RNA + ATAC + Protein from Mimitou DOGMA-seq trimodal pretraining. 256-dimensional latent space, contrastive learning across modalities. **Phospho and VDJ slot in via Phase 2 QurieSeq data without re-architecting the encoder** — the substrate is extensible by design.
+- **Multi-omics by design, currently validated on 3 modalities**: RNA + ATAC + Protein from Mimitou DOGMA-seq pretraining. 256-dimensional latent space, contrastive learning across modalities. **Phospho and VDJ slot in via Phase 2 QurieSeq data without re-architecting the encoder** — the substrate is extensible by design.
 
 - **Cross-corpus generalization validated**: 73% cell-type accuracy on Calderon 2019 — a completely independent study (different donors, different protocols, different stimulation context). Zero retraining. Pre-registered pseudo-bulk centroid-NN methodology.
 
@@ -33,7 +33,7 @@ A modality-extensible foundation pretrained on RNA + ATAC + Protein today; Phosp
 
 ## Visual spec (encoder evidence)
 
-Two-panel layout:
+Three-zone layout:
 
 **Left panel — multi-omics encoder structure (showing extensibility):**
 
@@ -57,9 +57,7 @@ PHASE 2 (planned, 2/5)      │                 │
                                               decomposed readout
 ```
 
-**Right panel — cross-corpus validation:**
-
-A single hero number callout:
+**Right panel — cross-corpus validation hero number:**
 
 ```
 ┌─────────────────────────────────────────┐
@@ -69,7 +67,7 @@ A single hero number callout:
 │   cross-corpus cell-type accuracy       │
 │   on Calderon 2019                      │
 │                                         │
-│   (pre-registered pseudo-bulk            │
+│   (pre-registered pseudo-bulk           │
 │   centroid-NN methodology)              │
 │                                         │
 └─────────────────────────────────────────┘
@@ -81,16 +79,34 @@ Below the 73% callout, a small text block (3 lines):
 - Zero retraining
 - Major PBMC lineages: T (CD4/CD8), NK, B, Monocyte, DC
 
-(No per-cell-type bar chart. Just the overall number.)
+**Bottom-left sidebar / footer — DOGMA-seq dataset callout:**
+
+```
+┌─────────────────────────────────────────────────┐
+│ DOGMA-seq (Mimitou 2021, Nat Biotech)           │
+│                                                 │
+│ • RNA + ATAC + Protein measured in              │
+│   the same single cell                          │
+│ • Primary human PBMCs (not cell lines)          │
+│ • 6 healthy donors, ~30K cells                  │
+│ • Peer-reviewed protocol                        │
+│                                                 │
+│ Source of: encoder pretraining +                │
+│ perturbation training data                      │
+│ (ASAP-seq CRISPR sub-study)                     │
+└─────────────────────────────────────────────────┘
+```
+
+Position: bottom-left of slide as a small reference box. Doesn't compete with the 73% hero — gives credit + context to the data source. Reinforces credibility for technical reviewers.
 
 ---
 
 ## Notes for design
 
 - **The 73% is the slide.** Make it huge. The encoder schematic on the left is supporting evidence.
-- **Color the "today" vs "Phase 2" modalities differently**: today = filled/primary accent, Phase 2 = outlined/secondary tone. Conveys "extensible by design" without explanation.
+- **DOGMA callout is a credibility footer** — small text, recessive visual weight, but always-visible. Anyone who knows the field will recognize Mimitou 2021 immediately.
+- **Color the "today" vs "Phase 2" modalities differently**: today = filled/primary accent, Phase 2 = outlined/secondary tone.
 - **Lock icon on the encoder block** — reinforces "frozen substrate" narrative.
-- **Subtle background gradient or watermark behind 73%** — make it the visual anchor.
 - **Don't show a bar chart**. Per-cell-type breakdown is in speaker notes only.
 
 ---
@@ -101,7 +117,8 @@ Below the 73% callout, a small text block (3 lines):
 |---|---|
 | 73% Calderon cross-corpus accuracy | `docs/reports/phase_6_5g_2_closure_E2_NULL_2026_05_04.md` |
 | 256-D latent space | Architecture spec v1.1, §3.1 |
-| Trimodal DOGMA-seq pretraining (RNA + ATAC + Protein) | Mimitou 2021 ASAP-seq + DOGMA-seq paper |
+| DOGMA-seq pretraining (RNA + ATAC + Protein, same single cell) | Mimitou 2021, Nat Biotech |
+| DOGMA: 6 healthy donors, ~30K cells | Mimitou 2021 paper, Figure 1 |
 | Phospho + VDJ as Phase 2 extensions | QurieSeq Phase 2 spec (Thiago confirmation, May 12) |
 | Frozen post-pretraining | Architecture spec v1.1, §3.1 + Stage 3 Part 1 verdict |
 | Pseudo-bulk centroid-NN eval methodology | `docs/eval_methodology/cross_corpus_pseudobulk_centroid_nn.md` |
@@ -110,6 +127,10 @@ Below the 73% callout, a small text block (3 lines):
 ---
 
 ## Speaker notes (NOT on slide — for Ash to use when answering questions)
+
+**If asked: "Why DOGMA-seq specifically?"**
+
+> DOGMA-seq is the first published protocol that measures RNA, chromatin accessibility, and surface protein from the same single cell. Mimitou published it in 2021 in Nature Biotechnology. We chose it as our pretraining substrate because it's the only public dataset combining these three modalities in primary human PBMCs at scale. It's also the source of our perturbation training data (ASAP-seq CRISPR sub-study from the same lab) — meaning the encoder and the perturbation adapter both come from a coherent technical and biological context.
 
 **If asked: "How does it perform per cell type?"**
 
@@ -127,7 +148,7 @@ Below the 73% callout, a small text block (3 lines):
 
 ## Investor framing (one-paragraph elevator)
 
-> The encoder is a multi-omics foundation model — currently pretrained on three modalities (RNA, chromatin, protein) from Mimitou DOGMA-seq, extensible to five (adding phospho and VDJ in Phase 2). After pretraining, we held out a completely separate dataset (Calderon 2019, different donors, different protocols) and the encoder achieved 73% cell-type accuracy with zero retraining. The methodology was pre-registered — no post-hoc cherry-picking. This is the substrate every downstream task builds on, and it's frozen — we don't retune the encoder for new tasks, which is what makes the platform a true foundation model rather than a per-task model.
+> The encoder is a multi-omics foundation model — currently pretrained on three modalities (RNA, chromatin, protein) from Mimitou DOGMA-seq, extensible to five (adding phospho and VDJ in Phase 2). DOGMA-seq is the first published single-cell protocol measuring RNA, chromatin accessibility, and surface protein from the same cell (Mimitou 2021, Nature Biotechnology) — providing 6 donors of primary human PBMC data and a coherent biological context for the encoder. After pretraining, we held out a completely separate dataset (Calderon 2019, different donors, different protocols) and the encoder achieved 73% cell-type accuracy with zero retraining. The methodology was pre-registered. This is the substrate every downstream task builds on, and it's frozen — we don't retune the encoder for new tasks, which is what makes the platform a true foundation model rather than a per-task model.
 
 ---
 
@@ -143,12 +164,17 @@ Below the 73% callout, a small text block (3 lines):
 
 ## Diagram generation strategy
 
-**Tool**: Cowork or Claude Code (Python matplotlib for both panels combined into one SVG).
+**Tool**: Cowork or Claude Code (Python matplotlib for the three-zone layout combined into one SVG).
 
 **File output**: `docs/deck/assets/diagrams/A2_encoder_evidence.svg`
 
 **Followup prompt for Cowork** (when ready):
-"Generate `A2_encoder_evidence.svg` per spec in `docs/deck/content/A2_encoder_substrate.md`. Two-panel layout: left = encoder schematic showing 5 modalities (3 validated with filled style ✅, 2 Phase 2 with outlined style 🟡) flowing into 256-D latent space with lock icon. Right = single huge '73%' callout with caption 'cross-corpus cell-type accuracy on Calderon 2019'. Output 1920×1080 viewBox. Use Kinga's deck color palette (TBD)."
+"Generate `A2_encoder_evidence.svg` per spec in `docs/deck/content/A2_encoder_substrate.md`. Three-zone layout: 
+1. Top-left = encoder schematic showing 5 modalities (3 validated with filled style ✅, 2 Phase 2 with outlined style 🟡) flowing into 256-D latent space with lock icon. 
+2. Top-right = single huge '73%' callout with caption 'cross-corpus cell-type accuracy on Calderon 2019'. 
+3. Bottom-left = DOGMA-seq sidebar reference box (Mimitou 2021 Nat Biotech, RNA+ATAC+Protein same cell, PBMCs, 6 donors ~30K cells, source of pretraining AND perturbation data).
+
+Output 1920×1080 viewBox. Use Kinga's deck color palette (TBD)."
 
 ---
 
@@ -160,6 +186,6 @@ Below the 73% callout, a small text block (3 lines):
 
 ---
 
-## What's NEXT after A2 is committed
+## What's NEXT after A2 v4 is committed
 
-Move to **A3 (Decomposed Readout)** — the architecturally most novel slide. Explains the 4-arm decomposition and zero-arm constraint that enables zero-shot synergy prediction. Equation belongs here. Connects directly to the BTK+JAK demo story on C2.
+Move to **B1 (Methodology Rigor — the three-dataset story)**. DOGMA gets central treatment there as one of three independent datasets underpinning the platform validation.
