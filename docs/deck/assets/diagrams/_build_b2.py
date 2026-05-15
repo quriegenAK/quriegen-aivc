@@ -17,6 +17,7 @@ from _deck_common import (  # type: ignore
     TEXT_TITLE, TEXT_BODY, TEXT_MUTED, TEXT_DIM, TEXT_DISABLED, DIVIDER,
     FONT, FONT_BODY, FONT_MATH, FONT_MONO, START_X, W, H,
     svg_open, background, header, footer, render_png,
+    check_no_text_collisions,
 )
 
 
@@ -89,31 +90,52 @@ def build_svg() -> str:
     for i, (rng, verdict, action, color, highlight) in enumerate(rows):
         ry = row_y0 + i * ROW_H
         if highlight:
-            # Strong cyan-tinted highlight row
+            # v2: 0.57 hero relocated to its own dedicated pill between the
+            # range column and the verdict column (Option A from prompt).
+            # Resolves the v1 collision where 0.57 at (132, 464) and
+            # "0.50 — 0.80" at (160, 452) shared the same visual band.
+            #
+            # New layout within highlighted row:
+            #   row top:     ◆ WE ARE HERE (eyebrow, top-left)
+            #   row middle:  [0.50 — 0.80]   [◆ 0.57 ◆ pill]   [ADAPTER_RECOMMENDED]   [Train ...]
             parts.append(
                 f'<rect x="{TZ_X + 24}" y="{ry - 2}" width="{TZ_W - 48}" height="{ROW_H}" rx="10" '
                 f'fill="{CYAN}" fill-opacity="0.16" stroke="{CYAN_HI}" stroke-width="2"/>'
             )
-            # WE ARE HERE marker on left edge
+            # WE ARE HERE eyebrow (top, small caps)
             parts.append(
                 f'<text x="{TZ_X + 36}" y="{ry + 22}" fill="{CYAN_HI}" font-family="{FONT}" '
                 f'font-size="10" font-weight="700" letter-spacing="2.5">◆ WE ARE HERE</text>'
             )
+            # Range "0.50 — 0.80" in column 1 (unchanged position)
             parts.append(
-                f'<text x="{TZ_X + 36}" y="{ry + 56}" fill="{CYAN_HI}" font-family="{FONT}" '
-                f'font-size="22" font-weight="700">0.57</text>'
-            )
-            # Verdict & action in the same row (offset to right of WE ARE HERE label)
-            parts.append(
-                f'<text x="{col_x_range}" y="{ry + 44}" fill="{TEXT_BODY}" font-family="{FONT_MONO}" '
+                f'<text x="{col_x_range}" y="{ry + 54}" fill="{TEXT_BODY}" font-family="{FONT_MONO}" '
                 f'font-size="22" font-weight="700">{rng}</text>'
             )
+            # 0.57 hero pill — dedicated column between range and verdict.
+            # Range column ends around x≈400 (col_x_range=160 + ~240px range text).
+            # Verdict column starts at col_x_verdict=816.
+            # Place pill at x≈460, width 200, centered text.
+            pill_x, pill_w = TZ_X + 380, 200
+            pill_y = ry + 14
+            pill_h = ROW_H - 26
             parts.append(
-                f'<text x="{col_x_verdict}" y="{ry + 44}" fill="{CYAN_HI}" font-family="{FONT}" '
+                f'<rect x="{pill_x}" y="{pill_y}" width="{pill_w}" height="{pill_h}" rx="14" '
+                f'fill="{CYAN_HI}" fill-opacity="0.24" stroke="{CYAN_HI}" stroke-width="2"/>'
+            )
+            parts.append(
+                f'<text x="{pill_x + pill_w / 2}" y="{pill_y + pill_h / 2 + 2}" '
+                f'fill="{CYAN_HI}" font-family="{FONT}" '
+                f'font-size="28" font-weight="700" '
+                f'text-anchor="middle" dominant-baseline="middle">◆ 0.57</text>'
+            )
+            # Verdict (column 3) and Action (column 4) — unchanged
+            parts.append(
+                f'<text x="{col_x_verdict}" y="{ry + 54}" fill="{CYAN_HI}" font-family="{FONT}" '
                 f'font-size="22" font-weight="700">{verdict}</text>'
             )
             parts.append(
-                f'<text x="{col_x_action}" y="{ry + 44}" fill="{TEXT_BODY}" font-family="{FONT_BODY}" '
+                f'<text x="{col_x_action}" y="{ry + 54}" fill="{TEXT_BODY}" font-family="{FONT_BODY}" '
                 f'font-size="16" font-weight="700">{action}</text>'
             )
         else:
@@ -258,7 +280,21 @@ if __name__ == "__main__":
     here = pathlib.Path(__file__).resolve().parent
     svg_path = here / "B2_adapter_verdict.svg"
     png_path = here / "B2_adapter_verdict_preview.png"
-    svg_path.write_text(build_svg())
-    print(f"wrote {svg_path}")
+    svg = build_svg()
+    # v2 collision-guard smoke test (per _deck_common.py helpers added 2026-05-15).
+    # Filter the known-benign footer-vs-pagination false-positive (long source
+    # text bounding-box estimate over-extends past the pagination's text-anchor
+    # ="end" position; cairosvg actual render does not collide).
+    collisions = check_no_text_collisions(svg, min_gap=4)
+    blocking = [c for c in collisions if "D2 / 12" not in (c[0], c[1])
+                                       and "B2 / 12" not in (c[0], c[1])
+                                       and "D1 / 12" not in (c[0], c[1])
+                                       and not c[0].startswith("Source:")
+                                       and not c[1].startswith("Source:")]
+    if blocking:
+        msg = "\n".join(f"  · {a!r} ↔ {b!r} ({ox}×{oy}px)" for a, b, ox, oy in blocking)
+        raise SystemExit(f"B2 collision-guard FAIL:\n{msg}")
+    svg_path.write_text(svg)
+    print(f"wrote {svg_path}  (collision-guard ✓)")
     render_png(svg_path, png_path)
     print(f"wrote {png_path}")

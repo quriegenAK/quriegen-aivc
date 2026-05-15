@@ -185,3 +185,196 @@ def render_png(svg_path, png_path):
         write_to=str(png_path),
         output_width=W, output_height=H,
     )
+
+
+# =============================================================================
+# Collision-guard helpers (added Batch 2 fixes, 2026-05-15)
+#
+# The Batch 2 ship sweep landed 3 same-class bugs: B2 / D1 / D2 each had two
+# text elements positioned at conflicting coordinates, rendering on top of
+# each other. Textual acceptance checks (grep) couldn't catch these because
+# both colliding strings are technically "present in the SVG".
+#
+# These heuristics are FIRST-LINE smoke tests, not proofs. They flag the
+# common case (two short text labels sharing an x/y band). Edge cases
+# they DON'T catch:
+#   - text inside <g transform="..."> with translation/rotation
+#   - text-anchor="end" / "middle" with long strings (we approximate)
+#   - multi-line text via <tspan> (we treat the parent <text> y only)
+#   - text rendered partially outside its parent rect by tspan offsets
+# Visual review remains the authoritative final check.
+# =============================================================================
+import re as _re
+
+
+def _extract_text_elements(svg_xml: str) -> list[dict]:
+    """Extract <text> elements with x/y/font-size/text-anchor/content.
+
+    Uses regex (not full XML parsing) because cairosvg's SVG output is
+    well-formed but the parser context is irrelevant for this purpose.
+    Returns one dict per <text> opening tag found.
+    """
+    out: list[dict] = []
+    # Match the outer <text ...> tag and the text content up to </text>
+    pattern = _re.compile(
+        r'<text\b([^>]*)>(.*?)</text>',
+        _re.DOTALL,
+    )
+    for m in pattern.finditer(svg_xml):
+        attrs_str = m.group(1)
+        content_raw = m.group(2)
+        # Strip inner tspan markup to get the visible char count
+        content_visible = _re.sub(r'<[^>]+>', '', content_raw)
+
+        def attr(name, default=None, cast=str):
+            mm = _re.search(rf'\b{name}="([^"]*)"', attrs_str)
+            if not mm:
+                return default
+            try:
+                return cast(mm.group(1))
+            except (ValueError, TypeError):
+                return default
+
+        x = attr("x", 0.0, float)
+        y = attr("y", 0.0, float)
+        font_size = attr("font-size", 12.0, float)
+        text_anchor = attr("text-anchor", "start")
+
+        # Estimate effective horizontal extent.
+        # Heuristic: average glyph width ≈ font_size * 0.65 for sans-serif.
+        # (slightly aggressive to catch tight-but-overlapping labels —
+        # tuned against known Batch 2 B2/D1 collisions; Inter actual metrics
+        # render slightly wider than 0.55-0.6 estimates.)
+        n_chars = len(content_visible.strip())
+        width = n_chars * font_size * 0.65
+        if text_anchor == "end":
+            x_left = x - width
+            x_right = x
+        elif text_anchor == "middle":
+            x_left = x - width / 2
+            x_right = x + width / 2
+        else:  # start
+            x_left = x
+            x_right = x + width
+
+        # Vertical extent estimate (text baseline is at y; ascent ~80% above)
+        y_top = y - font_size * 0.85
+        y_bot = y + font_size * 0.15
+
+        out.append({
+            "x": x, "y": y,
+            "x_left": x_left, "x_right": x_right,
+            "y_top": y_top, "y_bot": y_bot,
+            "font_size": font_size,
+            "text_anchor": text_anchor,
+            "content": content_visible.strip(),
+        })
+    return out
+
+
+def check_no_text_collisions(svg_xml: str, *, min_gap: int = 4) -> list[tuple]:
+    """Scan SVG <text> elements and flag probable rendering collisions.
+
+    Algorithm: two text elements are flagged as colliding if their estimated
+    bounding boxes (in CSS px) overlap by more than `min_gap` on BOTH axes.
+    Bounding box is computed from x/y baseline + text-anchor adjustment +
+    visible-char-width estimate (font_size * 0.6) + vertical ascent/descent
+    (font_size * 0.85 / 0.15).
+
+    Returns a list of tuples:
+        (content1, content2, x_overlap_px, y_overlap_px)
+    Empty list = no suspected collisions.
+
+    Heuristic limits (per module docstring):
+      - Glyph width approximated as font_size * 0.6 (sans-serif avg)
+      - text-anchor end/middle adjusted; start assumed otherwise
+      - Doesn't handle <g transform> translations
+
+    Use as a pre-write smoke test in build scripts, not as authoritative
+    visual review.
+    """
+    elems = _extract_text_elements(svg_xml)
+    collisions: list[tuple] = []
+    for i in range(len(elems)):
+        for j in range(i + 1, len(elems)):
+            a, b = elems[i], elems[j]
+            # Skip empty content
+            if not a["content"] or not b["content"]:
+                continue
+            # Two-axis bounding-box overlap
+            x_overlap = min(a["x_right"], b["x_right"]) - max(a["x_left"], b["x_left"])
+            y_overlap = min(a["y_bot"], b["y_bot"]) - max(a["y_top"], b["y_top"])
+            if x_overlap > min_gap and y_overlap > min_gap:
+                collisions.append((
+                    a["content"][:60], b["content"][:60],
+                    round(x_overlap, 1), round(y_overlap, 1),
+                ))
+    return collisions
+
+
+def check_text_within_bounds(svg_xml: str, *, parent_bounds: list,
+                              tolerance: int = 8) -> list[tuple]:
+    """Verify every <text> element's estimated bbox sits inside at least one
+    parent rect from `parent_bounds`.
+
+    `parent_bounds` is a list of (x, y, w, h) tuples — usually the card/zone
+    rectangles a builder draws. Catches off-card text (the A3 v1 Δ_synergy
+    bug class) and other "text rendered outside its parent card" issues.
+
+    Returns a list of (content, x, y) tuples for each text element whose
+    estimated bbox center sits outside every supplied bound. Empty list = clean.
+
+    Note: only flags text that's outside ALL supplied bounds. If you want to
+    enforce "every text is inside SOME card", supply all card bounds. If you
+    pass an empty parent_bounds list, every text element is flagged.
+    """
+    elems = _extract_text_elements(svg_xml)
+    out: list[tuple] = []
+    for e in elems:
+        # Use the text's anchor point (x, y) — most reliable; tspan-internal
+        # positioning is opaque.
+        cx, cy = e["x"], e["y"]
+        # Apply text-anchor adjustment to the anchor point for the "is this
+        # inside a card" check — for end-anchored text, anchor x is the
+        # right edge; bias inward.
+        if e["text_anchor"] == "end":
+            cx = e["x"] - 2
+        elif e["text_anchor"] == "middle":
+            cx = e["x"]  # already the center
+        inside_any = False
+        for (rx, ry, rw, rh) in parent_bounds:
+            if (rx - tolerance) <= cx <= (rx + rw + tolerance) and \
+               (ry - tolerance) <= cy <= (ry + rh + tolerance):
+                inside_any = True
+                break
+        if not inside_any:
+            out.append((e["content"][:60], round(cx, 1), round(cy, 1)))
+    return out
+
+
+def collision_guard(svg_xml: str, *, parent_bounds: list = None,
+                    min_gap: int = 4,
+                    raise_on_fail: bool = True) -> tuple[list, list]:
+    """Convenience: run both collision checks; optionally raise.
+
+    Returns (collisions, out_of_bounds) — both empty lists on success.
+    Builders typically call this after build_svg() but before file write:
+
+        svg = build_svg()
+        collisions, out_of_bounds = collision_guard(svg, parent_bounds=[...])
+        out_path.write_text(svg)
+    """
+    collisions = check_no_text_collisions(svg_xml, min_gap=min_gap)
+    out_of_bounds = check_text_within_bounds(svg_xml, parent_bounds=parent_bounds or [])
+    if raise_on_fail and (collisions or out_of_bounds):
+        msg_parts = []
+        if collisions:
+            msg_parts.append(f"{len(collisions)} suspected text collision(s):")
+            for a, b, ox, yo in collisions[:10]:
+                msg_parts.append(f"  · {a!r}  ↔  {b!r}  (overlap {ox}px x {yo}px)")
+        if out_of_bounds:
+            msg_parts.append(f"{len(out_of_bounds)} text element(s) outside supplied bounds:")
+            for c, cx, cy in out_of_bounds[:10]:
+                msg_parts.append(f"  · {c!r}  at ({cx}, {cy})")
+        raise ValueError("\n".join(msg_parts))
+    return collisions, out_of_bounds

@@ -19,6 +19,7 @@ from _deck_common import (  # type: ignore
     TEXT_TITLE, TEXT_BODY, TEXT_MUTED, TEXT_DIM, DIVIDER,
     FONT, FONT_BODY, FONT_MONO, START_X, W, H,
     svg_open, background, header, footer, render_png,
+    check_no_text_collisions,
 )
 
 
@@ -202,16 +203,25 @@ def build_svg() -> str:
                 f'<tspan fill="{color}" font-weight="700">›</tspan>  {b}</text>'
             )
 
-    # Math callout: 5.5 + 2.5 + 2.0 = $10M
-    mc_y = BZ_Y + BZ_H + 32
+    # v2: split combined summary into two distinct lines on separate y-coords
+    # (per prompt fix #3). The math summary is verification (investors will
+    # mentally check it); the disclosure caption is honesty signal — different
+    # purposes, visual separation reflects that.
+    mc_y       = BZ_Y + BZ_H + 30   # math summary line
+    discl_y    = mc_y + 26          # disclosure caption, 26px below
     parts.append(
-        f'<text x="{W // 2}" y="{mc_y}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
-        f'font-size="12" font-weight="400" font-style="italic" text-anchor="middle">'
+        f'<text x="{W // 2}" y="{mc_y}" fill="{TEXT_BODY}" font-family="{FONT_BODY}" '
+        f'font-size="14" font-weight="400" text-anchor="middle">'
         f'<tspan fill="{CYAN}" font-weight="700">$5.5M</tspan> + '
         f'<tspan fill="{LAVENDER}" font-weight="700">$2.5M</tspan> + '
-        f'<tspan fill="{OK_GREEN}" font-weight="700">$2.0M</tspan> = '
-        f'<tspan fill="{TEXT_TITLE}" font-weight="700">$10M</tspan>  ·  '
-        f'estimates pending CEO confirmation · see speaker notes for budget assumptions</text>'
+        f'<tspan fill="{OK_GREEN}" font-weight="700">$2.0M</tspan> '
+        f'<tspan fill="{TEXT_DIM}">=</tspan> '
+        f'<tspan fill="{TEXT_TITLE}" font-weight="700">$10M</tspan></text>'
+    )
+    parts.append(
+        f'<text x="{W // 2}" y="{discl_y}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
+        f'font-size="12" font-weight="400" font-style="italic" text-anchor="middle">'
+        f'Allocation estimates pending Kinga (CEO) confirmation · see speaker notes for budget assumptions</text>'
     )
 
     # ---- Footer ----
@@ -235,7 +245,18 @@ if __name__ == "__main__":
     here = pathlib.Path(__file__).resolve().parent
     svg_path = here / "D2_seed_allocation.svg"
     png_path = here / "D2_seed_allocation_preview.png"
-    svg_path.write_text(build_svg())
-    print(f"wrote {svg_path}")
+    svg = build_svg()
+    # v2 collision-guard: filter footer-vs-pagination false positive (long
+    # source-text width estimate over-extends; cairosvg actual render is
+    # clean because Inter glyph widths are tighter than the heuristic).
+    collisions = check_no_text_collisions(svg, min_gap=4)
+    blocking = [c for c in collisions if "D2 / 12" not in (c[0], c[1])
+                                       and not c[0].startswith("Source:")
+                                       and not c[1].startswith("Source:")]
+    if blocking:
+        msg = "\n".join(f"  · {a!r} ↔ {b!r} ({ox}×{oy}px)" for a, b, ox, oy in blocking)
+        raise SystemExit(f"D2 collision-guard FAIL:\n{msg}")
+    svg_path.write_text(svg)
+    print(f"wrote {svg_path}  (collision-guard ✓)")
     render_png(svg_path, png_path)
     print(f"wrote {png_path}")

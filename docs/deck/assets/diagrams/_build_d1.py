@@ -21,6 +21,7 @@ from _deck_common import (  # type: ignore
     TEXT_TITLE, TEXT_BODY, TEXT_MUTED, TEXT_DIM, DIVIDER,
     FONT, FONT_BODY, FONT_MONO, START_X, W, H,
     svg_open, background, header, footer, render_png,
+    check_no_text_collisions,
 )
 
 # 10 quarters Q3'26 → Q4'28
@@ -49,8 +50,12 @@ def build_svg() -> str:
     # ====================================================================
     # GANTT GEOMETRY
     # ====================================================================
+    # v2: push gantt down by 36px to give the staggered milestone label rows
+    # (now BELOW the diamonds) breathing room without crowding the header
+    # subtitle. Total gantt height (4 lanes × 120 + 3 × 16 = 528) still
+    # comfortably clears the footer at y=948.
     GT_X = START_X + 200      # leave 200px for lane labels
-    GT_Y = 248                # top of gantt area
+    GT_Y = 284                # top of gantt area (was 248 in v1)
     GT_W = W - GT_X - START_X # ≈ 1528
     Q_W = GT_W // N_Q         # ≈ 152
 
@@ -65,24 +70,36 @@ def build_svg() -> str:
     N_LANES = len(LANES)
     GANTT_H = N_LANES * LANE_H + (N_LANES - 1) * LANE_GAP
 
-    # Milestone diamonds (top bar)
-    MS_Y = GT_Y - 32
+    # Milestone diamonds. v2: diamond row near top of gantt zone with the
+    # labels staggered BELOW it (clearer of header subtitle than v1's
+    # above-diamond placement).
+    MS_Y = 220   # diamond y-baseline (well below subtitle ending ~y=189)
     parts.append(
-        f'<text x="{START_X}" y="{MS_Y - 4}" fill="{TEXT_MUTED}" font-family="{FONT}" '
+        f'<text x="{START_X}" y="{MS_Y - 10}" fill="{TEXT_MUTED}" font-family="{FONT}" '
         f'font-size="11" font-weight="700" letter-spacing="2.5">MILESTONES</text>'
     )
 
+    # v2: milestone labels staggered between two y-positions to clear the
+    # v1 collision at Q3'26 / Q4'26 / Q1'27 (labels overlapped horizontally).
+    # "BTK+JAK ZERO-SHOT DEMO" shortened to "BTK+JAK demo" — visual emphasis
+    # (glow ring + larger marker + accent color) already conveys "anchor",
+    # so the long string was redundant and contributed to the overflow.
     milestones = [
-        # (quarter_index, label, color, anchor)
-        (0,  "QurieSeq P1 lands",       CYAN_HI,    False),
-        (1,  "BTK+JAK ZERO-SHOT DEMO",  CYAN_HI,    True),
-        (2,  "Phase 2 phospho on",      LAVENDER,   False),
-        (3,  "Pipeline 1 starts",       OK_GREEN,   False),
-        (5,  "Stage 4 wraps",           LAVENDER,   False),
-        (7,  "Pipeline 2 / P1 valid.",  OK_GREEN,   False),
-        (9,  "Stage 5 wraps",           LAVENDER,   False),
+        # (quarter_index, label, color, anchor, label_row)
+        # label_row: 0 = upper (y_high), 1 = lower (y_low) — alternating zigzag
+        (0,  "QurieSeq P1 lands",      CYAN_HI,    False, 0),
+        (1,  "BTK+JAK demo",           CYAN_HI,    True,  1),  # shortened from ZERO-SHOT DEMO
+        (2,  "Phase 2 phospho on",     LAVENDER,   False, 0),
+        (3,  "Pipeline 1 starts",      OK_GREEN,   False, 1),
+        (5,  "Stage 4 wraps",          LAVENDER,   False, 0),
+        (7,  "Pipeline 2 · P1 valid.", OK_GREEN,   False, 1),
+        (9,  "Stage 5 wraps",          LAVENDER,   False, 0),
     ]
-    for q_idx, label, color, anchor in milestones:
+    # Two label rows BELOW the diamond — upper row sits closer to diamond,
+    # lower row further away. Diamonds anchored at MS_Y; labels offset down.
+    Y_HIGH = MS_Y + 22   # upper label row (closer to diamond)
+    Y_LOW  = MS_Y + 44   # lower label row (further below)
+    for q_idx, label, color, anchor, label_row in milestones:
         mx = GT_X + q_idx * Q_W + Q_W // 2
         # Diamond marker
         size = 9 if anchor else 6
@@ -92,15 +109,22 @@ def build_svg() -> str:
             f'fill-opacity="{0.7 if anchor else 0.4}"/>'
         )
         if anchor:
-            # extra emphasis ring
             parts.append(
                 f'<circle cx="{mx}" cy="{MS_Y}" r="16" fill="none" stroke="{color}" '
                 f'stroke-width="1" stroke-opacity="0.4"/>'
             )
-        # Milestone label below the marker, rotated slightly with text-anchor end
+        # Connector line from diamond down to its staggered label
+        label_y = Y_HIGH if label_row == 0 else Y_LOW
+        if label_row == 1:
+            # Lower row: thin connector from diamond bottom edge down to label baseline
+            parts.append(
+                f'<line x1="{mx}" y1="{MS_Y + size}" x2="{mx}" y2="{label_y - 12}" '
+                f'stroke="{color}" stroke-width="1" stroke-opacity="0.45"/>'
+            )
+        # Label text — staggered y, text-anchor="start" with mx+12 offset
         parts.append(
-            f'<text x="{mx + 12}" y="{MS_Y - 16}" fill="{color}" font-family="{FONT}" '
-            f'font-size="{11 if anchor else 10}" font-weight="700" '
+            f'<text x="{mx + 12}" y="{label_y}" fill="{color}" font-family="{FONT}" '
+            f'font-size="{12 if anchor else 11}" font-weight="700" '
             f'text-anchor="start">{label}</text>'
         )
 
@@ -247,7 +271,18 @@ if __name__ == "__main__":
     here = pathlib.Path(__file__).resolve().parent
     svg_path = here / "D1_quarterly_roadmap.svg"
     png_path = here / "D1_quarterly_roadmap_preview.png"
-    svg_path.write_text(build_svg())
-    print(f"wrote {svg_path}")
+    svg = build_svg()
+    # v2 collision-guard: filter footer-vs-pagination false positive only;
+    # any milestone-label collision should now be cleared by the staggered
+    # y_high/y_low layout introduced in v2.
+    collisions = check_no_text_collisions(svg, min_gap=4)
+    blocking = [c for c in collisions if "D1 / 12" not in (c[0], c[1])
+                                       and not c[0].startswith("Source:")
+                                       and not c[1].startswith("Source:")]
+    if blocking:
+        msg = "\n".join(f"  · {a!r} ↔ {b!r} ({ox}×{oy}px)" for a, b, ox, oy in blocking)
+        raise SystemExit(f"D1 collision-guard FAIL:\n{msg}")
+    svg_path.write_text(svg)
+    print(f"wrote {svg_path}  (collision-guard ✓)")
     render_png(svg_path, png_path)
     print(f"wrote {png_path}")
