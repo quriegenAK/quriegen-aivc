@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC decomposed readout: how synergy generalizes">
+<rect width="1920" height="1080" fill="#070A14"/>
+<defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
+<text x="96" y="78" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX A3 · ARCHITECTURE DEPTH</text>
+<line x1="476" y1="72" x2="696" y2="72" stroke="#26DDF9" stroke-opacity="0.4" stroke-width="1"/>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">Decomposed Readout — How Synergy Generalizes</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Four parallel heads · baseline + stim + inhibitor + synergy · the synergy head learns only the non-additive correction — that's what enables zero-shot drug combinations</text>
+<text x="96" y="232" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">4-ARM DECOMPOSITION</text>
+<line x1="296" y1="226" x2="1240" y2="226" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="244" width="1144" height="368" rx="14" fill="#0F1428" stroke="#26DDF9" stroke-width="1.5" stroke-opacity="0.5"/>
+<text x="146" y="300" fill="#F7FAFF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="38" font-weight="600"><tspan font-style="italic">ŷ</tspan><tspan fill="#A8B4C2" font-style="italic">(c, s, i, t)</tspan><tspan fill="#94A3B8">  =  </tspan><tspan fill="#EAF6FF" font-weight="700">h<tspan font-size="26" baseline-shift="-30%">base</tspan></tspan><tspan fill="#EAF6FF" font-style="italic">(z, t)</tspan></text>
+<text x="1210" y="300" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← always active (baseline)</text>
+<text x="306" y="370" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="36" font-weight="700">+</text>
+<text x="356" y="370" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" font-style="italic">1</text>
+<text x="376" y="370" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="500"><tspan fill="#94A3B8">[</tspan><tspan font-style='italic'>s</tspan><tspan fill="#94A3B8">]</tspan></text>
+<text x="918" y="370" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
+<text x="946" y="370" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">stim</tspan><tspan font-style="italic" font-weight="500" fill="#4ADE80">(z, s, t)</tspan></text>
+<text x="1210" y="370" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← active if stim present</text>
+<text x="306" y="440" fill="#8B5CF6" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="36" font-weight="700">+</text>
+<text x="356" y="440" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" font-style="italic">1</text>
+<text x="376" y="440" fill="#8B5CF6" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="500"><tspan fill="#94A3B8">[</tspan><tspan font-style='italic'>i</tspan><tspan fill="#94A3B8">]</tspan></text>
+<text x="918" y="440" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
+<text x="946" y="440" fill="#8B5CF6" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">inh</tspan><tspan font-style="italic" font-weight="500" fill="#8B5CF6">(z, i, t)</tspan></text>
+<text x="1210" y="440" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← active if inhibitor present</text>
+<text x="306" y="510" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="36" font-weight="700">+</text>
+<text x="356" y="510" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" font-style="italic">1</text>
+<text x="376" y="510" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="500"><tspan fill="#94A3B8">[</tspan><tspan font-style='italic'>s</tspan><tspan fill='#94A3B8'> ∧ </tspan><tspan font-style='italic'>i</tspan><tspan fill="#94A3B8">]</tspan></text>
+<text x="1884" y="510" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
+<text x="1912" y="510" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">synergy</tspan><tspan font-style="italic" font-weight="500" fill="#00F2FF">(z, s, i, t)</tspan></text>
+<text x="1210" y="510" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← combination only (the zero-shot win)</text>
+<text x="96" y="560" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">LOAD-BEARING CONSTRAINT</text>
+<line x1="336" y1="554" x2="1240" y2="554" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="572" width="1144" height="244" rx="14" fill="#0B1020" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.5"/>
+<text x="120" y="610" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">ZERO-ARM PENALTY · L₂ SOFT CONSTRAINT</text>
+<text x="128" y="652" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="16" font-weight="400">For NTC (no stim, no inh):</text>
+<text x="456" y="652" fill="#EAF6FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="16" font-weight="700">Δ_stim, Δ_inh, Δ_synergy = 0</text>
+<text x="128" y="684" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="16" font-weight="400">For stim-only cells:</text>
+<text x="456" y="684" fill="#EAF6FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="16" font-weight="700">Δ_inh, Δ_synergy = 0</text>
+<text x="128" y="716" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="16" font-weight="400">For inhibitor-only cells:</text>
+<text x="456" y="716" fill="#EAF6FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="16" font-weight="700">Δ_stim, Δ_synergy = 0</text>
+<line x1="128" y1="756" x2="1208" y2="756" stroke="#1A2235" stroke-width="1"/>
+<text x="128" y="778" fill="#EAF6FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="20" font-weight="700"><tspan fill="#A8B4C2" font-weight="400">Penalty: </tspan>L<tspan font-size="14" baseline-shift="-30%">zero-arm</tspan><tspan fill="#94A3B8"> = </tspan><tspan fill="#00F2FF">λ</tspan><tspan fill="#94A3B8"> · Σ </tspan>‖Δ‖²  <tspan fill="#A8B4C2" font-weight="400">where condition fails</tspan></text>
+<text x="1208" y="778" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="20" font-weight="700" text-anchor="end">λ = 1.0</text>
+<text x="1208" y="800" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic" text-anchor="end">architecture spec v1.1, §3.2.2</text>
+<text x="1284" y="232" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">COMPOSITIONAL GENERALIZATION</text>
+<line x1="1540" y1="226" x2="1824" y2="226" stroke="#1A2235" stroke-width="1"/>
+<rect x="1284" y="248" width="540" height="178" rx="12" fill="#4ADE80" fill-opacity="0.0" stroke="#4ADE80" stroke-width="1.2" stroke-opacity="0.55"/>
+<text x="1302" y="272" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">VALIDATED</text>
+<text x="1302" y="300" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">TRAIN ON</text>
+<text x="1302" y="320" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">Mimitou CRISPR · CD3E single + CD4 single + CD3E×CD4 double</text>
+<text x="1302" y="348" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">PREDICT</text>
+<text x="1302" y="368" fill="#F7FAFF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="700">Predict held-out CD3E + CD4 double-KO</text>
+<rect x="1676" y="382" width="130" height="28" rx="14" fill="#4ADE80" fill-opacity="0.18" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.7"/>
+<text x="1741.0" y="401" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="0.5" text-anchor="middle">0.68 accuracy</text>
+<text x="1302" y="402" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Stage 3 Part 1 · 2.27× chance</text>
+<rect x="1284" y="434" width="540" height="178" rx="12" fill="#00F2FF" fill-opacity="0.16" stroke="#00F2FF" stroke-width="2" stroke-opacity="0.85"/>
+<text x="1302" y="458" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">ZERO-SHOT TARGET</text>
+<text x="1302" y="486" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">TRAIN ON</text>
+<text x="1302" y="506" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">QurieSeq Phase 1 · BTK single + JAK single + 4-arm controls</text>
+<text x="1302" y="534" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">PREDICT</text>
+<text x="1302" y="554" fill="#F7FAFF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="700">Predict BTK + JAK combination, never trained on either pair</text>
+<rect x="1676" y="568" width="130" height="28" rx="14" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.7"/>
+<text x="1741.0" y="587" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="0.5" text-anchor="middle">Headline demo</text>
+<text x="1302" y="588" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Q4 2026</text>
+<rect x="1284" y="620" width="540" height="178" rx="12" fill="#B47DF0" fill-opacity="0.0" stroke="#B47DF0" stroke-width="1.2" stroke-opacity="0.55"/>
+<text x="1302" y="644" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">ARCHITECTURE CLAIM</text>
+<text x="1302" y="672" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">TRAIN ON</text>
+<text x="1302" y="692" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">Mimitou · single perturbations</text>
+<text x="1302" y="720" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">PREDICT</text>
+<text x="1302" y="740" fill="#F7FAFF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="700">Compose any pairwise combination at inference</text>
+<rect x="1676" y="754" width="130" height="28" rx="14" fill="#B47DF0" fill-opacity="0.18" stroke="#B47DF0" stroke-width="1" stroke-opacity="0.7"/>
+<text x="1741.0" y="773" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="0.5" text-anchor="middle">Compositional</text>
+<text x="1302" y="774" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">no retraining</text>
+<line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Architecture spec v1.1 §3.2 (4-arm decomposition) + §3.2.2 (zero-arm constraint, λ=1.0) · Stage 3 Part 1 verdict (2026-05-11) · Implementation aivc/skills/decomposed_readout.py · Test test_zero_arm_loss_double_perturbation_no_constraint</text>
+<text x="1824" y="980" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">A3 / 12</text>
+</svg>

@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC temporal dynamics via Neural ODE">
+<rect width="1920" height="1080" fill="#070A14"/>
+<defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient><linearGradient id="curvegrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#A8B4C2"/><stop offset="15%" stop-color="#00F2FF"/><stop offset="45%" stop-color="#8B5CF6"/><stop offset="70%" stop-color="#B47DF0"/><stop offset="100%" stop-color="#EAF6FF"/></linearGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
+<text x="96" y="78" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX A4 · ARCHITECTURE DEPTH</text>
+<line x1="476" y1="72" x2="696" y2="72" stroke="#26DDF9" stroke-opacity="0.4" stroke-width="1"/>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">Temporal Dynamics — Continuous-Time via Neural ODE</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Cells respond on irregular timescales · 0 → 180 min · Neural ODE handles non-uniform sampling natively — no discretization, no interpolation artifacts</text>
+<text x="96" y="232" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">LATENT TRAJECTORY · z(t)</text>
+<line x1="296" y1="226" x2="1824" y2="226" stroke="#1A2235" stroke-width="1"/>
+<line x1="156" y1="268" x2="156" y2="508" stroke="#1A2235" stroke-width="1.5"/>
+<line x1="156" y1="508" x2="1784" y2="508" stroke="#1A2235" stroke-width="1.5"/>
+<text x="132" y="388.0" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle" transform="rotate(-90, 132, 388.0)">LATENT  z(t)</text>
+<text x="970.0" y="586" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3" text-anchor="middle">TIME · MINUTES POST-PERTURBATION (non-uniform spacing)</text>
+<line x1="156" y1="448.0" x2="1784" y2="448.0" stroke="#1A2235" stroke-width="0.5" stroke-opacity="0.5" stroke-dasharray="2 6"/>
+<line x1="156" y1="388.0" x2="1784" y2="388.0" stroke="#1A2235" stroke-width="0.5" stroke-opacity="0.5" stroke-dasharray="2 6"/>
+<line x1="156" y1="328.0" x2="1784" y2="328.0" stroke="#1A2235" stroke-width="0.5" stroke-opacity="0.5" stroke-dasharray="2 6"/>
+<path d="M 156.00 484.00 C 204.84 472.80, 335.08 441.60, 449.04 416.80 C 563.00 392.00, 720.37 357.60, 839.76 335.20 C 959.15 312.80, 1016.13 286.40, 1165.36 282.40 C 1314.59 278.40, 1640.19 306.40, 1735.16 311.20" fill="none" stroke="#26DDF9" stroke-width="14" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 156.00 484.00 C 204.84 472.80, 335.08 441.60, 449.04 416.80 C 563.00 392.00, 720.37 357.60, 839.76 335.20 C 959.15 312.80, 1016.13 286.40, 1165.36 282.40 C 1314.59 278.40, 1640.19 306.40, 1735.16 311.20" fill="none" stroke="url(#curvegrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="156.0" y1="508" x2="156.0" y2="516" stroke="#A8B4C2" stroke-width="2"/>
+<line x1="156.0" y1="508" x2="156.0" y2="484.0" stroke="#A8B4C2" stroke-width="1" stroke-opacity="0.30" stroke-dasharray="2 4"/>
+<circle cx="156.0" cy="484.0" r="14" fill="#A8B4C2" fill-opacity="0.18"/>
+<circle cx="156.0" cy="484.0" r="7" fill="#A8B4C2" stroke="#070A14" stroke-width="2"/>
+<text x="156.0" y="538" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">0 min</text>
+<text x="156.0" y="558" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="700" text-anchor="middle">Baseline</text>
+<text x="156.0" y="573" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-weight="400" font-style="italic" text-anchor="middle">pre-perturbation state</text>
+<line x1="449.03999999999996" y1="508" x2="449.03999999999996" y2="516" stroke="#00F2FF" stroke-width="2"/>
+<line x1="449.03999999999996" y1="508" x2="449.03999999999996" y2="416.8" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.30" stroke-dasharray="2 4"/>
+<circle cx="449.03999999999996" cy="416.8" r="14" fill="#00F2FF" fill-opacity="0.18"/>
+<circle cx="449.03999999999996" cy="416.8" r="7" fill="#00F2FF" stroke="#070A14" stroke-width="2"/>
+<text x="449.03999999999996" y="538" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">5 min</text>
+<text x="449.03999999999996" y="558" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="700" text-anchor="middle">Early signaling</text>
+<text x="449.03999999999996" y="573" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-weight="400" font-style="italic" text-anchor="middle">phospho-active · RNA latent</text>
+<line x1="839.76" y1="508" x2="839.76" y2="516" stroke="#8B5CF6" stroke-width="2"/>
+<line x1="839.76" y1="508" x2="839.76" y2="335.20000000000005" stroke="#8B5CF6" stroke-width="1" stroke-opacity="0.30" stroke-dasharray="2 4"/>
+<circle cx="839.76" cy="335.20000000000005" r="14" fill="#8B5CF6" fill-opacity="0.18"/>
+<circle cx="839.76" cy="335.20000000000005" r="7" fill="#8B5CF6" stroke="#070A14" stroke-width="2"/>
+<text x="839.76" y="538" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">30 min</text>
+<text x="839.76" y="558" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="700" text-anchor="middle">Transcriptional onset</text>
+<text x="839.76" y="573" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-weight="400" font-style="italic" text-anchor="middle">RNA dynamics begin</text>
+<line x1="1165.3600000000001" y1="508" x2="1165.3600000000001" y2="516" stroke="#B47DF0" stroke-width="2"/>
+<line x1="1165.3600000000001" y1="508" x2="1165.3600000000001" y2="282.4" stroke="#B47DF0" stroke-width="1" stroke-opacity="0.30" stroke-dasharray="2 4"/>
+<circle cx="1165.3600000000001" cy="282.4" r="14" fill="#B47DF0" fill-opacity="0.18"/>
+<circle cx="1165.3600000000001" cy="282.4" r="7" fill="#B47DF0" stroke="#070A14" stroke-width="2"/>
+<text x="1165.3600000000001" y="538" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">60 min</text>
+<text x="1165.3600000000001" y="558" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="700" text-anchor="middle">Peak response</text>
+<text x="1165.3600000000001" y="573" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-weight="400" font-style="italic" text-anchor="middle">maximum activation window</text>
+<line x1="1735.1599999999999" y1="508" x2="1735.1599999999999" y2="516" stroke="#EAF6FF" stroke-width="2"/>
+<line x1="1735.1599999999999" y1="508" x2="1735.1599999999999" y2="311.20000000000005" stroke="#EAF6FF" stroke-width="1" stroke-opacity="0.30" stroke-dasharray="2 4"/>
+<circle cx="1735.1599999999999" cy="311.20000000000005" r="14" fill="#EAF6FF" fill-opacity="0.18"/>
+<circle cx="1735.1599999999999" cy="311.20000000000005" r="7" fill="#EAF6FF" stroke="#070A14" stroke-width="2"/>
+<text x="1735.1599999999999" y="538" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">180 min</text>
+<text x="1735.1599999999999" y="558" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="700" text-anchor="middle">Stable phenotype</text>
+<text x="1735.1599999999999" y="573" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-weight="400" font-style="italic" text-anchor="middle">RNA + Protein equilibrium</text>
+<rect x="158" y="272" width="270" height="48" rx="10" fill="#0B1020" fill-opacity="0.85" stroke="#26DDF9" stroke-width="1" stroke-opacity="0.45"/>
+<text x="172" y="298" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700"><tspan fill="#94A3B8">d</tspan><tspan font-style="italic">z</tspan><tspan fill="#94A3B8"> / </tspan><tspan fill="#94A3B8">d</tspan><tspan font-style="italic">t</tspan><tspan fill="#94A3B8"> = </tspan><tspan fill="#26DDF9" font-weight="700">f<tspan font-size="14" baseline-shift="-30%">θ</tspan></tspan><tspan fill="#A8B4C2" font-style="italic">(z, p, t)</tspan></text>
+<text x="96" y="608" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">ARCHITECTURE CHOICE</text>
+<line x1="316" y1="602" x2="1824" y2="602" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="620" width="560" height="296" rx="14" fill="#0F1428" stroke="#00F2FF" stroke-width="2" stroke-opacity="0.6"/>
+<rect x="96" y="620" width="560" height="296" rx="14" fill="#26DDF9" fill-opacity="0.18" stroke="none"/>
+<rect x="530" y="636" width="110" height="24" rx="12" fill="#00F2FF" fill-opacity="0.22" stroke="#00F2FF" stroke-width="1"/>
+<text x="585.0" y="652" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="middle">PRIMARY</text>
+<text x="120" y="666" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">01  ·  PRIMARY</text>
+<text x="120" y="706" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">Neural ODE</text>
+<text x="120" y="732" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic">continuous-time backbone</text>
+<text x="120" y="764" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✓</text>
+<text x="146" y="764" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Continuous time</text>
+<text x="120" y="792" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✓</text>
+<text x="146" y="792" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Irregular sampling native</text>
+<text x="120" y="820" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✓</text>
+<text x="146" y="820" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Deterministic trajectories</text>
+<text x="120" y="848" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✓</text>
+<text x="146" y="848" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Reuses ≈130K-param adapter</text>
+<text x="120" y="876" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✓</text>
+<text x="146" y="876" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">torchdiffeq · spec §4</text>
+<rect x="680" y="620" width="560" height="296" rx="14" fill="#0F1428" stroke="#FBBF24" stroke-width="1.5" stroke-opacity="0.6"/>
+<rect x="680" y="620" width="560" height="296" rx="14" fill="#FBBF24" fill-opacity="0.05" stroke="none"/>
+<rect x="1114" y="636" width="110" height="24" rx="12" fill="#FBBF24" fill-opacity="0.22" stroke="#FBBF24" stroke-width="1"/>
+<text x="1169.0" y="652" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="middle">FALLBACK</text>
+<text x="704" y="666" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">02  ·  FALLBACK</text>
+<text x="704" y="706" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">Latent SDE</text>
+<text x="704" y="732" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic">documented downgrade path</text>
+<text x="704" y="764" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">◐</text>
+<text x="730" y="764" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Stochastic dynamics support</text>
+<text x="704" y="792" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">◐</text>
+<text x="730" y="792" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Same f_θ drift, zero-init noise</text>
+<text x="704" y="820" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">◐</text>
+<text x="730" y="820" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Trigger: NaN >3 / 100 batches</text>
+<text x="704" y="848" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">◐</text>
+<text x="730" y="848" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Trigger: plateau >5 epochs</text>
+<text x="704" y="876" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">◐</text>
+<text x="730" y="876" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Trigger: spectral radius >5.0</text>
+<rect x="1264" y="620" width="560" height="296" rx="14" fill="#10141F" stroke="#FF4D6D" stroke-width="1.2" stroke-opacity="0.6"/>
+<rect x="1264" y="620" width="560" height="296" rx="14" fill="#000000" fill-opacity="0.20" stroke="none"/>
+<rect x="1698" y="636" width="110" height="24" rx="12" fill="#FF4D6D" fill-opacity="0.22" stroke="#FF4D6D" stroke-width="1"/>
+<text x="1753.0" y="652" fill="#FF4D6D" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="middle">REJECTED</text>
+<text x="1288" y="666" fill="#FF4D6D" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">03  ·  REJECTED</text>
+<text x="1288" y="706" fill="#5B6478" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700">Discrete Transformer</text>
+<text x="1288" y="732" fill="#5B6478" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic">architectural invariant violated</text>
+<text x="1288" y="764" fill="#FF4D6D" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✗</text>
+<text x="1314" y="764" fill="#5B6478" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Fixed timesteps assumption</text>
+<text x="1288" y="792" fill="#FF4D6D" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✗</text>
+<text x="1314" y="792" fill="#5B6478" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Interpolation artifacts</text>
+<text x="1288" y="820" fill="#FF4D6D" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✗</text>
+<text x="1314" y="820" fill="#5B6478" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Loses 5-min ⟶ 30-min spacing info</text>
+<text x="1288" y="848" fill="#FF4D6D" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✗</text>
+<text x="1314" y="848" fill="#5B6478" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Architectural invariant rejection</text>
+<text x="1288" y="876" fill="#FF4D6D" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700">✗</text>
+<text x="1314" y="876" fill="#5B6478" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400">Spec v1.1 §2 · invariant fixed</text>
+<line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Architecture spec v1.1 §4 (Neural ODE backbone) + §7.1 (Latent SDE fallback, trigger conditions) + §2 (Transformer-rejection invariant) · QurieSeq Phase 1 design (Thiago confirmation, 2026-05-12) · torchdiffeq + torchsde libraries</text>
+<text x="1824" y="980" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">A4 / 12</text>
+</svg>
