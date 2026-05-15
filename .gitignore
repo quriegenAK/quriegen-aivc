@@ -109,3 +109,10 @@ experiments/phase6_5*/
 data/phase6_5g_2/external_evidence/asap_repro_labels_*/LLL_module_scores.csv
 # PR #54b1 — class-index manifest (data artifact, regenerable)
 data/phase6_5g_2/dogma_h5ads/cell_type_index.json
+
+# PowerPoint lock files
+~$*.pptx
+*.pptx.lock
+
+# Source deck (too large for git, ~108MB)
+docs/deck/source/*.pptx
