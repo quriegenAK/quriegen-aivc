@@ -9,25 +9,21 @@
 <line x1="296" y1="226" x2="1240" y2="226" stroke="#1A2235" stroke-width="1"/>
 <rect x="96" y="244" width="1144" height="368" rx="14" fill="#0F1428" stroke="#26DDF9" stroke-width="1.5" stroke-opacity="0.5"/>
 <text x="146" y="300" fill="#F7FAFF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="38" font-weight="600"><tspan font-style="italic">ŷ</tspan><tspan fill="#A8B4C2" font-style="italic">(c, s, i, t)</tspan><tspan fill="#94A3B8">  =  </tspan><tspan fill="#EAF6FF" font-weight="700">h<tspan font-size="26" baseline-shift="-30%">base</tspan></tspan><tspan fill="#EAF6FF" font-style="italic">(z, t)</tspan></text>
-<text x="1210" y="300" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← always active (baseline)</text>
 <text x="306" y="370" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="36" font-weight="700">+</text>
 <text x="356" y="370" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" font-style="italic">1</text>
 <text x="376" y="370" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="500"><tspan fill="#94A3B8">[</tspan><tspan font-style='italic'>s</tspan><tspan fill="#94A3B8">]</tspan></text>
-<text x="918" y="370" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
-<text x="946" y="370" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">stim</tspan><tspan font-style="italic" font-weight="500" fill="#4ADE80">(z, s, t)</tspan></text>
-<text x="1210" y="370" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← active if stim present</text>
+<text x="430" y="370" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
+<text x="458" y="370" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">stim</tspan><tspan font-style="italic" font-weight="500" fill="#4ADE80">(z, s, t)</tspan></text>
 <text x="306" y="440" fill="#8B5CF6" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="36" font-weight="700">+</text>
 <text x="356" y="440" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" font-style="italic">1</text>
 <text x="376" y="440" fill="#8B5CF6" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="500"><tspan fill="#94A3B8">[</tspan><tspan font-style='italic'>i</tspan><tspan fill="#94A3B8">]</tspan></text>
-<text x="918" y="440" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
-<text x="946" y="440" fill="#8B5CF6" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">inh</tspan><tspan font-style="italic" font-weight="500" fill="#8B5CF6">(z, i, t)</tspan></text>
-<text x="1210" y="440" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← active if inhibitor present</text>
+<text x="430" y="440" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
+<text x="458" y="440" fill="#8B5CF6" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">inh</tspan><tspan font-style="italic" font-weight="500" fill="#8B5CF6">(z, i, t)</tspan></text>
 <text x="306" y="510" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="36" font-weight="700">+</text>
 <text x="356" y="510" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" font-style="italic">1</text>
 <text x="376" y="510" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="500"><tspan fill="#94A3B8">[</tspan><tspan font-style='italic'>s</tspan><tspan fill='#94A3B8'> ∧ </tspan><tspan font-style='italic'>i</tspan><tspan fill="#94A3B8">]</tspan></text>
-<text x="1884" y="510" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
-<text x="1912" y="510" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">synergy</tspan><tspan font-style="italic" font-weight="500" fill="#00F2FF">(z, s, i, t)</tspan></text>
-<text x="1210" y="510" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400" font-style="italic" text-anchor="end">← combination only (the zero-shot win)</text>
+<text x="494" y="510" fill="#94A3B8" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="32" font-weight="700">·</text>
+<text x="522" y="510" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">synergy</tspan><tspan font-style="italic" font-weight="500" fill="#00F2FF">(z, s, i, t)</tspan></text>
 <text x="96" y="560" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">LOAD-BEARING CONSTRAINT</text>
 <line x1="336" y1="554" x2="1240" y2="554" stroke="#1A2235" stroke-width="1"/>
 <rect x="96" y="572" width="1144" height="244" rx="14" fill="#0B1020" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.5"/>

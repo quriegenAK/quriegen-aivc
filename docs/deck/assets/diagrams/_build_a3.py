@@ -174,19 +174,27 @@ def build_svg() -> str:
         f'<tspan fill="{COL_BASE}" font-style="italic">(z, t)</tspan>'
         f'</text>'
     )
-    # Caption right of line 1
-    parts.append(
-        f'<text x="{EQ_X + EQ_W - 30}" y="{eq_top}" fill="{TEXT_DIM}" font-family="{FONT_BODY}" '
-        f'font-size="14" font-weight="400" font-style="italic" text-anchor="end">'
-        f'← always active (baseline)</text>'
-    )
+    # v2: top-line "← always active (baseline)" annotation removed — color-coding
+    # + the right-side compositional generalization table convey the same info
+    # without overlapping the equation terms at slide-fill rendering.
 
     # 4-arm continuation lines, each starting with "+" indented and color-coded head
     LINE_DY = 70
     indent = line_x + 220   # match ŷ width approx so '+ ...' sits under ' = '
 
-    def arm_line(y, plus_color, indicator_content, indicator_color, head_label, head_subscript,
-                 head_args, head_color, caption):
+    # v2: arm_line drops the right-side `caption` annotation entirely.
+    # The annotations ("← stim present", "← active if inhibitor present",
+    # "← combination only (the zero-shot win)") overlapped with Δ_stim
+    # and Δ_inh at slide-fill rendering. Color-coding (h_base white,
+    # Δ_stim green, Δ_inh purple, Δ_synergy cyan) + the right-side
+    # compositional generalization table now do the job the annotations
+    # were doing — without competing visually with the equation.
+    # v2 bug fix: `indicator_visual_chars` is the count of *rendered* glyphs
+    # inside the brackets, not the HTML string length. Previously used
+    # len(indicator_content) which counted tspan markup chars (200+ for
+    # line 4) and pushed Δ_synergy off the card to x=1912.
+    def arm_line(y, plus_color, indicator_content, indicator_visual_chars,
+                 indicator_color, head_label, head_subscript, head_args, head_color):
         parts.append(
             f'<text x="{indent - 60}" y="{y}" fill="{plus_color}" font-family="{FONT_MATH}" '
             f'font-size="36" font-weight="700">+</text>'
@@ -202,8 +210,8 @@ def build_svg() -> str:
             f'font-size="32" font-weight="500"><tspan fill="{TEXT_DIM}">[</tspan>'
             f'{indicator_content}<tspan fill="{TEXT_DIM}">]</tspan></text>'
         )
-        # · operator
-        ind_w = 38 + len(indicator_content) * 14
+        # · operator (positioned based on indicator visual width, not HTML chars)
+        ind_w = 38 + indicator_visual_chars * 16
         parts.append(
             f'<text x="{indent + 10 + ind_w}" y="{y}" fill="{TEXT_DIM}" font-family="{FONT_MATH}" '
             f'font-size="32" font-weight="700">·</text>'
@@ -215,20 +223,17 @@ def build_svg() -> str:
             f'font-size="34" font-weight="700">Δ<tspan font-size="22" baseline-shift="-30%">{head_subscript}</tspan>'
             f'<tspan font-style="italic" font-weight="500" fill="{head_color}">({head_args})</tspan></text>'
         )
-        # caption right
-        parts.append(
-            f'<text x="{EQ_X + EQ_W - 30}" y="{y}" fill="{TEXT_DIM}" font-family="{FONT_BODY}" '
-            f'font-size="14" font-weight="400" font-style="italic" text-anchor="end">'
-            f'{caption}</text>'
-        )
 
-    arm_line(eq_top + LINE_DY, COL_STIM, "<tspan font-style='italic'>s</tspan>", COL_STIM,
-             "Δ_stim", "stim", "z, s, t", COL_STIM, "← active if stim present")
-    arm_line(eq_top + 2 * LINE_DY, COL_INH, "<tspan font-style='italic'>i</tspan>", COL_INH,
-             "Δ_inh", "inh", "z, i, t", COL_INH, "← active if inhibitor present")
+    arm_line(eq_top + LINE_DY, COL_STIM,
+             "<tspan font-style='italic'>s</tspan>", 1,
+             COL_STIM, "Δ_stim", "stim", "z, s, t", COL_STIM)
+    arm_line(eq_top + 2 * LINE_DY, COL_INH,
+             "<tspan font-style='italic'>i</tspan>", 1,
+             COL_INH, "Δ_inh", "inh", "z, i, t", COL_INH)
     arm_line(eq_top + 3 * LINE_DY, COL_SYN,
              "<tspan font-style='italic'>s</tspan><tspan fill='" + TEXT_DIM + "'> ∧ </tspan><tspan font-style='italic'>i</tspan>",
-             COL_SYN, "Δ_synergy", "synergy", "z, s, i, t", COL_SYN, "← combination only (the zero-shot win)")
+             5,  # visual: 's' + ' ' + '∧' + ' ' + 'i' = 5 glyphs
+             COL_SYN, "Δ_synergy", "synergy", "z, s, i, t", COL_SYN)
 
     # ====================================================================
     # CONSTRAINT BLOCK (theorem-style)  x=96..1240, y=560..820
