@@ -1,5 +1,9 @@
-# Don't track final .pptx or .pdf exports (large files)
+# Don't track final .pptx or .pdf exports as a class (can be large)
 *.pptx
 *.pdf
 # Keep this .gitignore tracked
 !.gitignore
+# Exception: the Phase 3 appendix deliverable (2.5MB, committed alongside its
+# build script for reproducibility and so reviewers can open it directly from
+# the repo without re-running the builder).
+!aivc_appendix_v1.pptx
