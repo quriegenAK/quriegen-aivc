@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC F1 — integrated platform flywheel + competitor archetypes">
+<rect width="1920" height="1080" fill="#070A14"/>
+<defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
+<text x="96" y="78" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX F1 · COMPETITIVE POSITIONING</text>
+<line x1="476" y1="72" x2="696" y2="72" stroke="#FBBF24" stroke-opacity="0.4" stroke-width="1"/>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">The Closed-Loop Platform — Co-Designed, Compounding</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Proprietary data, co-designed architecture, integrated as one system · no public dataset has the combination drug combination prediction requires</text>
+<text x="96" y="216" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">INTEGRATED PLATFORM · 4-PILLAR FLYWHEEL</text>
+<line x1="456" y1="210" x2="1824" y2="210" stroke="#1A2235" stroke-width="1"/>
+<rect x="800" y="216" width="320" height="130" rx="14" fill="#0F1428" stroke="#FBBF24" stroke-width="1.5" stroke-opacity="0.65"/>
+<text x="818" y="244" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">CO-DESIGNED ARCHITECTURE</text>
+<text x="818" y="264" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600">matches the assay</text>
+<text x="818" y="290" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  4-arm decomposed readout</text>
+<text x="818" y="308" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  Neural ODE temporal</text>
+<text x="818" y="326" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  Compositional generalization</text>
+<rect x="1080" y="361" width="320" height="130" rx="14" fill="#0F1428" stroke="#FBBF24" stroke-width="1.5" stroke-opacity="0.65"/>
+<text x="1098" y="389" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">TEMPORAL MULTI-OMICS</text>
+<text x="1098" y="409" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600">5 modalities by Phase 2</text>
+<text x="1098" y="435" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  RNA + ATAC + Protein</text>
+<text x="1098" y="453" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  (+ phospho + VDJ Phase 2)</text>
+<text x="1098" y="471" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  0/5/30/60/180 min sampling</text>
+<rect x="800" y="506" width="320" height="130" rx="14" fill="#0F1428" stroke="#FBBF24" stroke-width="1.5" stroke-opacity="0.65"/>
+<text x="818" y="534" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">PROTOCOL-FAMILY EXPANSION</text>
+<text x="818" y="554" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600">no re-architecting</text>
+<text x="818" y="580" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  Same wet-lab pipeline</text>
+<text x="818" y="598" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  extends to Phase 2 phospho</text>
+<text x="818" y="616" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  + VDJ without re-architecting</text>
+<rect x="520" y="361" width="320" height="130" rx="14" fill="#0F1428" stroke="#FBBF24" stroke-width="1.5" stroke-opacity="0.65"/>
+<text x="538" y="389" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">WET-LAB GENERATION</text>
+<text x="538" y="409" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600">QurieSeq Phase 1+2</text>
+<text x="538" y="435" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  Primary human PBMCs</text>
+<text x="538" y="453" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  5 → 20 donors</text>
+<text x="538" y="471" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  4-arm perturbations</text>
+<text x="960" y="414" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" text-anchor="middle">INTEGRATED</text>
+<text x="960" y="440" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" text-anchor="middle">PLATFORM</text>
+<circle cx="960" cy="426" r="60" fill="none" stroke="#FBBF24" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="4 4"/>
+<circle cx="960" cy="426" r="2.5" fill="#FBBF24" fill-opacity="0.9"/>
+<path d="M 1120 336 Q 1180 336 1110 361" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.7" stroke-linecap="round"/>
+<path d="M 1117.7 352.9 L 1110 361 L 1121.1 362.3" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1170" y="370" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600" text-anchor="middle">compounds</text>
+<path d="M 1110 491 Q 1180 516 1120 516" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.7" stroke-linecap="round"/>
+<path d="M 1130.0 511.0 L 1120 516 L 1130.0 521.0" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1180" y="508" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600" text-anchor="middle">compounds</text>
+<path d="M 800 516 Q 740 516 810 491" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.7" stroke-linecap="round"/>
+<path d="M 802.3 499.1 L 810 491 L 798.9 489.7" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="750" y="508" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600" text-anchor="middle">compounds</text>
+<path d="M 810 361 Q 740 336 800 336" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.7" stroke-linecap="round"/>
+<path d="M 790.0 341.0 L 800 336 L 790.0 331.0" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="750" y="370" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic" font-weight="600" text-anchor="middle">compounds</text>
+<text x="96" y="656" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">WHO OPTIMIZES WHAT?</text>
+<line x1="336" y1="650" x2="1824" y2="650" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="672" width="560" height="156" rx="12" fill="#0B1020" stroke="#1A2235" stroke-width="1.2" stroke-opacity="0.7"/>
+<text x="116" y="700" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">DATA SCALE</text>
+<text x="116" y="726" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  <tspan font-weight="700">TAHOE</tspan> — 100M cells, RNA-only cell lines</text>
+<text x="116" y="748" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  <tspan font-weight="700">Immunai</tspan> — modality-rich atlas, partner data</text>
+<line x1="112" y1="782" x2="640" y2="782" stroke="#1A2235" stroke-width="1"/>
+<text x="116" y="802" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic"><tspan font-weight="700">Optimize:</tspan> data breadth</text>
+<text x="116" y="818" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic"><tspan font-weight="700">Decouple:</tspan> wet-lab + protocol</text>
+<rect x="680" y="672" width="560" height="156" rx="12" fill="#0B1020" stroke="#1A2235" stroke-width="1.2" stroke-opacity="0.7"/>
+<text x="700" y="700" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">FOUNDATION MODELS</text>
+<text x="700" y="726" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  <tspan font-weight="700">CytoReason</tspan> — partner-derived multi-omics, immune</text>
+<text x="700" y="748" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  <tspan font-weight="700">Turbine AI</tspan> — virtual lab, pharma partnerships</text>
+<text x="700" y="770" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  <tspan font-weight="700">DeepLife</tspan> — causal modeling, drug repositioning</text>
+<line x1="696" y1="782" x2="1224" y2="782" stroke="#1A2235" stroke-width="1"/>
+<text x="700" y="802" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic"><tspan font-weight="700">Optimize:</tspan> model architecture</text>
+<text x="700" y="818" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic"><tspan font-weight="700">Decouple:</tspan> proprietary data</text>
+<rect x="1264" y="672" width="560" height="156" rx="12" fill="#0B1020" stroke="#1A2235" stroke-width="1.2" stroke-opacity="0.7"/>
+<text x="1284" y="700" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">DOWNSTREAM THERAPEUTICS</text>
+<text x="1284" y="726" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  <tspan font-weight="700">Valo Health</tspan> — clinical development</text>
+<text x="1284" y="748" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  <tspan font-weight="700">Noetik</tspan> — spatial multi-omics oncology</text>
+<line x1="1280" y1="782" x2="1808" y2="782" stroke="#1A2235" stroke-width="1"/>
+<text x="1284" y="802" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic"><tspan font-weight="700">Optimize:</tspan> clinical pipeline</text>
+<text x="1284" y="818" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic"><tspan font-weight="700">Decouple:</tspan> foundation modeling</text>
+<rect x="96" y="842" width="1728" height="86" rx="14" fill="#FBBF24" fill-opacity="0.16" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.9"/>
+<text x="118" y="872" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">INTEGRATED CAUSAL PERTURBATION PLATFORM</text>
+<text x="118" y="898" fill="#F7FAFF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#FBBF24" font-weight="700">›</tspan>  <tspan font-weight="700">QURIEGEN</tspan> — proprietary wet-lab generation + co-designed architecture + temporal multi-omics + compositional causal modeling + protocol-family expansion, all coupled</text>
+<text x="118" y="918" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-style="italic"><tspan font-weight="700">Optimize:</tspan> the closed-loop system itself <tspan fill="#94A3B8">— integration is the moat (each loop deepens the next)</tspan></text>
+<text x="960" y="908" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-style="italic" text-anchor="middle">"No public dataset has the combination drug combination prediction requires. The wet lab, the architecture, and the protocol family are co-designed."</text>
+<line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: docs/deck/research/competitive_landscape_2026_05.md (10-competitor research) · Architecture spec v1.1 · QurieSeq Phase 1+2 spec (Thiago, May 2026) · Stage 3 Part 1 dataset survey · Kinga slide 9 competitive matrix</text>
+<text x="1824" y="980" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">F1 / 13</text>
+</svg>
