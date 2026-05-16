@@ -3,7 +3,9 @@
 *.pdf
 # Keep this .gitignore tracked
 !.gitignore
-# Exception: the Phase 3 appendix deliverable (2.5MB, committed alongside its
-# build script for reproducibility and so reviewers can open it directly from
-# the repo without re-running the builder).
+# Exception: appendix deliverables (committed alongside their build script
+# for reproducibility and so reviewers can open them directly from the repo
+# without re-running the builder). v1 preserved as historical artifact;
+# v2 is the current deliverable (Phase 2 + 3 complete, 20 slides).
 !aivc_appendix_v1.pptx
+!aivc_appendix_v2.pptx

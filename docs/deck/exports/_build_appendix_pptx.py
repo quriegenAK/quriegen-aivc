@@ -39,7 +39,9 @@ from lxml import etree
 REPO = Path(__file__).resolve().parents[3]
 CONTENT_DIR = REPO / "docs" / "deck" / "content"
 DIAGRAMS_DIR = REPO / "docs" / "deck" / "assets" / "diagrams"
-OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v1.pptx"
+# v2: adds Section F (Competitive Positioning) + F1 content slide.
+# v1 file preserved as historical artifact at aivc_appendix_v1.pptx.
+OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v2.pptx"
 
 # 16:9 widescreen matching SVG viewBox 1920×1080 (13.333" × 7.5" at 144 dpi)
 SLIDE_WIDTH = Inches(13.333)
@@ -51,6 +53,7 @@ CYAN        = RGBColor(0x26, 0xDD, 0xF9)
 CYAN_HI     = RGBColor(0x00, 0xF2, 0xFF)
 LAVENDER    = RGBColor(0xB4, 0x7D, 0xF0)
 OK_GREEN    = RGBColor(0x4A, 0xDE, 0x80)
+WARN_AMBER  = RGBColor(0xFB, 0xBF, 0x24)  # Section F accent — matches F1 SVG #FBBF24
 TEXT_TITLE  = RGBColor(0xF7, 0xFA, 0xFF)
 TEXT_BODY   = RGBColor(0xEA, 0xF6, 0xFF)
 TEXT_MUTED  = RGBColor(0xA8, 0xB4, 0xC2)
@@ -74,6 +77,7 @@ CONTENT_SLIDES = [
     ("D1", "D1_quarterly_roadmap_preview.png",           "D1_quarterly_roadmap.md"),
     ("D2", "D2_seed_allocation_preview.png",             "D2_seed_allocation.md"),
     ("E1", "E1_five_year_trajectory_preview.png",        "E1_five_year_trajectory.md"),
+    ("F1", "F1_integrated_platform_preview.png",         "F1_competitive_positioning.md"),  # v2
 ]
 
 SECTIONS = [
@@ -116,6 +120,16 @@ SECTIONS = [
         "footer": "Slide E1",
         "accent": TEXT_BODY,
         "ids": ["E1"],
+    },
+    {
+        # v2: new Section F appended after E. Amber accent matches F1 SVG.
+        "letter": "F",
+        "title": "Competitive Positioning",
+        "sub": ("Why us · the closed-loop integrated platform · "
+                "proprietary data, co-designed architecture, compounding over time"),
+        "footer": "Slide F1",
+        "accent": WARN_AMBER,
+        "ids": ["F1"],
     },
 ]
 
