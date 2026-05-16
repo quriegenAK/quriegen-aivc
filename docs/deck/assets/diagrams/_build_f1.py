@@ -311,8 +311,12 @@ def build_svg() -> str:
         )
 
     # Full-width Quriegen row (amber accent, dominates)
+    # v2: tightened internal line-height (Option B from F1 v2 fix prompt) —
+    # row collapsed from QR_H=86 to QR_H=64 to free vertical budget for the
+    # closing line below. Per-line offsets shrunk +30/+56/+76 → +22/+42/+58.
+    # Content unchanged; only spacing.
     QR_Y = BUCKET_Y + BUCKET_H + 14
-    QR_H = 86
+    QR_H = 64
     parts.append(
         f'<rect x="{START_X}" y="{QR_Y}" width="{W - 2*START_X}" height="{QR_H}" rx="14" '
         f'fill="{ACCENT_AMBER}" fill-opacity="0.16" stroke="{ACCENT_AMBER}" '
@@ -320,13 +324,13 @@ def build_svg() -> str:
     )
     # Title (left)
     parts.append(
-        f'<text x="{START_X + 22}" y="{QR_Y + 30}" fill="{ACCENT_AMBER}" font-family="{FONT}" '
+        f'<text x="{START_X + 22}" y="{QR_Y + 22}" fill="{ACCENT_AMBER}" font-family="{FONT}" '
         f'font-size="13" font-weight="700" letter-spacing="2.5">'
         f'INTEGRATED CAUSAL PERTURBATION PLATFORM</text>'
     )
     # Quriegen line
     parts.append(
-        f'<text x="{START_X + 22}" y="{QR_Y + 56}" fill="{TEXT_TITLE}" font-family="{FONT_BODY}" '
+        f'<text x="{START_X + 22}" y="{QR_Y + 42}" fill="{TEXT_TITLE}" font-family="{FONT_BODY}" '
         f'font-size="14" font-weight="400">'
         f'<tspan fill="{ACCENT_AMBER}" font-weight="700">›</tspan>  '
         f'<tspan font-weight="700">QURIEGEN</tspan> — proprietary wet-lab generation '
@@ -335,17 +339,21 @@ def build_svg() -> str:
     )
     # Optimize line
     parts.append(
-        f'<text x="{START_X + 22}" y="{QR_Y + 76}" fill="{ACCENT_AMBER}" '
+        f'<text x="{START_X + 22}" y="{QR_Y + 58}" fill="{ACCENT_AMBER}" '
         f'font-family="{FONT_BODY}" font-size="12" font-style="italic">'
         f'<tspan font-weight="700">Optimize:</tspan> the closed-loop system itself '
         f'<tspan fill="{TEXT_DIM}">— integration is the moat (each loop deepens the next)</tspan></text>'
     )
 
     # ====================================================================
-    # CLOSING LINE — italic centered takeaway (above footer)
+    # CLOSING LINE — italic centered takeaway
+    # v2 FIX: moved from y=908 (which sat INSIDE the Quriegen row's
+    # footprint y=898-918) to y=938 — below the compressed Quriegen row
+    # (rect ends at y=QR_Y+64=906) with 20px gap above and 7px gap below
+    # to the footer divider at y=H-132=948.
     # ====================================================================
     parts.append(
-        f'<text x="{cx}" y="908" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
+        f'<text x="{cx}" y="938" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
         f'font-size="14" font-style="italic" text-anchor="middle">'
         f'"No public dataset has the combination drug combination prediction requires. '
         f'The wet lab, the architecture, and the protocol family are co-designed."</text>'
@@ -373,10 +381,18 @@ if __name__ == "__main__":
     png_path = here / "F1_integrated_platform_preview.png"
     svg = build_svg()
 
-    # Collision guard (filter known footer-vs-pagination false positive
-    # — long source-citation width estimate over-extends past pagination's
-    # text-anchor="end" position; cairosvg actual render is clean)
-    collisions = check_no_text_collisions(svg, min_gap=4)
+    # v2 FIX: tightened collision-guard min_gap 4 → 2 so near-collisions
+    # like v1's closing-line-vs-Quriegen-bullet (4.0px y-overlap, exactly
+    # at the old threshold) actually trip the guard. min_gap=2 still
+    # tolerates 1-2px sub-pixel anti-aliasing noise but no longer lets
+    # genuine ~3-4px overlaps slip through silently.
+    #
+    # Filter scope unchanged: ONLY the source-citation-vs-pagination
+    # false positive is skipped (the long Source: text width estimate
+    # over-extends past pagination's text-anchor="end" position, but
+    # cairosvg actual Inter render is clean). All other near-collisions
+    # block the build.
+    collisions = check_no_text_collisions(svg, min_gap=2)
     blocking = [c for c in collisions
                 if "F1 / 13" not in (c[0], c[1])
                 and not c[0].startswith("Source:")
