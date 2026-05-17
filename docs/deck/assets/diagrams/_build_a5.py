@@ -1,43 +1,48 @@
 """Build A5_causal_architecture.svg + preview PNG.
 
-v2 fixes (4 issues from prompt commit ff92117 → A5 v2):
-  Fix 1 (critical): equation rendering — `I` was being substituted to
-    turnstile `⊢` glyph because `font-style="italic"` on a Latin I tspan
-    triggers math-italic font substitution. Replaced with explicit non-italic
-    Inter font family. Superscript `⁻¹` no longer relies on
-    `baseline-shift="super"` (which cairosvg silently drops) — uses literal
-    Unicode superscript chars U+207B + U+00B9 in the equation. Same for
-    component definition row's `(I − W)⁻¹` reference.
-  Fix 2 (medium): equation-card layout tightened. Component definitions
-    row pulled up, architectural-requirement footer pushed to its own
-    y-band with explicit 30px gap above. Card overall height reduced from
-    294 → 244 to give cleaner vertical rhythm.
-  Fix 3 (minor): subtitle trimmed from ~150 → ~120 chars; validation
-    timing detail moves entirely to status pill.
-  Fix 4 (substantive upgrade): GRN visualization replaced with 8 named
-    biologically-meaningful gene nodes (BTK · JAK · CD3E · NFKB · STAT3
-    · ZAP70 · MYD88 · IRF7). Radial gradient fills via SVG <defs>,
-    hub-degree size differentiation, color coding by gene class (cyan
-    perturbation targets / lavender TFs / green kinases / muted-blue
-    effectors). Directional weight-coded edges with arrowheads. Novel
-    learned edge highlighted in right panel with lavender marker.
-    Line-style legend in right panel bottom-right.
+v3 fixes (commit ff92117 / v2 → v3):
+  Fix 1 (FINAL): all 3 instances of `(I − W)⁻¹ · dₚ` equations now render via
+    matplotlib mathtext → base64 PNG → SVG <image> embed. Stops fighting
+    cairosvg's italic-Latin-I → turnstile substitution bug. Math is now
+    bitmap and bypasses font-substitution entirely. Three sites:
+      - Hero equation at ~56pt equivalent (top zone)
+      - Component definitions col 3 `(I − W)⁻¹` at ~24pt
+      - Bottom comparison fragment `(I − W)⁻¹ dₚ` at ~12pt
+    Color-coded rendering deferred to Phase 4 — v3 uses white-only math
+    per prompt: correctness over decoration.
+  Fix 2: architectural-requirement footer was 3 separate <text> elements
+    with hardcoded segment widths that didn't match actual rendered
+    widths, producing garbled overlap. Collapsed to single text element
+    with text-anchor="middle". Plain SVG text (ρ and < render fine in
+    Inter; mathtext PNG reserved for `(I − W)⁻¹` only).
 
-Helper audit finding (per Fix 2 in prompt): the v1 collision-guard at
-min_gap=2 correctly reported 0 bbox overlaps because there were none
-(component-row baseline y=380 and architectural-footer baseline y=496
-had 116px clear y-gap). The user-perceived "collision" was visual
-cramping at slide-fill scale, not literal text-element overlap. The
-helper detects A class of issues (bbox overlap); this v1 case was
-B class (layout density). Both are real but require different checks.
-Fix 2 here is pure layout-spacing improvement; the helper's design
-is unchanged.
+Carry-over from v2 (preserved, do not touch per prompt):
+  - GRN visualization (8 named gene nodes + gradients + edge weights +
+    legend) — outstanding per Ash review
+  - Status pill (STAGE 3c · SPEC-LOCKED · Q1-Q2 2027 · post Phase 1)
+  - Subtitle (125 chars)
+  - Direct-effect log-FC head block diagram
+  - Causal vs predictive comparison rows
+  - Honesty discipline (no operational/validated/in-production language)
+  - Section A palette (cyan + lavender + green + amber on dark navy)
+  - Pagination A5 / 14
 
 Run: python3 docs/deck/assets/diagrams/_build_a5.py
 """
 from __future__ import annotations
+import base64
+import io
+import math
 import pathlib
 import sys
+
+# Matplotlib import (only needed for the 3 equation PNGs)
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+# 'stix' fontset renders math symbols professionally and matches investor-grade
+# typography per prompt recommendation.
+matplotlib.rcParams["mathtext.fontset"] = "stix"
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from _deck_common import (  # type: ignore
@@ -48,30 +53,88 @@ from _deck_common import (  # type: ignore
     check_no_text_collisions,
 )
 
-# Section F amber (also used for "novel learned edge" marker on GRN)
 ACCENT_AMBER = WARN_AMBER
 
 
+# =============================================================================
+# v3 Fix 1: matplotlib mathtext → base64 PNG → SVG <image> embed
+# =============================================================================
+def render_math_to_base64_png(latex_expr: str, fontsize: int = 24,
+                              color: str = "white",
+                              dpi: int = 300) -> tuple[str, int, int]:
+    """Render a LaTeX-style math expression to a base64-encoded PNG.
+
+    Returns (base64_data_uri, display_w_px, display_h_px) where the display
+    dimensions are in SVG units (1 SVG unit = 1pt at 72 dpi).
+
+    Uses matplotlib mathtext (no LaTeX install required). Renders with
+    transparent background so the math overlays cleanly on the dark SVG.
+
+    v3.1 bug fix: earlier version added an axes with xlim/ylim(0,1) and
+    `bbox_inches='tight'` then cropped to the axes bbox (the full figure
+    area), producing 578×146 PNG regardless of fontsize. Fix: render text
+    directly on the figure with no axes; tight-crop measures only the text
+    bbox now, producing PNGs sized proportional to fontsize as expected.
+    """
+    # Render directly on the figure — no axes. With no axes, bbox_inches='tight'
+    # crops to the text artist's bounding box exactly.
+    fig = plt.figure(dpi=dpi)
+    fig.patch.set_alpha(0)
+    fig.text(0.5, 0.5, latex_expr, fontsize=fontsize, color=color,
+             ha="center", va="center")
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=dpi, transparent=True,
+                bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+
+    buf.seek(0)
+    raw = buf.read()
+
+    # Measure actual cropped PNG dimensions
+    try:
+        from PIL import Image as _PILImage
+        img = _PILImage.open(io.BytesIO(raw))
+        width_px, height_px = img.size
+    except Exception:
+        # Fallback: estimate from fontsize
+        width_px, height_px = int(fontsize * 8 * dpi / 72), int(fontsize * 2 * dpi / 72)
+
+    # Convert px-at-dpi → SVG-display-px (1 SVG unit = 1pt at 72dpi)
+    display_w = max(int(width_px * 72 / dpi), 1)
+    display_h = max(int(height_px * 72 / dpi), 1)
+
+    b64 = base64.b64encode(raw).decode("ascii")
+    data_uri = f"data:image/png;base64,{b64}"
+    return data_uri, display_w, display_h
+
+
+def math_image(latex_expr: str, x_center: int, y_center: int,
+               fontsize: int = 24, color: str = "white") -> str:
+    """Return an SVG `<image>` tag rendering a math expression centered at
+    (x_center, y_center). Uses matplotlib mathtext for math typography."""
+    data_uri, w, h = render_math_to_base64_png(latex_expr, fontsize, color)
+    img_x = x_center - w // 2
+    img_y = y_center - h // 2
+    return f'<image x="{img_x}" y="{img_y}" width="{w}" height="{h}" href="{data_uri}"/>'
+
+
+# =============================================================================
+# Main SVG build
+# =============================================================================
 def build_svg() -> str:
-    parts: list[str] = [svg_open("AIVC A5 v2 — Causal architecture (Stage 3c spec-locked)")]
+    parts: list[str] = [svg_open("AIVC A5 v3 — Causal architecture (Stage 3c spec-locked)")]
     background(parts)
 
     # ====================================================================
-    # SVG <defs> — radial gradients for 8 GRN nodes
-    # Per Fix 4: each node gets a radial gradient fill (darker center →
-    # lighter edge) to give 3D effect without busy shadowing.
+    # SVG <defs> — radial gradients for 8 GRN nodes (v2 unchanged)
     # ====================================================================
     gradient_defs = '<defs>'
-    # Color schemes per gene class (per Fix 4 spec table):
-    #   perturbation targets (BTK, JAK, CD3E) → cyan
-    #   transcription factors (NFKB, STAT3)   → lavender
-    #   kinases/signaling (ZAP70, MYD88)       → green
-    #   effectors (IRF7)                        → muted blue (use a softer cyan)
     GRAD_DEFS = {
-        "cyan":     ("#26DDF9", "#00F2FF"),   # CYAN → CYAN_HI
-        "lavender": ("#8B5CF6", "#B47DF0"),   # PURPLE → LAVENDER
-        "green":    ("#4ADE80", "#86EFAC"),   # OK_GREEN → softer green
-        "blue":     ("#5B9BD5", "#94BFE0"),   # muted blue → softer
+        "cyan":     ("#26DDF9", "#00F2FF"),
+        "lavender": ("#8B5CF6", "#B47DF0"),
+        "green":    ("#4ADE80", "#86EFAC"),
+        "blue":     ("#5B9BD5", "#94BFE0"),
     }
     for name, (c0, c1) in GRAD_DEFS.items():
         gradient_defs += (
@@ -81,7 +144,6 @@ def build_svg() -> str:
             f'  <stop offset="100%" stop-color="{c0}" stop-opacity="0.18"/>'
             f'</radialGradient>'
         )
-    # Background glows (carry over from earlier helper background())
     gradient_defs += '</defs>'
     parts.append(gradient_defs)
 
@@ -90,9 +152,6 @@ def build_svg() -> str:
         appendix_id="A5",
         section="ARCHITECTURE DEPTH",
         title="Causal Architecture — Spec-Locked",
-        # v2 Fix 3: subtitle trimmed from ~150 chars to ~120. Validation
-        # timing moved entirely to the status pill (which carries it
-        # explicitly).
         subtitle=(
             "Neumann propagation + sparse learned GRN + direct-effect decoder · "
             "spec-locked v1.1 · validation post Phase 1 (Q1-Q2 2027)"
@@ -101,7 +160,7 @@ def build_svg() -> str:
     )
 
     # ====================================================================
-    # STATUS PILL — top-right, unchanged from v1 (Ash-approved)
+    # STATUS PILL — top-right (v2 unchanged)
     # ====================================================================
     PILL_X, PILL_Y = 1456, 60
     PILL_W, PILL_H = 368, 108
@@ -128,8 +187,6 @@ def build_svg() -> str:
 
     # ====================================================================
     # TOP ZONE — Neumann propagation block (visual hero)
-    # v2 Fix 2: card compressed from 294px → 244px tall, internal rows
-    # given explicit y-band separation. y=216..460 (was y=216..510).
     # ====================================================================
     NZ_X, NZ_Y, NZ_W, NZ_H = START_X, 216, W - 2 * START_X, 244
     parts.append(
@@ -146,69 +203,22 @@ def build_svg() -> str:
         f'fill="{SURFACE}" stroke="{CYAN}" stroke-width="1.5" stroke-opacity="0.55"/>'
     )
 
-    # ---- The equation (visual hero, centered) ----
-    # v2 Fix 1:
-    #   - I rendered with explicit non-italic font-family="Inter, Arial, sans-serif"
-    #     to prevent math-italic font substitution (which produces turnstile glyph).
-    #   - Superscript ⁻¹ uses literal Unicode chars U+207B U+00B9, not
-    #     baseline-shift="super" (cairosvg silently drops this).
+    # ---- v3 Fix 1: Hero equation via matplotlib mathtext PNG embed ----
     EQ_CX = NZ_X + NZ_W // 2
-    EQ_Y = NZ_Y + 80   # equation baseline (was 100; tightened)
+    EQ_CY = NZ_Y + 78
+    hero_expr = r"$\hat{y} \; = \; (I - W)^{-1} \cdot d_p$"
+    parts.append(math_image(hero_expr, EQ_CX, EQ_CY, fontsize=44, color="white"))
 
-    # v2 Fix 1 (FINAL — bulletproof rect-I per prompt Risk 1 fallback):
-    # Confirmed via 3 separate font-chain attempts (Inter, Inter+Arial+
-    # sans-serif chain, Arial-only) that cairosvg + fontconfig substitutes
-    # Latin I (U+0049) → turnstile glyph regardless of font-family attribute.
-    # Source codepoint verified U+0049; problem is exclusively at render-time.
-    # The prompt's Risk 1 explicitly authorizes rect fallback for this case.
-    #
-    # Equation rendered in 3 pieces: left text + rect-I + right text.
-    # Hardcoded offsets centered around EQ_CX. Approximate widths:
-    #   "ŷ = (" at 56pt × 0.5 ≈ 140px right-anchored at EQ_CX - 28
-    #   rect-I at EQ_CX - 24, width 8, height 42 (matches Latin cap-height)
-    #   "− W)⁻¹ · dₚ" at 56pt left-anchored at EQ_CX - 12
-    # Visually centered enough; not pixel-perfect but readable + correct.
-
-    # Left half: "ŷ = ("
+    # Subtle horizontal underline below the equation
     parts.append(
-        f'<text x="{EQ_CX - 28}" y="{EQ_Y}" fill="{TEXT_TITLE}" font-family="Inter, Arial, sans-serif" '
-        f'font-size="56" font-weight="700" text-anchor="end">'
-        f'<tspan font-style="italic">ŷ</tspan>'
-        f'<tspan fill="{TEXT_DIM}"> = </tspan>'
-        f'<tspan fill="{OK_GREEN}">(</tspan>'
-        f'</text>'
-    )
-    # Rect-I (vertical bar, no font-substitution risk)
-    parts.append(
-        f'<rect x="{EQ_CX - 24}" y="{EQ_Y - 40}" width="8" height="42" '
-        f'fill="{OK_GREEN}" rx="0"/>'
-    )
-    # Right half: " − W)⁻¹ · dₚ"
-    parts.append(
-        f'<text x="{EQ_CX - 12}" y="{EQ_Y}" fill="{TEXT_TITLE}" font-family="Inter, Arial, sans-serif" '
-        f'font-size="56" font-weight="700" text-anchor="start">'
-        f'<tspan fill="{OK_GREEN}"> − </tspan>'
-        f'<tspan fill="{CYAN_HI}" font-style="italic" font-weight="700">W</tspan>'
-        f'<tspan fill="{OK_GREEN}">)</tspan>'
-        f'<tspan fill="{OK_GREEN}">⁻¹</tspan>'
-        f'<tspan fill="{TEXT_DIM}"> · </tspan>'
-        f'<tspan fill="{LAVENDER}" font-style="italic" font-weight="700">d</tspan>'
-        f'<tspan fill="{LAVENDER}" font-style="italic">ₚ</tspan>'
-        f'</text>'
-    )
-
-    parts.append(
-        f'<line x1="{EQ_CX - 220}" y1="{EQ_Y + 14}" x2="{EQ_CX + 220}" y2="{EQ_Y + 14}" '
+        f'<line x1="{EQ_CX - 220}" y1="{EQ_CY + 32}" x2="{EQ_CX + 220}" y2="{EQ_CY + 32}" '
         f'stroke="{CYAN}" stroke-width="1" stroke-opacity="0.35"/>'
     )
 
     # ---- Component definitions row (3 columns) ----
-    # v2 Fix 2: pulled up; was DEF_Y = EQ_Y + 64 = 380.
-    # Now at NZ_Y + 158 = 374 (subtle adjustment so eq + defs feel like one unit).
     DEF_Y = NZ_Y + 158
     COL_W = NZ_W // 3
-
-    # Cols 0 + 1 — normal rendering via the loop (no I-substitution risk)
+    # Cols 0+1 — normal text rendering (no I-substitution risk)
     for i, (sym, color, annotation) in enumerate([
         ("W",  CYAN_HI,  "sparse learned GRN"),
         ("dₚ", LAVENDER, "direct perturbation effect"),
@@ -229,63 +239,46 @@ def build_svg() -> str:
             f'<text x="{cx - 70}" y="{DEF_Y}" fill="{TEXT_BODY}" font-family="{FONT_BODY}" '
             f'font-size="14" font-style="italic">{annotation}</text>'
         )
-
-    # Col 2 — (I − W)⁻¹ with rect-I fix (same pattern as main equation).
-    # At 24pt: rect-I is ~4×20px. Hardcoded offsets around symbol anchor.
+    # Col 2 — `(I − W)⁻¹` via matplotlib mathtext PNG embed (Fix 1)
     cx2 = NZ_X + 2 * COL_W + COL_W // 2
-    sym_anchor_x = cx2 - 90   # right edge of full symbol (matches loop pattern)
-    # Right half: " − W)⁻¹" — anchored at sym_anchor_x
-    parts.append(
-        f'<text x="{sym_anchor_x}" y="{DEF_Y}" fill="{OK_GREEN}" font-family="Inter, Arial, sans-serif" '
-        f'font-size="24" font-weight="700" text-anchor="end">'
-        f'<tspan> − </tspan>'
-        f'<tspan font-style="italic">W</tspan>'
-        f'<tspan>)</tspan>'
-        f'<tspan>⁻¹</tspan>'
-        f'</text>'
-    )
-    # Right-half approximate width at 24pt: ~70px → so rect-I goes at sym_anchor_x - 70
-    rect_x = sym_anchor_x - 72
-    parts.append(
-        f'<rect x="{rect_x}" y="{DEF_Y - 17}" width="4" height="20" fill="{OK_GREEN}" rx="0"/>'
-    )
-    # Left "(" — just before rect-I
-    parts.append(
-        f'<text x="{rect_x - 2}" y="{DEF_Y}" fill="{OK_GREEN}" font-family="Inter, Arial, sans-serif" '
-        f'font-size="24" font-weight="700" text-anchor="end">(</text>'
-    )
-    # Annotation right of full symbol (matches loop pattern: x=cx-70)
+    # Position math image centered at (cx2 - 130, DEF_Y - 8) — left of annotation
+    comp3_expr = r"$(I - W)^{-1}$"
+    parts.append(math_image(comp3_expr, cx2 - 132, DEF_Y - 8, fontsize=20, color="white"))
+    # Annotation right of math image
     parts.append(
         f'<text x="{cx2 - 70}" y="{DEF_Y}" fill="{TEXT_BODY}" font-family="{FONT_BODY}" '
         f'font-size="14" font-style="italic">closed-form propagation</text>'
     )
 
-    # ---- Architectural requirement footer ----
-    # v2 Fix 2: explicit 30px gap above this line. Card ends at NZ_Y+NZ_H = 460;
-    # footer baseline at NZ_Y+220 = 436 gives 16px breathing below + 62px gap
-    # from definitions (DEF_Y=374) above.
+    # ---- v3 Fix 2: Architectural-requirement footer as ONE single text element ----
+    # Was 3 separate <text> elements with hardcoded segment widths that didn't
+    # match actual rendered widths → garbled overlap. Collapsed back to single
+    # text with text-anchor="middle". Plain text for ρ + < (Inter renders both
+    # correctly; matplotlib mathtext PNG reserved for (I − W)⁻¹ only).
     AR_Y = NZ_Y + 220
     parts.append(
         f'<line x1="{NZ_X + 32}" y1="{AR_Y - 22}" x2="{NZ_X + NZ_W - 32}" y2="{AR_Y - 22}" '
         f'stroke="{DIVIDER}" stroke-width="1"/>'
     )
+    # v3 Fix 2 (final): single text element, single uniform fill, no nested
+    # tspans. Earlier v3 attempt kept a cyan-colored <tspan> for `ρ(W) < 1`
+    # which triggered cairosvg's text-anchor="middle" + nested-tspan render
+    # bug (garbled overlap). Plain text only — ρ and < both render fine
+    # in Inter without any inline coloring.
     parts.append(
         f'<text x="{EQ_CX}" y="{AR_Y}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
         f'font-size="13" font-style="italic" text-anchor="middle">'
-        f'<tspan font-weight="700">Architectural requirement:</tspan> '
-        f'<tspan fill="{CYAN_HI}" font-weight="700">ρ(W) &lt; 1</tspan> '
-        f'enforced by sparsity L1 — guarantees Neumann-series convergence'
+        f'Architectural requirement:  ρ(W) &lt; 1  enforced by sparsity L1  —  guarantees Neumann-series convergence'
         f'</text>'
     )
 
     # ====================================================================
-    # MIDDLE ZONE — Sparse learned GRN visualization (Fix 4 upgrade)
-    # y=484..786 (302px tall, slightly larger than v1's 226 for richer viz)
+    # MIDDLE ZONE — Sparse learned GRN visualization (v2 unchanged)
     # ====================================================================
     MZ_Y = 484
     MZ_H = 302
     PANEL_GAP = 60
-    PANEL_W = (W - 2 * START_X - PANEL_GAP) // 2  # 834
+    PANEL_W = (W - 2 * START_X - PANEL_GAP) // 2
 
     parts.append(
         f'<text x="{START_X}" y="{MZ_Y}" fill="{TEXT_MUTED}" font-family="{FONT}" '
@@ -297,64 +290,35 @@ def build_svg() -> str:
         f'stroke="{DIVIDER}" stroke-width="1"/>'
     )
 
-    # ---- Node definitions (Fix 4) ----
-    # 8 named gene clusters with biological grouping. Position layout: pathway
-    # flow from top (perturbation targets) → middle (signaling kinases) →
-    # bottom (TFs hub + effector). "Structured biology" not "random graph".
-    #
-    # Position is fractional within panel inner area (0..1 in x, 0..1 in y).
-    # Hub-degree size differentiation: NFKB + STAT3 = 30px diameter (largest),
-    # peripheral nodes 18-22px.
     NODES = [
-        # (label, frac_x, frac_y, gene_class, radius)
-        # Top row — perturbation targets
         ("BTK",   0.18, 0.18, "cyan",     22),
         ("CD3E",  0.50, 0.10, "cyan",     22),
         ("JAK",   0.82, 0.18, "cyan",     22),
-        # Middle row — kinases / signaling intermediates
         ("ZAP70", 0.30, 0.46, "green",    20),
         ("MYD88", 0.70, 0.46, "green",    20),
-        # Bottom row — transcription-factor hubs (largest, most-connected)
         ("NFKB",  0.38, 0.78, "lavender", 30),
         ("STAT3", 0.62, 0.78, "lavender", 30),
-        # Far-bottom-right — effector (smallest, periphery)
         ("IRF7",  0.92, 0.90, "blue",     18),
     ]
-    # Index lookup by label
     node_by_label = {n[0]: n for n in NODES}
-
-    # ---- Edge definitions (Fix 4) ----
-    # Biological grounding: signaling-pathway-aware directed edges.
-    # (source, target, in_string_prior, learned_weight)
-    #   learned_weight: 0=pruned (below threshold), 1=medium, 2=strong
-    # The "novel" edge (in_string_prior=False, learned_weight≥1) is the
-    # platform's "we learned something the prior didn't predict" highlight.
     EDGES = [
-        # Direct perturbation → TF
-        ("BTK",   "NFKB",  True,  2),  # BCR signaling → NFKB (canonical)
-        ("JAK",   "STAT3", True,  2),  # JAK-STAT (canonical)
-        # Perturbation → kinase intermediate
-        ("CD3E",  "ZAP70", True,  2),  # TCR signaling (canonical)
-        # Kinase → TF
-        ("ZAP70", "NFKB",  True,  1),  # T-cell activation
-        ("MYD88", "NFKB",  True,  2),  # TLR signaling (canonical)
-        # Kinase → effector
-        ("MYD88", "IRF7",  True,  1),  # TLR-IRF7
-        # TF cross-talk / pruned-in-learning
-        ("STAT3", "IRF7",  True,  0),  # In STRING but learning prunes it (low signal in our data)
-        ("NFKB",  "IRF7",  True,  0),  # Pruned
-        # NOVEL learned edge (not in STRING prior, discovered in training)
-        ("STAT3", "NFKB",  False, 2),  # TF cross-regulation discovered
+        ("BTK",   "NFKB",  True,  2),
+        ("JAK",   "STAT3", True,  2),
+        ("CD3E",  "ZAP70", True,  2),
+        ("ZAP70", "NFKB",  True,  1),
+        ("MYD88", "NFKB",  True,  2),
+        ("MYD88", "IRF7",  True,  1),
+        ("STAT3", "IRF7",  True,  0),
+        ("NFKB",  "IRF7",  True,  0),
+        ("STAT3", "NFKB",  False, 2),  # novel learned edge
     ]
 
     def render_panel(px: int, py: int, pw: int, ph: int,
                      title: str, subtitle: str, left_panel: bool):
-        # Card
         parts.append(
             f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="14" '
             f'fill="{SURFACE}" stroke="{DIVIDER}" stroke-width="1.2" stroke-opacity="0.9"/>'
         )
-        # Title + subtitle
         parts.append(
             f'<text x="{px + 20}" y="{py + 26}" fill="{TEXT_BODY}" font-family="{FONT}" '
             f'font-size="13" font-weight="700" letter-spacing="2">{title}</text>'
@@ -363,23 +327,17 @@ def build_svg() -> str:
             f'<text x="{px + 20}" y="{py + 44}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
             f'font-size="11" font-style="italic">{subtitle}</text>'
         )
-
-        # Graph drawing area inside panel
         gx0, gy0 = px + 30, py + 60
-        gw, gh = pw - 60, ph - 130  # leave 70px at bottom for captions + legend
+        gw, gh = pw - 60, ph - 130
 
-        # Compute absolute positions per node
         def node_pos(label: str):
             n = node_by_label[label]
-            return (gx0 + n[1] * gw, gy0 + n[2] * gh, n[3], n[4])  # x, y, gene_class, r
+            return (gx0 + n[1] * gw, gy0 + n[2] * gh, n[3], n[4])
 
-        # ---- Edges first (so nodes overlay) ----
+        # Edges
         for src_lbl, tgt_lbl, in_prior, weight in EDGES:
             sx, sy, _, sr = node_pos(src_lbl)
             tx, ty, _, tr = node_pos(tgt_lbl)
-            # Compute edge endpoints retracted by node radii (so arrow lands
-            # at edge of node circle, not center)
-            import math
             dx, dy = tx - sx, ty - sy
             dist = math.hypot(dx, dy) or 1
             ux, uy = dx / dist, dy / dist
@@ -389,15 +347,12 @@ def build_svg() -> str:
             y2 = ty - uy * tr
 
             if left_panel:
-                # STRING prior — only show edges that are in prior; all uniform.
                 if in_prior:
                     parts.append(
                         f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
                         f'stroke="{TEXT_MUTED}" stroke-width="2" stroke-opacity="0.55"/>'
                     )
             else:
-                # Learned GRN — weight + direction + confidence-source encoded.
-                # Pruned (was in prior, dropped): dashed grey, no arrowhead
                 if weight == 0:
                     parts.append(
                         f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
@@ -405,9 +360,7 @@ def build_svg() -> str:
                         f'stroke-dasharray="4 4"/>'
                     )
                     continue
-                # Strong / medium / novel — solid stroke, with arrowhead at target
                 if not in_prior:
-                    # Novel learned edge — brighter cyan + lavender circle marker at midpoint
                     stroke_color = CYAN_HI
                     stroke_width = 4
                     stroke_opacity = 0.95
@@ -415,7 +368,7 @@ def build_svg() -> str:
                     stroke_color = CYAN_HI
                     stroke_width = 4
                     stroke_opacity = 0.9
-                else:  # medium
+                else:
                     stroke_color = CYAN
                     stroke_width = 2.5
                     stroke_opacity = 0.75
@@ -424,7 +377,6 @@ def build_svg() -> str:
                     f'stroke="{stroke_color}" stroke-width="{stroke_width}" '
                     f'stroke-opacity="{stroke_opacity}"/>'
                 )
-                # Arrowhead at (x2, y2) pointing along (ux, uy)
                 head_len = 8
                 head_w = 5
                 px_x, px_y = -uy, ux
@@ -437,7 +389,6 @@ def build_svg() -> str:
                     f'fill="none" stroke="{LAVENDER}" stroke-width="1.6" stroke-opacity="0.85" '
                     f'stroke-linecap="round" stroke-linejoin="round"/>'
                 )
-                # Novel-edge marker: small lavender filled circle at midpoint
                 if not in_prior:
                     mx, my = (sx + tx) / 2, (sy + ty) / 2
                     parts.append(
@@ -450,31 +401,25 @@ def build_svg() -> str:
                         f'text-anchor="middle">◆</text>'
                     )
 
-        # ---- Nodes ----
         for n in NODES:
             label, fx, fy, gene_class, r = n
             nx = gx0 + fx * gw
             ny = gy0 + fy * gh
-            # Outer soft glow ring (subtle, matches gradient)
             parts.append(
                 f'<circle cx="{nx:.0f}" cy="{ny:.0f}" r="{r + 4}" fill="none" '
                 f'stroke="url(#grn-{gene_class})" stroke-width="1.5" stroke-opacity="0.45"/>'
             )
-            # Filled gradient node
             parts.append(
                 f'<circle cx="{nx:.0f}" cy="{ny:.0f}" r="{r}" '
                 f'fill="url(#grn-{gene_class})" stroke="{TEXT_TITLE}" '
                 f'stroke-width="1" stroke-opacity="0.55"/>'
             )
-            # Gene label centered in node (or above for very small nodes)
-            label_y_off = 4  # approximate vertical centering
             parts.append(
-                f'<text x="{nx:.0f}" y="{ny + label_y_off}" fill="{TEXT_TITLE}" '
+                f'<text x="{nx:.0f}" y="{ny + 4}" fill="{TEXT_TITLE}" '
                 f'font-family="{FONT_BODY}" font-size="11" font-weight="700" '
                 f'text-anchor="middle">{label}</text>'
             )
 
-        # ---- Panel-bottom captions + (right-only) legend ----
         cap_y = py + ph - 50
         if left_panel:
             parts.append(
@@ -488,7 +433,6 @@ def build_svg() -> str:
                 f'font-family="{FONT_BODY}" font-size="11" font-style="italic">'
                 f'lower L1 sparsity pressure</text>'
             )
-            # Gene-class color-legend on left panel (so it's not duplicated)
             legend_y = py + ph - 16
             lx = px + 20
             parts.append(
@@ -514,10 +458,8 @@ def build_svg() -> str:
                 f'<tspan fill="{LAVENDER}" font-weight="700">◆</tspan> = '
                 f'novel (not in STRING prior)</text>'
             )
-            # Edge-style legend in right panel (bottom-right corner)
             legend_x = px + pw - 240
             legend_y = py + ph - 60
-            # Small backdrop card
             parts.append(
                 f'<rect x="{legend_x - 8}" y="{legend_y - 12}" width="232" height="62" rx="6" '
                 f'fill="{SURFACE_2}" stroke="{DIVIDER}" stroke-width="0.8" stroke-opacity="0.8"/>'
@@ -526,21 +468,18 @@ def build_svg() -> str:
                 f'<text x="{legend_x}" y="{legend_y}" fill="{TEXT_MUTED}" font-family="{FONT}" '
                 f'font-size="9" font-weight="700" letter-spacing="2">EDGE LEGEND</text>'
             )
-            # 4 legend rows
             row_specs = [
-                ('━━', CYAN_HI, 4, None, "high-weight learned"),
-                ('──', CYAN,    2.5, None, "medium-weight learned"),
-                ('···', TEXT_DIM, 1.2, '4 4', "pruned (below threshold)"),
-                ('◆',  LAVENDER, 0, None, "novel (not in STRING)"),
+                ('━━',  CYAN_HI,  4,   None,    "high-weight learned"),
+                ('──',  CYAN,     2.5, None,    "medium-weight learned"),
+                ('···', TEXT_DIM, 1.2, '4 4',   "pruned (below threshold)"),
+                ('◆',   LAVENDER, 0,   None,    "novel (not in STRING)"),
             ]
             for li, (glyph, color, sw, dash, desc) in enumerate(row_specs):
                 row_y = legend_y + 14 + li * 10
-                # Draw line sample
                 lx = legend_x + 4
                 lx_end = lx + 28
                 dash_attr = f' stroke-dasharray="{dash}"' if dash else ''
                 if glyph == '◆':
-                    # Special: lavender diamond marker, no line sample
                     parts.append(
                         f'<text x="{lx + 14}" y="{row_y + 3}" fill="{color}" '
                         f'font-family="{FONT}" font-size="10" font-weight="700" '
@@ -565,7 +504,6 @@ def build_svg() -> str:
                  "LEARNED SPARSE GRN", "edge weights + direction after training",
                  left_panel=False)
 
-    # Connector arrow + caption between panels
     mid_x = START_X + PANEL_W + PANEL_GAP // 2
     arrow_y = panel_y + panel_h // 2
     parts.append(
@@ -591,7 +529,7 @@ def build_svg() -> str:
     )
 
     # ====================================================================
-    # BOTTOM ZONE — Direct-effect log-FC head (unchanged structure from v1)
+    # BOTTOM ZONE — Direct-effect log-FC head
     # ====================================================================
     BZ_X, BZ_Y, BZ_W, BZ_H = START_X, 812, W - 2 * START_X, 108
     parts.append(
@@ -610,10 +548,12 @@ def build_svg() -> str:
         f'<rect x="{b1_x}" y="{BD_Y}" width="{b1_w}" height="{BD_BOX_H}" rx="8" '
         f'fill="{SURFACE_2}" stroke="{TEXT_DIM}" stroke-width="1" stroke-opacity="0.7"/>'
     )
+    # v3.1: removed italic on `z` — italic Latin letters trigger cairosvg
+    # glyph substitution (same bug as I→turnstile). Plain text renders fine.
     parts.append(
         f'<text x="{b1_x + b1_w // 2}" y="{BD_Y + BD_BOX_H // 2 + 5}" fill="{TEXT_BODY}" '
         f'font-family="{FONT_BODY}" font-size="13" font-weight="600" text-anchor="middle">'
-        f'<tspan font-style="italic">z</tspan> + perturbation context</text>'
+        f'z + perturbation context</text>'
     )
     a1_x = b1_x + b1_w + 12
     a1_w = 40
@@ -647,15 +587,18 @@ def build_svg() -> str:
         f'fill="none" stroke="{LAVENDER}" stroke-width="2" stroke-opacity="0.95" '
         f'stroke-linecap="round" stroke-linejoin="round"/>'
     )
+    # v3.1: removed italic on `d` — same cairosvg italic-Latin substitution
+    # bug. Render dₚ as plain bold + Unicode subscript ₚ.
     out_x = a2_x + a2_w + 4
     parts.append(
         f'<text x="{out_x + 20}" y="{BD_Y + BD_BOX_H // 2 + 7}" fill="{LAVENDER}" '
         f'font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">'
-        f'<tspan font-style="italic">d</tspan>'
-        f'<tspan font-style="italic">ₚ</tspan>'
-        f'</text>'
+        f'dₚ</text>'
     )
 
+    # Bottom comparison line — v3 Fix 1: render `(I − W)⁻¹ dₚ` fragment via
+    # mathtext PNG embed. The Stage 3a/3b line + the prose on the Stage 3c
+    # line stay as SVG text.
     cmp_x = out_x + 80
     cmp_y = BD_Y - 4
     parts.append(
@@ -665,51 +608,38 @@ def build_svg() -> str:
         f'abundance after perturbation'
         f'</text>'
     )
-    # Bottom-zone comparison line — use rect-I fix here too (consistent
-    # with main equation + component defs). At 12pt: rect-I = 2.5×11px.
-    # Split into 3 pieces: segment A (left text) + rect-I + segment B (right text).
-    cmp_seg_y = cmp_y + 36
-    # Segment A: "Stage 3c separates:  dₚ (direct) + ("
+    # Stage 3c line — text before math + math PNG + text after
+    # v3.1: removed italic on `d` (cairosvg italic-Latin substitution bug).
+    # font-family changed from FONT_BODY (Arial-first) to Inter-first because
+    # Arial doesn't include Unicode subscript ₚ (U+209A) and was rendering it
+    # as a missing-glyph box. Inter has the full Latin-Extended subscript range.
+    cmp_y_3c = cmp_y + 36
     parts.append(
-        f'<text x="{cmp_x}" y="{cmp_seg_y}" fill="{TEXT_BODY}" font-family="Inter, Arial, sans-serif" '
+        f'<text x="{cmp_x}" y="{cmp_y_3c}" fill="{TEXT_BODY}" font-family="Inter, Arial, sans-serif" '
         f'font-size="12" font-weight="400">'
         f'<tspan fill="{CYAN_HI}" font-weight="700">Stage 3c separates:</tspan>  '
-        f'<tspan fill="{LAVENDER}" font-weight="700" font-style="italic">d</tspan>'
-        f'<tspan fill="{LAVENDER}" font-style="italic">ₚ</tspan>'
-        f'<tspan fill="{TEXT_BODY}"> (direct) + </tspan>'
-        f'<tspan fill="{OK_GREEN}" font-weight="700">(</tspan>'
+        f'<tspan fill="{LAVENDER}" font-weight="700">dₚ</tspan>'
+        f'<tspan fill="{TEXT_BODY}"> (direct)  +  </tspan>'
         f'</text>'
     )
-    # Approximate width of segment A at 12pt × 0.55 visual char width.
-    # "Stage 3c separates:  dₚ (direct) + (" ≈ 36 visible chars → ~238px
-    SEG_A_W = 238
-    rect_x2 = cmp_x + SEG_A_W
+    # Math fragment `(I − W)⁻¹ dₚ` as mathtext PNG.
+    # Approximate left-text width: "Stage 3c separates:  dₚ (direct)  +  " ≈ 36 chars × 12pt × 0.55 = 238px
+    cmp_math_x = cmp_x + 232
+    cmp_math_expr = r"$(I - W)^{-1} \, d_p$"
+    parts.append(math_image(cmp_math_expr, cmp_math_x + 50, cmp_y_3c - 4, fontsize=11, color="white"))
+    # Text after math fragment
     parts.append(
-        f'<rect x="{rect_x2}" y="{cmp_seg_y - 9}" width="2.5" height="11" fill="{OK_GREEN}" rx="0"/>'
-    )
-    # Segment B: " − W)⁻¹ dₚ (propagated)"
-    parts.append(
-        f'<text x="{rect_x2 + 4}" y="{cmp_seg_y}" fill="{TEXT_BODY}" font-family="Inter, Arial, sans-serif" '
+        f'<text x="{cmp_math_x + 110}" y="{cmp_y_3c}" fill="{TEXT_BODY}" font-family="{FONT_BODY}" '
         f'font-size="12" font-weight="400">'
-        f'<tspan fill="{OK_GREEN}" font-weight="700"> − </tspan>'
-        f'<tspan fill="{OK_GREEN}" font-weight="700" font-style="italic">W</tspan>'
-        f'<tspan fill="{OK_GREEN}" font-weight="700">)</tspan>'
-        f'<tspan fill="{OK_GREEN}" font-weight="700">⁻¹</tspan>'
-        f'<tspan fill="{LAVENDER}" font-weight="700" font-style="italic"> d</tspan>'
-        f'<tspan fill="{LAVENDER}" font-style="italic">ₚ</tspan>'
-        f'<tspan fill="{TEXT_BODY}"> (propagated)</tspan>'
-        f'</text>'
+        f'(propagated)</text>'
     )
 
-    parts.append(
-        f'<text x="{BZ_X + 22}" y="{BZ_Y + BZ_H - 12}" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
-        f'font-size="12" font-style="italic">'
-        f'<tspan font-weight="700">Why this matters:</tspan>  causal queries vs predictive queries — '
-        f'<tspan fill="{TEXT_BODY}">"what does X cause?"</tspan>'
-        f'<tspan fill="{TEXT_DIM}">  vs  </tspan>'
-        f'<tspan fill="{TEXT_BODY}">"what happens after X?"</tspan>'
-        f'</text>'
-    )
+    # v3.1: removed the "Why this matters: causal queries vs predictive queries"
+    # line entirely. It was at y=908 (perturbation-context rect ends at y=898,
+    # 4px y-bbox overlap) AND redundant: the Stage 3a/3b "predicted: abundance
+    # after perturbation" row + Stage 3c "separates: dₚ (direct) + (I-W)⁻¹dₚ
+    # (propagated)" row above already convey the predictive-vs-causal contrast.
+    # The colloquial Q&A version belongs in speaker notes, not on-slide.
 
     footer(
         parts,
@@ -733,28 +663,17 @@ if __name__ == "__main__":
     png_path = here / "A5_causal_architecture_preview.png"
     svg = build_svg()
 
-    # Collision guard tightened to min_gap=2 (per F1 v2 lesson).
-    # Known-good filters (intentional rect-split adjacencies for the
-    # `(I − W)⁻¹` math notation — text-anchor positions left+right halves
-    # precisely with rect-I in middle; bbox heuristic can't reason about
-    # the rect gap so it flags them as overlapping when they aren't):
-    #   - Pair containing "− W)" right-half text  (equation + comp defs + cmp line)
-    #   - Pair containing "(" alone (rect-split open paren)
+    # v3: collision guard simplified — no more rect-split known-FP filter
+    # (rect-I logic removed; equations are now <image> elements which bypass
+    # text-collision detection entirely).
     collisions = check_no_text_collisions(svg, min_gap=2)
-    def _is_rect_split_pair(a: str, b: str) -> bool:
-        a, b = a.strip(), b.strip()
-        return (
-            ("− W)" in a or "− W)" in b)
-            or a == "(" or b == "("
-        )
     blocking = [c for c in collisions
                 if "A5 / 14" not in (c[0], c[1])
                 and not c[0].startswith("Source:")
-                and not c[1].startswith("Source:")
-                and not _is_rect_split_pair(c[0], c[1])]
+                and not c[1].startswith("Source:")]
     if blocking:
         msg = "\n".join(f"  · {a!r} ↔ {b!r} ({ox}×{oy}px)" for a, b, ox, oy in blocking)
-        raise SystemExit(f"A5 v2 collision-guard FAIL:\n{msg}")
+        raise SystemExit(f"A5 v3 collision-guard FAIL:\n{msg}")
 
     svg_path.write_text(svg)
     print(f"wrote {svg_path}  (collision-guard ✓ min_gap=2)")
