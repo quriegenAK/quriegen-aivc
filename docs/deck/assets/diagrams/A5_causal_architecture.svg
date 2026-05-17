@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC A5 — Causal architecture (Stage 3c spec-locked)">
+<rect width="1920" height="1080" fill="#070A14"/>
+<defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
+<text x="96" y="78" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX A5 · ARCHITECTURE DEPTH</text>
+<line x1="476" y1="72" x2="696" y2="72" stroke="#26DDF9" stroke-opacity="0.4" stroke-width="1"/>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">Causal Architecture — Spec-Locked</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Neumann propagation + sparse learned GRN + direct-effect decoder · architecturally locked in spec v1.1 · validation begins Q1-Q2 2027 once Phase 1 wet-lab perturbation data lands</text>
+<rect x="1456" y="60" width="368" height="108" rx="10" fill="#26DDF9" fill-opacity="0.12" stroke="#00F2FF" stroke-width="1.5" stroke-opacity="0.85"/>
+<text x="1474" y="94" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700">◆</text>
+<text x="1498" y="93" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="2.5">STAGE 3c · SPEC-LOCKED</text>
+<text x="1474" y="124" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700">Validation Q1-Q2 2027</text>
+<text x="1474" y="146" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-style="italic">post Phase 1 wet-lab data</text>
+<text x="96" y="216" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">NEUMANN PROPAGATION · PERTURBATION FLOW THROUGH LEARNED GRAPH</text>
+<line x1="676" y1="210" x2="1824" y2="210" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="228" width="1728" height="282" rx="14" fill="#0F1428" stroke="#26DDF9" stroke-width="1.5" stroke-opacity="0.55"/>
+<text x="960" y="316" fill="#F7FAFF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="56" font-weight="700" text-anchor="middle"><tspan font-style="italic">ŷ</tspan><tspan fill="#94A3B8">  =  </tspan><tspan fill="#4ADE80">(</tspan><tspan fill="#4ADE80" font-style="italic">I</tspan><tspan fill="#4ADE80"> − </tspan><tspan fill="#00F2FF" font-style="italic" font-weight="700">W</tspan><tspan fill="#4ADE80">)</tspan><tspan fill="#4ADE80" font-size="34" baseline-shift="super">−1</tspan><tspan fill="#94A3B8">  ·  </tspan><tspan fill="#B47DF0" font-style="italic" font-weight="700">d</tspan><tspan fill="#B47DF0" font-size="34" baseline-shift="sub" font-style="italic">p</tspan></text>
+<line x1="740" y1="330" x2="1180" y2="330" stroke="#26DDF9" stroke-width="1" stroke-opacity="0.35"/>
+<text x="294" y="380" fill="#00F2FF" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="24" font-weight="700" text-anchor="end"><tspan font-style="italic" font-weight="700">W</tspan></text>
+<text x="314" y="380" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-style="italic">sparse learned GRN</text>
+<text x="870" y="380" fill="#B47DF0" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="24" font-weight="700" text-anchor="end"><tspan font-style="italic" font-weight="700">d</tspan><tspan font-size="16" baseline-shift="sub" font-style="italic">p</tspan></text>
+<text x="890" y="380" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-style="italic">direct perturbation effect</text>
+<text x="1446" y="380" fill="#4ADE80" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="24" font-weight="700" text-anchor="end"><tspan>(</tspan><tspan font-style="italic">I</tspan><tspan> − </tspan><tspan font-style="italic">W</tspan><tspan>)</tspan><tspan font-size="16" baseline-shift="super">−1</tspan></text>
+<text x="1466" y="380" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-style="italic">closed-form propagation</text>
+<line x1="128" y1="472" x2="1792" y2="472" stroke="#1A2235" stroke-width="1"/>
+<text x="960" y="496" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-style="italic" text-anchor="middle"><tspan font-weight="700">Architectural requirement:</tspan> <tspan fill="#00F2FF" font-weight="700">ρ(W) &lt; 1</tspan> enforced by sparsity L1 — guarantees Neumann-series convergence</text>
+<text x="96" y="534" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">SPARSE LEARNED GRN · STRUCTURAL PRIOR (LEFT) → LEARNED WEIGHTS (RIGHT)</text>
+<line x1="796" y1="528" x2="1824" y2="528" stroke="#1A2235" stroke-width="1"/>
+<rect x="96" y="550" width="834" height="226" rx="14" fill="#0F1428" stroke="#1A2235" stroke-width="1.2" stroke-opacity="0.9"/>
+<text x="116" y="576" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2">STRUCTURAL PRIOR  ·  STRING DB</text>
+<text x="116" y="594" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">edge-existence prior</text>
+<line x1="265" y1="641" x2="436" y2="629" stroke="#94A3B8" stroke-width="1.5" stroke-opacity="0.55"/>
+<line x1="436" y1="629" x2="606" y2="641" stroke="#94A3B8" stroke-width="1.5" stroke-opacity="0.55"/>
+<line x1="265" y1="641" x2="343" y2="670" stroke="#94A3B8" stroke-width="1.5" stroke-opacity="0.55"/>
+<line x1="343" y1="670" x2="513" y2="670" stroke="#94A3B8" stroke-width="1.5" stroke-opacity="0.55"/>
+<line x1="513" y1="670" x2="420" y2="699" stroke="#94A3B8" stroke-width="1.5" stroke-opacity="0.55"/>
+<line x1="513" y1="670" x2="683" y2="696" stroke="#94A3B8" stroke-width="1.5" stroke-opacity="0.55"/>
+<circle cx="265" cy="641" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="436" cy="629" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="606" cy="641" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="343" cy="670" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="513" cy="670" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="420" cy="699" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="683" cy="696" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<text x="116" y="748" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700"><tspan fill="#A8B4C2" font-weight="700">›</tspan>  STRING-supported edges</text>
+<text x="116" y="766" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">lower L1 sparsity pressure</text>
+<rect x="990" y="550" width="834" height="226" rx="14" fill="#0F1428" stroke="#1A2235" stroke-width="1.2" stroke-opacity="0.9"/>
+<text x="1010" y="576" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2">LEARNED SPARSE GRN</text>
+<text x="1010" y="594" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">edge weights after training</text>
+<line x1="1159" y1="641" x2="1330" y2="629" stroke="#00F2FF" stroke-width="4" stroke-opacity="0.95"/>
+<line x1="1330" y1="629" x2="1500" y2="641" stroke="#00F2FF" stroke-width="4" stroke-opacity="0.95"/>
+<line x1="1159" y1="641" x2="1237" y2="670" stroke="#26DDF9" stroke-width="2.5" stroke-opacity="0.75"/>
+<line x1="1237" y1="670" x2="1407" y2="670" stroke="#00F2FF" stroke-width="4" stroke-opacity="0.95"/>
+<line x1="1407" y1="670" x2="1314" y2="699" stroke="#26DDF9" stroke-width="2.5" stroke-opacity="0.75"/>
+<line x1="1500" y1="641" x2="1407" y2="670" stroke="#26DDF9" stroke-width="2.5" stroke-opacity="0.75"/>
+<line x1="1314" y1="699" x2="1577" y2="696" stroke="#94A3B8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="4 4"/>
+<line x1="1407" y1="670" x2="1577" y2="696" stroke="#94A3B8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="4 4"/>
+<circle cx="1159" cy="641" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="1330" cy="629" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="1500" cy="641" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="1237" cy="670" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="1407" cy="670" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="1314" cy="699" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<circle cx="1577" cy="696" r="9" fill="#0B1020" stroke="#EAF6FF" stroke-width="1.5"/>
+<text x="1010" y="748" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="700"><tspan fill="#26DDF9" font-weight="700">›</tspan>  thick cyan = high-weight learned</text>
+<text x="1010" y="766" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">dashed = below sparsity threshold (pruned)</text>
+<line x1="942" y1="663" x2="978" y2="663" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round"/>
+<path d="M 972 657 L 978 663 L 972 669" fill="none" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.95" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="960" y="647" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="middle">L1 sparsity</text>
+<text x="960" y="800" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-style="italic" text-anchor="middle">prior shapes initialization, learning prunes</text>
+<rect x="96" y="812" width="1728" height="108" rx="14" fill="#0F1428" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.55"/>
+<text x="118" y="838" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5">DIRECT-EFFECT LOG-FC HEAD</text>
+<rect x="118" y="860" width="360" height="38" rx="8" fill="#0B1020" stroke="#94A3B8" stroke-width="1" stroke-opacity="0.7"/>
+<text x="298" y="884" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="600" text-anchor="middle"><tspan font-style="italic">z</tspan> + perturbation context</text>
+<line x1="490" y1="879" x2="522" y2="879" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round"/>
+<path d="M 516 874 L 524 879 L 516 884" fill="none" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.95" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="534" y="860" width="240" height="38" rx="8" fill="#B47DF0" fill-opacity="0.16" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.85"/>
+<text x="654" y="884" fill="#F7FAFF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="700" text-anchor="middle">log-FC decoder</text>
+<line x1="786" y1="879" x2="818" y2="879" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round"/>
+<path d="M 812 874 L 820 879 L 812 884" fill="none" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.95" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="850" y="886" fill="#B47DF0" font-family="Inter, 'Cambria Math', 'STIX Two Math', serif" font-size="22" font-weight="700"><tspan font-style="italic">d</tspan><tspan font-size="16" baseline-shift="sub" font-style="italic">p</tspan></text>
+<text x="910" y="870" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan font-weight="700">Stage 3a/3b predicted:</tspan> abundance after perturbation</text>
+<text x="910" y="892" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-weight="400"><tspan fill="#00F2FF" font-weight="700">Stage 3c separates:</tspan>  <tspan fill="#B47DF0" font-weight="700" font-style="italic">d</tspan><tspan fill="#B47DF0" font-size="9" baseline-shift="sub" font-style="italic">p</tspan><tspan fill="#EAF6FF"> (direct) + </tspan><tspan fill="#4ADE80" font-weight="700">(I − W)</tspan><tspan fill="#4ADE80" font-size="9" baseline-shift="super">−1</tspan><tspan fill="#B47DF0" font-weight="700" font-style="italic"> d</tspan><tspan fill="#B47DF0" font-size="9" baseline-shift="sub" font-style="italic">p</tspan><tspan fill="#EAF6FF"> (propagated)</tspan></text>
+<text x="118" y="908" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-style="italic"><tspan font-weight="700">Why this matters:</tspan>  causal queries vs predictive queries — <tspan fill="#EAF6FF">"what does X cause?"</tspan><tspan fill="#94A3B8">  vs  </tspan><tspan fill="#EAF6FF">"what happens after X?"</tspan></text>
+<line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Architecture spec v1.1 (causal layer pending §X extension) · QurieSeq Phase 1+2 spec (Thiago, May 2026) · STRING DB v12.0 (Szklarczyk et al., 2023, NAR) · Neumann series propagation (standard linear-algebra reference)</text>
+<text x="1824" y="980" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">A5 / 14</text>
+</svg>
