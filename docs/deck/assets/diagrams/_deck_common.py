@@ -272,7 +272,7 @@ def _extract_text_elements(svg_xml: str) -> list[dict]:
     return out
 
 
-def check_no_text_collisions(svg_xml: str, *, min_gap: int = 4) -> list[tuple]:
+def check_no_text_collisions(svg_xml: str, *, min_gap: int = 2) -> list[tuple]:
     """Scan SVG <text> elements and flag probable rendering collisions.
 
     Algorithm: two text elements are flagged as colliding if their estimated
@@ -280,6 +280,17 @@ def check_no_text_collisions(svg_xml: str, *, min_gap: int = 4) -> list[tuple]:
     Bounding box is computed from x/y baseline + text-anchor adjustment +
     visible-char-width estimate (font_size * 0.6) + vertical ascent/descent
     (font_size * 0.85 / 0.15).
+
+    Default `min_gap=2` is the post-F1-v2 / A5-v2 sweep value: catches
+    near-collisions while tolerating 1-2px sub-pixel anti-aliasing noise.
+    Per-builder calls may override (e.g., min_gap=0 for strictest smoke test).
+
+    Caveat: this catches bbox-overlap (literal text-element collisions). It
+    does NOT catch "visual cramping" where two rows have clear y-gap but
+    feel too close at slide-fill scale (e.g., 80-100px gap between a body
+    bullet at 14pt and an italic caption at 13pt that visually competes).
+    Layout density issues like that require human visual review or a
+    separate heuristic (e.g., min-row-gap-by-font-size check).
 
     Returns a list of tuples:
         (content1, content2, x_overlap_px, y_overlap_px)
@@ -353,7 +364,7 @@ def check_text_within_bounds(svg_xml: str, *, parent_bounds: list,
 
 
 def collision_guard(svg_xml: str, *, parent_bounds: list = None,
-                    min_gap: int = 4,
+                    min_gap: int = 2,
                     raise_on_fail: bool = True) -> tuple[list, list]:
     """Convenience: run both collision checks; optionally raise.
 
