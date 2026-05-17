@@ -5,7 +5,9 @@
 !.gitignore
 # Exception: appendix deliverables (committed alongside their build script
 # for reproducibility and so reviewers can open them directly from the repo
-# without re-running the builder). v1 preserved as historical artifact;
-# v2 is the current deliverable (Phase 2 + 3 complete, 20 slides).
+# without re-running the builder).
+# v1 (18 slides) + v2 (20 slides) preserved as historical artifacts;
+# v3 (21 slides — A5 added) is the current deliverable.
 !aivc_appendix_v1.pptx
 !aivc_appendix_v2.pptx
+!aivc_appendix_v3.pptx

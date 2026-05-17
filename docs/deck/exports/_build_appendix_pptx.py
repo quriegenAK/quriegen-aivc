@@ -39,9 +39,10 @@ from lxml import etree
 REPO = Path(__file__).resolve().parents[3]
 CONTENT_DIR = REPO / "docs" / "deck" / "content"
 DIAGRAMS_DIR = REPO / "docs" / "deck" / "assets" / "diagrams"
-# v2: adds Section F (Competitive Positioning) + F1 content slide.
-# v1 file preserved as historical artifact at aivc_appendix_v1.pptx.
-OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v2.pptx"
+# v3: adds A5 content slide between A4 and B section divider. Section A
+# grows from 4 → 5 content slides; total deck 20 → 21 slides.
+# v1 (18 slides) + v2 (20 slides) preserved as historical artifacts.
+OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v3.pptx"
 
 # 16:9 widescreen matching SVG viewBox 1920×1080 (13.333" × 7.5" at 144 dpi)
 SLIDE_WIDTH = Inches(13.333)
@@ -69,6 +70,7 @@ CONTENT_SLIDES = [
     ("A2", "A2_encoder_evidence_preview.png",            "A2_encoder_substrate.md"),
     ("A3", "A3_decomposed_readout_preview.png",          "A3_decomposed_readout.md"),
     ("A4", "A4_temporal_dynamics_preview.png",           "A4_temporal_neural_ode.md"),
+    ("A5", "A5_causal_architecture_preview.png",         "A5_causal_architecture.md"),  # v3
     ("B1", "B1_three_datasets_methodology_preview.png",  "B1_methodology_rigor.md"),
     ("B2", "B2_adapter_verdict_preview.png",             "B2_encoder_probe_verdict.md"),
     ("B3", "B3_mechanism_pre_demo_preview.png",          "B3_synergy_pre_demo.md"),
@@ -85,9 +87,9 @@ SECTIONS = [
         "letter": "A",
         "title": "Architecture Depth",
         "sub": "How the model works · what's frozen, what trains, what generalizes",
-        "footer": "Slides A1 – A4",
+        "footer": "Slides A1 – A5",  # v3: was "A1 – A4"; A5 added
         "accent": CYAN,
-        "ids": ["A1", "A2", "A3", "A4"],
+        "ids": ["A1", "A2", "A3", "A4", "A5"],  # v3: A5 inserted at position 5
     },
     {
         "letter": "B",
