@@ -50,8 +50,8 @@ def build_svg() -> str:
         section="COMPETITIVE POSITIONING",
         title="The Closed-Loop Platform — Co-Designed, Compounding",
         subtitle=(
-            "Proprietary data, co-designed architecture, integrated as one system · "
-            "no public dataset has the combination drug combination prediction requires"
+            "No public dataset has the combination — multi-omics + perturbation-aware + temporal + combinatorial · "
+            "Phase 1 QuRIE-seq closes the gap with phospho at Q3 2026; the platform compounds from there"
         ),
         eyebrow_color=ACCENT_AMBER,
     )
@@ -82,6 +82,10 @@ def build_svg() -> str:
     )
 
     # ---- Pillar definitions ----
+    # Body lines can be either plain strings OR (text, color) tuples for
+    # per-line color override. Used to lavender-emphasize "Phospho" in the
+    # TEMPORAL MULTI-OMICS pillar — visual load-bearing signal that we have
+    # the modality no public dataset has.
     pillars = [
         # (label_caps, subtitle, body_lines, center_x, center_y)
         ("CO-DESIGNED ARCHITECTURE", "matches the assay",
@@ -89,15 +93,15 @@ def build_svg() -> str:
           "Neural ODE temporal",
           "Compositional generalization"],
          top_cx, top_cy),
-        ("TEMPORAL MULTI-OMICS", "5 modalities by Phase 2",
-         ["RNA + ATAC + Protein",
-          "(+ phospho + VDJ Phase 2)",
-          "0/5/30/60/180 min sampling"],
+        ("TEMPORAL MULTI-OMICS", "phospho is the modality no one else has",
+         [("RNA · Protein · Phospho", LAVENDER),       # phospho-emphasized line
+          ("5 timepoints (0/5/30/60/180)", TEXT_BODY),
+          ("ATAC × 2 timepoints · VDJ Phase 2", TEXT_MUTED)],
          right_cx, right_cy),
         ("PROTOCOL-FAMILY EXPANSION", "no re-architecting",
-         ["Same wet-lab pipeline",
-          "extends to Phase 2 phospho",
-          "+ VDJ without re-architecting"],
+         ["Same wet-lab pipeline scales",
+          "to Phase 2: 20 donors + VDJ",
+          "without re-architecting"],
          bottom_cx, bottom_cy),
         ("WET-LAB GENERATION", "QurieSeq Phase 1+2",
          ["Primary human PBMCs",
@@ -106,7 +110,7 @@ def build_svg() -> str:
          left_cx, left_cy),
     ]
 
-    def render_pillar(label: str, subtitle: str, body: list[str],
+    def render_pillar(label: str, subtitle: str, body: list,
                       ccx: int, ccy: int):
         x = ccx - PILLAR_W // 2
         y = ccy - PILLAR_H // 2
@@ -125,12 +129,17 @@ def build_svg() -> str:
             f'<text x="{x + 18}" y="{y + 48}" fill="{ACCENT_AMBER}" font-family="{FONT_BODY}" '
             f'font-size="11" font-style="italic" font-weight="600">{subtitle}</text>'
         )
-        # Body lines
+        # Body lines — support (text, color) tuples for per-line override
         for j, line in enumerate(body):
+            if isinstance(line, tuple):
+                text, line_color = line
+                font_weight = "700" if line_color == LAVENDER else "400"
+            else:
+                text, line_color, font_weight = line, TEXT_BODY, "400"
             parts.append(
-                f'<text x="{x + 18}" y="{y + 74 + j * 18}" fill="{TEXT_BODY}" '
-                f'font-family="{FONT_BODY}" font-size="12" font-weight="400">'
-                f'<tspan fill="{ACCENT_AMBER}" font-weight="700">›</tspan>  {line}</text>'
+                f'<text x="{x + 18}" y="{y + 74 + j * 18}" fill="{line_color}" '
+                f'font-family="{FONT_BODY}" font-size="12" font-weight="{font_weight}">'
+                f'<tspan fill="{ACCENT_AMBER}" font-weight="700">›</tspan>  {text}</text>'
             )
 
     for label, subtitle, body, ccx, ccy in pillars:
@@ -355,8 +364,8 @@ def build_svg() -> str:
     parts.append(
         f'<text x="{cx}" y="938" fill="{TEXT_MUTED}" font-family="{FONT_BODY}" '
         f'font-size="14" font-style="italic" text-anchor="middle">'
-        f'"No public dataset has the combination drug combination prediction requires. '
-        f'The wet lab, the architecture, and the protocol family are co-designed."</text>'
+        f'"Phase 1 QuRIE-seq (Q3 2026) measures RNA + Protein + Phospho at 5 timepoints — '
+        f'the combination no public dataset has. The platform compounds from there."</text>'
     )
 
     # ---- Footer (standard pattern, F1 / 13) ----

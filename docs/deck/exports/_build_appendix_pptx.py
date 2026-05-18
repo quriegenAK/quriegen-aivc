@@ -39,10 +39,12 @@ from lxml import etree
 REPO = Path(__file__).resolve().parents[3]
 CONTENT_DIR = REPO / "docs" / "deck" / "content"
 DIAGRAMS_DIR = REPO / "docs" / "deck" / "assets" / "diagrams"
-# v3: adds A5 content slide between A4 and B section divider. Section A
-# grows from 4 → 5 content slides; total deck 20 → 21 slides.
-# v1 (18 slides) + v2 (20 slides) preserved as historical artifacts.
-OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v3.pptx"
+# v4: phospho-in-Phase-1 correction — refreshed SVGs for A2, C1, D1, F1
+# (A5 SVG unchanged from v3; speaker notes for A5 updated via content spec).
+# Slide count + section structure identical to v3 (21 slides total).
+# v1 (18 slides) + v2 (20 slides) + v3 (21 slides) preserved as historical
+# artifacts.
+OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v4.pptx"
 
 # 16:9 widescreen matching SVG viewBox 1920×1080 (13.333" × 7.5" at 144 dpi)
 SLIDE_WIDTH = Inches(13.333)

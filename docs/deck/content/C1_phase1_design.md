@@ -29,7 +29,7 @@ First proprietary perturbation-aware multi-omics dataset on primary human PBMCs.
 
 - **Experimental design tied to model architecture**: 5 timepoints match the Neural ODE temporal backbone. 4-arm design (vehicle / stim / inhibitor singles / combinations) matches the decomposed readout. BTK + JAK combination condition is confirmed for Phase 1 — this is the proof-of-capability for compositional generalization (predict combo from singles).
 
-- **5 donors × ~5k cells/donor/timepoint = ~125k cells total across ~17 conditions**. Donor chromatin signature (ATAC at t=0) functions as biological donor ID since Sanquin blood provider returns blood-type-only metadata. Phase 2 (2027) scales to 20 donors and adds VDJ as 5th modality.
+- **5 donors × ~5k cells/donor/timepoint = ~125k cells total across the Phase 1 perturbation panel**. Panel size lands at ~15–20 conditions (vehicle + stimulus + inhibitor singles + combinations including BTK+JAK); exact panel is under final wet-lab spec review with Thiago. Donor chromatin signature (ATAC at t=0) functions as biological donor ID since Sanquin blood provider returns blood-type-only metadata. Phase 2 (2027) scales to 20 donors and adds VDJ as 5th modality.
 
 ---
 
@@ -80,13 +80,18 @@ ATAC sampling rationale: chromatin layer slow-varying — endpoint coverage suff
 **Left block — perturbation conditions:**
 
 ```
-PERTURBATION CONDITIONS (17 total)
+PERTURBATION CONDITIONS
 · Vehicle control (baseline)
-· Stimulus (PMA/Iono or equivalent — TBD with Thiago)
-· 6 inhibitor singles: BTK, JAK, [+4 others TBD]
-· 6 inhibitor + stim combos
-· 3 inhibitor + inhibitor combos including BTK+JAK
+· Stimulus condition (panel under final wet-lab spec review)
+· Inhibitor singles — BTK, JAK CONFIRMED for Phase 1
+  (additional inhibitor panel TBC with Thiago)
+· Inhibitor combinations — BTK + JAK combo CONFIRMED
+  (Stage 3b headline demo)
+· Combo conditions sized to support pre-registered
+  compositional generalization eval
 ```
+
+Conservative framing: preserves the architecturally load-bearing claim (BTK+JAK combo locked in Phase 1, supports Stage 3b) without committing to specific panel counts (singles count, total count) that have not been Thiago-confirmed.
 
 **Right block — wet-lab parameters:**
 
@@ -126,18 +131,19 @@ This is the **first slide where investors see we own the data flow**. Three thin
 
 | Claim | Source |
 |---|---|
-| 5 donors, ~5,000 cells per donor per timepoint | Thiago confirmation, May 12 |
+| 5 donors, ~5,000 cells per donor per timepoint, ~125k cells total | Thiago confirmation, May 12 |
 | 5 timepoints: 0/5/30/60/180 min | Thiago confirmation, May 12 |
 | 4-arm design: vehicle / stim / inh / combo | Thiago confirmation + architecture spec v1.1, §5 |
-| RNA + Protein measured per timepoint | Thiago confirmation |
-| ATAC at donor level (chromatin signature, available to model) | Kinga clarification ("we will be using it"), May 12 |
-| Phospho deferred to Phase 2 | Thiago confirmation (Phase 2 scope) |
-| VDJ deferred to Phase 2 | Thiago confirmation + Kinga "VDJ later" confirmation |
-| Phase 1 stimuli (LPS, IFNγ/TNFα, SEB/TSST-1 + costim) | Thiago Phase 1 spec |
-| Phase 1 inhibitors (acalabrutinib, idelalisib, IKK16, rapamycin) | Thiago Phase 1 spec |
-| BTK + JAK combo confirmed for Phase 1 | Thiago confirmation, May 12 ("Both inhibitors scheduled to be bought and used in Phase 1") |
-| Phase 2 scale to 20 donors | QurieSeq roadmap (Phase 2 specs) |
-| All major PBMC lineages | Thiago confirmation ("all major lineages") |
+| RNA + surface Protein measured per cell per timepoint (all 5) | QuRIE-seq protocol family (integral assay capability) + Kinga clarification, May 17 |
+| Phospho measured per cell at all 5 timepoints (integral to QuRIE-seq) | `docs/deck/research/phase1_modality_correction_2026_05_17.md` (canonical correction) + Kinga clarification, May 17 |
+| ATAC measured at t=0 and t=180 (chromatin endpoint coverage) | `docs/deck/research/phase1_modality_correction_2026_05_17.md` + Kinga clarification, May 17 |
+| VDJ deferred to Phase 2 (5th modality) | Thiago + Kinga confirmation ("VDJ later") |
+| Phase 1 stimulus + inhibitor panel under final wet-lab review | Thiago Phase 1 spec (in-progress) |
+| BTK + JAK combo CONFIRMED for Phase 1 | Thiago confirmation, May 12 ("Both inhibitors scheduled to be bought and used in Phase 1") |
+| Phase 2 scale to 20 donors + adds VDJ | QurieSeq roadmap (Phase 2 spec) |
+| All major PBMC lineages (B / T / NK / monocyte / DC) | Thiago confirmation ("all major lineages") |
+| Donor source = Sanquin (Dutch national blood bank, blood-type-only metadata) | Wet-lab plan (Thiago) |
+| No public dataset combines RNA + Protein + Phospho + perturbation-aware temporal on primary PBMCs | Stage 3 Part 1 Report 1 (datasets) + competitive landscape doc 2026-05 |
 
 ---
 
@@ -170,6 +176,10 @@ This is the **first slide where investors see we own the data flow**. Three thin
 **If asked: "What's the BTK+JAK combo and why is it the headline?"**
 
 > BTK = Bruton tyrosine kinase (BCR pathway), inhibited by Ibrutinib (Imbruvica, approved CLL drug). JAK = Janus kinase (cytokine signaling), inhibited by Ruxolitinib (Jakafi, approved myelofibrosis drug). Both drugs are FDA-approved as monotherapies. The BTK+JAK combination has clinical evidence for synergistic effect in CLL (PMID 26819050, NCT02912754). Phase 1 includes the BTK+JAK combo condition specifically so Stage 3b can demonstrate zero-shot synergy prediction — train on singles (BTK alone, JAK alone) and predict the combo response from architecture alone. This is the compositional generalization proof-of-capability that justifies the integrated platform claim.
+
+**If asked: "What's the full perturbation panel size?"**
+
+> Final panel is under wet-lab spec review with Thiago. The architecturally load-bearing condition — BTK+JAK combo — is locked for Phase 1 (Thiago confirmation May 12). Total panel size expected to land at ~15-20 conditions including vehicle, stimulus, inhibitor singles, and combinations. The exact perturbation count is a wet-lab parameter, not an architectural commitment — the architecture is sized to support compositional generalization regardless of final panel size as long as BTK+JAK combo is included.
 
 ---
 

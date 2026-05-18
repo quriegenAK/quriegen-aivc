@@ -1,113 +1,97 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC QurieSeq Phase 1 experimental design">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="AIVC QuRIE-seq Phase 1 modality × timepoint matrix">
 <rect width="1920" height="1080" fill="#070A14"/>
 <defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
 <text x="96" y="78" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX C1 · QURIESEQ PHASE 1</text>
 <line x1="476" y1="72" x2="696" y2="72" stroke="#26DDF9" stroke-opacity="0.4" stroke-width="1"/>
-<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">The Data Architected For The Model — Phase 1 lands Q3 2026</text>
-<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">5 donors × 5 timepoints × 4-arm perturbations · RNA + Protein per cell, donor-level ATAC at t=0 · ≈500,000 cells total</text>
-<rect x="680" y="220" width="560" height="40" rx="20" fill="#4ADE80" fill-opacity="0.16" stroke="#4ADE80" stroke-width="1.5"/>
-<text x="696" y="246" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">✓</text>
-<text x="724" y="246" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="1.5">BTK + JAK combination CONFIRMED for Phase 1</text>
-<text x="256" y="266" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">TIMEPOINTS</text>
-<text x="412" y="296" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">0 min</text>
-<text x="725" y="296" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">5 min</text>
-<text x="1038" y="296" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">30 min</text>
-<text x="1351" y="296" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">60 min</text>
-<text x="1664" y="296" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">180 min</text>
-<text x="96" y="338" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">DONOR 1</text>
-<text x="96" y="358" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">(detail)</text>
-<rect x="262" y="312" width="301" height="64" rx="8" fill="#0F1428" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.4"/>
-<rect x="272" y="328" width="67" height="32" rx="5" fill="#A8B4C2" fill-opacity="0.18" stroke="#A8B4C2" stroke-width="1" stroke-opacity="0.6"/>
-<text x="305" y="349" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">V</text>
-<rect x="343" y="328" width="67" height="32" rx="5" fill="#4ADE80" fill-opacity="0.18" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.6"/>
-<text x="376" y="349" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">S</text>
-<rect x="414" y="328" width="67" height="32" rx="5" fill="#8B5CF6" fill-opacity="0.18" stroke="#8B5CF6" stroke-width="1" stroke-opacity="0.6"/>
-<text x="447" y="349" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">I</text>
-<rect x="485" y="328" width="67" height="32" rx="5" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.6"/>
-<text x="518" y="349" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">C</text>
-<rect x="575" y="312" width="301" height="64" rx="8" fill="#0F1428" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.4"/>
-<rect x="585" y="328" width="67" height="32" rx="5" fill="#A8B4C2" fill-opacity="0.18" stroke="#A8B4C2" stroke-width="1" stroke-opacity="0.6"/>
-<text x="618" y="349" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">V</text>
-<rect x="656" y="328" width="67" height="32" rx="5" fill="#4ADE80" fill-opacity="0.18" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.6"/>
-<text x="689" y="349" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">S</text>
-<rect x="727" y="328" width="67" height="32" rx="5" fill="#8B5CF6" fill-opacity="0.18" stroke="#8B5CF6" stroke-width="1" stroke-opacity="0.6"/>
-<text x="760" y="349" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">I</text>
-<rect x="798" y="328" width="67" height="32" rx="5" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.6"/>
-<text x="831" y="349" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">C</text>
-<rect x="888" y="312" width="301" height="64" rx="8" fill="#0F1428" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.4"/>
-<rect x="898" y="328" width="67" height="32" rx="5" fill="#A8B4C2" fill-opacity="0.18" stroke="#A8B4C2" stroke-width="1" stroke-opacity="0.6"/>
-<text x="931" y="349" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">V</text>
-<rect x="969" y="328" width="67" height="32" rx="5" fill="#4ADE80" fill-opacity="0.18" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1002" y="349" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">S</text>
-<rect x="1040" y="328" width="67" height="32" rx="5" fill="#8B5CF6" fill-opacity="0.18" stroke="#8B5CF6" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1073" y="349" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">I</text>
-<rect x="1111" y="328" width="67" height="32" rx="5" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1144" y="349" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">C</text>
-<rect x="1201" y="312" width="301" height="64" rx="8" fill="#0F1428" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.4"/>
-<rect x="1211" y="328" width="67" height="32" rx="5" fill="#A8B4C2" fill-opacity="0.18" stroke="#A8B4C2" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1244" y="349" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">V</text>
-<rect x="1282" y="328" width="67" height="32" rx="5" fill="#4ADE80" fill-opacity="0.18" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1315" y="349" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">S</text>
-<rect x="1353" y="328" width="67" height="32" rx="5" fill="#8B5CF6" fill-opacity="0.18" stroke="#8B5CF6" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1386" y="349" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">I</text>
-<rect x="1424" y="328" width="67" height="32" rx="5" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1457" y="349" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">C</text>
-<rect x="1514" y="312" width="301" height="64" rx="8" fill="#0F1428" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.4"/>
-<rect x="1524" y="328" width="67" height="32" rx="5" fill="#A8B4C2" fill-opacity="0.18" stroke="#A8B4C2" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1557" y="349" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">V</text>
-<rect x="1595" y="328" width="67" height="32" rx="5" fill="#4ADE80" fill-opacity="0.18" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1628" y="349" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">S</text>
-<rect x="1666" y="328" width="67" height="32" rx="5" fill="#8B5CF6" fill-opacity="0.18" stroke="#8B5CF6" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1699" y="349" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">I</text>
-<rect x="1737" y="328" width="67" height="32" rx="5" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.6"/>
-<text x="1770" y="349" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">C</text>
-<rect x="262" y="382" width="1556" height="24" rx="6" fill="#B47DF0" fill-opacity="0.10" stroke="#B47DF0" stroke-width="1" stroke-opacity="0.55"/>
-<text x="274" y="398" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2">◆ ATAC (chromatin signature) — donor-level static input at t=0 only</text>
-<text x="96" y="444" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">DONOR 2</text>
-<rect x="262" y="422" width="1556" height="36" rx="6" fill="#0F1428" stroke="#1A2235" stroke-width="1"/>
-<text x="1040" y="445" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic" text-anchor="middle">same 5-timepoint × 4-arm grid · RNA + Protein per cell · ATAC at t=0</text>
-<text x="96" y="484" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">DONOR 3</text>
-<rect x="262" y="462" width="1556" height="36" rx="6" fill="#0F1428" stroke="#1A2235" stroke-width="1"/>
-<text x="1040" y="485" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic" text-anchor="middle">same 5-timepoint × 4-arm grid · RNA + Protein per cell · ATAC at t=0</text>
-<text x="96" y="524" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">DONOR 4</text>
-<rect x="262" y="502" width="1556" height="36" rx="6" fill="#0F1428" stroke="#1A2235" stroke-width="1"/>
-<text x="1040" y="525" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic" text-anchor="middle">same 5-timepoint × 4-arm grid · RNA + Protein per cell · ATAC at t=0</text>
-<text x="96" y="564" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">DONOR 5</text>
-<rect x="262" y="542" width="1556" height="36" rx="6" fill="#0F1428" stroke="#1A2235" stroke-width="1"/>
-<text x="1040" y="565" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400" font-style="italic" text-anchor="middle">same 5-timepoint × 4-arm grid · RNA + Protein per cell · ATAC at t=0</text>
-<text x="256" y="590" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">LEGEND</text>
-<text x="356" y="590" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">V</text>
-<text x="374" y="590" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">Vehicle baseline</text>
-<text x="606" y="590" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">S</text>
-<text x="624" y="590" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">Stim alone</text>
-<text x="856" y="590" fill="#8B5CF6" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">I</text>
-<text x="874" y="590" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">Inhibitor alone</text>
-<text x="1106" y="590" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">C</text>
-<text x="1124" y="590" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400">Stim + Inh combo</text>
-<rect x="1364" y="562" width="460" height="46" rx="10" fill="#26DDF9" fill-opacity="0.10" stroke="#00F2FF" stroke-width="1.5"/>
-<text x="1382" y="582" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">TOTAL</text>
-<text x="1382" y="602" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700">5 × 5 × 4 × ~5,000 cells = ~500,000 cells</text>
-<text x="96" y="644" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">WHY THIS DESIGN</text>
-<line x1="316" y1="638" x2="1824" y2="638" stroke="#1A2235" stroke-width="1"/>
-<rect x="96" y="656" width="560" height="244" rx="14" fill="#0F1428" stroke="#00F2FF" stroke-width="1.5" stroke-opacity="0.55"/>
-<text x="116" y="688" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">WHY 5 TIMEPOINTS</text>
-<text x="116" y="726" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Phospho-level signaling at 5 min (Phase 2 ready)</text>
-<text x="116" y="762" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Transcriptional onset at 30 min</text>
-<text x="116" y="798" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Stable phenotype at 180 min</text>
-<text x="116" y="834" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  Non-uniform spacing maps Neural ODE (A4)</text>
-<rect x="680" y="656" width="560" height="244" rx="14" fill="#0F1428" stroke="#B47DF0" stroke-width="1.5" stroke-opacity="0.55"/>
-<text x="700" y="688" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">WHY 4-ARM PER PERT</text>
-<text x="700" y="726" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Vehicle = baseline</text>
-<text x="700" y="762" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Stim only = activation alone</text>
-<text x="700" y="798" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Inh only = inhibition alone</text>
-<text x="700" y="834" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  Stim + Inh = synergy → direct match to A3</text>
-<rect x="1264" y="656" width="560" height="244" rx="14" fill="#0F1428" stroke="#4ADE80" stroke-width="1.5" stroke-opacity="0.55"/>
-<text x="1284" y="688" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2.5">WHY 5 DONORS</text>
-<text x="1284" y="726" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Donor-conditioned static context (ATAC)</text>
-<text x="1284" y="762" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  5 biological replicates of full 5×4 grid</text>
-<text x="1284" y="798" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Phase 2 scales to 20 donors</text>
-<text x="1284" y="834" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="14" font-weight="400"><tspan fill="#4ADE80" font-weight="700">›</tspan>  Cross-donor generalization eval ready</text>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">QuRIE-seq Phase 1 — 5 donors × 5 timepoints × 4 modalities × BTK+JAK combo</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">First proprietary perturbation-aware multi-omics dataset on primary human PBMCs · phospho is integral to QuRIE-seq · BTK+JAK combo confirmed · Q3 2026 delivery</text>
+<rect x="680" y="210" width="560" height="40" rx="20" fill="#4ADE80" fill-opacity="0.16" stroke="#4ADE80" stroke-width="1.5"/>
+<text x="696" y="236" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700">✓</text>
+<text x="724" y="236" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="1.5">BTK + JAK combination CONFIRMED for Phase 1</text>
+<text x="96" y="266" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">PHASE 1 · MODALITY × TIMEPOINT MATRIX</text>
+<line x1="476" y1="260" x2="1824" y2="260" stroke="#1A2235" stroke-width="1"/>
+<rect x="278" y="280" width="305" height="36" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="1"/>
+<text x="430" y="298" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">t=0</text>
+<text x="430" y="312" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-style="italic" text-anchor="middle">baseline</text>
+<rect x="587" y="280" width="305" height="36" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="1"/>
+<text x="739" y="298" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">t=5</text>
+<text x="739" y="312" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-style="italic" text-anchor="middle">early signal</text>
+<rect x="896" y="280" width="305" height="36" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="1"/>
+<text x="1048" y="298" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">t=30</text>
+<text x="1048" y="312" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-style="italic" text-anchor="middle">transcription</text>
+<rect x="1205" y="280" width="305" height="36" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="1"/>
+<text x="1357" y="298" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">t=60</text>
+<text x="1357" y="312" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-style="italic" text-anchor="middle">stable</text>
+<rect x="1514" y="280" width="305" height="36" rx="6" fill="#0B1020" stroke="#1A2235" stroke-width="1"/>
+<text x="1666" y="298" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">t=180</text>
+<text x="1666" y="312" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-style="italic" text-anchor="middle">endpoint</text>
+<text x="96" y="344" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1.5">RNA</text>
+<text x="96" y="362" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">gene expression</text>
+<rect x="280" y="324" width="301" height="44" rx="6" fill="#26DDF9" fill-opacity="0.14" stroke="#26DDF9" stroke-width="1" stroke-opacity="0.55"/>
+<text x="430" y="355" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="589" y="324" width="301" height="44" rx="6" fill="#26DDF9" fill-opacity="0.14" stroke="#26DDF9" stroke-width="1" stroke-opacity="0.55"/>
+<text x="739" y="355" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="898" y="324" width="301" height="44" rx="6" fill="#26DDF9" fill-opacity="0.14" stroke="#26DDF9" stroke-width="1" stroke-opacity="0.55"/>
+<text x="1048" y="355" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="1207" y="324" width="301" height="44" rx="6" fill="#26DDF9" fill-opacity="0.14" stroke="#26DDF9" stroke-width="1" stroke-opacity="0.55"/>
+<text x="1357" y="355" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="1516" y="324" width="301" height="44" rx="6" fill="#26DDF9" fill-opacity="0.14" stroke="#26DDF9" stroke-width="1" stroke-opacity="0.55"/>
+<text x="1666" y="355" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<text x="96" y="398" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1.5">Protein</text>
+<text x="96" y="416" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">surface markers</text>
+<rect x="280" y="378" width="301" height="44" rx="6" fill="#4ADE80" fill-opacity="0.14" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.55"/>
+<text x="430" y="409" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="589" y="378" width="301" height="44" rx="6" fill="#4ADE80" fill-opacity="0.14" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.55"/>
+<text x="739" y="409" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="898" y="378" width="301" height="44" rx="6" fill="#4ADE80" fill-opacity="0.14" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.55"/>
+<text x="1048" y="409" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="1207" y="378" width="301" height="44" rx="6" fill="#4ADE80" fill-opacity="0.14" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.55"/>
+<text x="1357" y="409" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="1516" y="378" width="301" height="44" rx="6" fill="#4ADE80" fill-opacity="0.14" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.55"/>
+<text x="1666" y="409" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<text x="96" y="452" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1.5">Phospho</text>
+<text x="96" y="470" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">kinase signaling · proprietary</text>
+<rect x="280" y="432" width="301" height="44" rx="6" fill="#B47DF0" fill-opacity="0.22" stroke="#B47DF0" stroke-width="1.6" stroke-opacity="0.85"/>
+<text x="430" y="463" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">✓</text>
+<rect x="589" y="432" width="301" height="44" rx="6" fill="#B47DF0" fill-opacity="0.22" stroke="#B47DF0" stroke-width="1.6" stroke-opacity="0.85"/>
+<text x="739" y="463" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">✓</text>
+<rect x="898" y="432" width="301" height="44" rx="6" fill="#B47DF0" fill-opacity="0.22" stroke="#B47DF0" stroke-width="1.6" stroke-opacity="0.85"/>
+<text x="1048" y="463" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">✓</text>
+<rect x="1207" y="432" width="301" height="44" rx="6" fill="#B47DF0" fill-opacity="0.22" stroke="#B47DF0" stroke-width="1.6" stroke-opacity="0.85"/>
+<text x="1357" y="463" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">✓</text>
+<rect x="1516" y="432" width="301" height="44" rx="6" fill="#B47DF0" fill-opacity="0.22" stroke="#B47DF0" stroke-width="1.6" stroke-opacity="0.85"/>
+<text x="1666" y="463" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">✓</text>
+<rect x="272" y="428" width="1556" height="52" rx="9" fill="none" stroke="#B47DF0" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="6 4"/>
+<text x="96" y="506" fill="#5EAACC" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="1.5">ATAC</text>
+<text x="96" y="524" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-style="italic">chromatin · slow-varying</text>
+<rect x="280" y="486" width="301" height="44" rx="6" fill="#5EAACC" fill-opacity="0.14" stroke="#5EAACC" stroke-width="1" stroke-opacity="0.55"/>
+<text x="430" y="517" fill="#5EAACC" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<rect x="589" y="486" width="301" height="44" rx="6" fill="#0B1020" fill-opacity="0.5" stroke="#1A2235" stroke-width="1" stroke-opacity="0.3"/>
+<rect x="898" y="486" width="301" height="44" rx="6" fill="#0B1020" fill-opacity="0.5" stroke="#1A2235" stroke-width="1" stroke-opacity="0.3"/>
+<rect x="1207" y="486" width="301" height="44" rx="6" fill="#0B1020" fill-opacity="0.5" stroke="#1A2235" stroke-width="1" stroke-opacity="0.3"/>
+<rect x="1516" y="486" width="301" height="44" rx="6" fill="#5EAACC" fill-opacity="0.14" stroke="#5EAACC" stroke-width="1" stroke-opacity="0.55"/>
+<text x="1666" y="517" fill="#5EAACC" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✓</text>
+<text x="96" y="558" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.5">VDJ</text>
+<text x="96" y="574" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="10" font-style="italic">5th modality</text>
+<rect x="280" y="544" width="1540" height="32" rx="6" fill="#FBBF24" fill-opacity="0.08" stroke="#FBBF24" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6 4"/>
+<text x="1050" y="565" fill="#FBBF24" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="600" font-style="italic" text-anchor="middle">PHASE 2 (2027) — adds clonal repertoire as 5th modality</text>
+<text x="960" y="600" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2" text-anchor="middle">4 MODALITIES MEASURED · 5 TIMEPOINTS · 5 DONORS · ~125K CELLS · BTK+JAK COMBO INCLUDED</text>
+<text x="960" y="622" fill="#B47DF0" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="600" font-style="italic" text-anchor="middle">└── No public dataset combines these modalities on primary PBMCs with perturbation-aware design ──┘</text>
+<rect x="96" y="648" width="848" height="240" rx="14" fill="#0F1428" stroke="#00F2FF" stroke-width="1.3" stroke-opacity="0.55"/>
+<text x="118" y="676" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5">PERTURBATION CONDITIONS</text>
+<text x="118" y="706" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  <tspan font-weight="700">Vehicle control</tspan> — baseline</text>
+<text x="118" y="738" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  <tspan font-weight="700">Stimulus condition</tspan> — panel under final wet-lab spec review</text>
+<text x="118" y="770" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  <tspan font-weight="700">Inhibitor singles</tspan> — BTK, JAK CONFIRMED · additional panel TBC</text>
+<text x="118" y="802" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  <tspan font-weight="700">Inhibitor combinations</tspan> — BTK+JAK CONFIRMED — Stage 3b headline demo</text>
+<text x="118" y="834" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#00F2FF" font-weight="700">›</tspan>  <tspan font-weight="700">Combo sizing</tspan> — supports pre-registered compositional eval</text>
+<rect x="976" y="648" width="848" height="240" rx="14" fill="#0F1428" stroke="#B47DF0" stroke-width="1.3" stroke-opacity="0.55"/>
+<text x="998" y="676" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5">WET-LAB PARAMETERS</text>
+<text x="998" y="706" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  <tspan font-weight="700">5 donors</tspan> — Sanquin, blood-type-only metadata</text>
+<text x="998" y="738" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  <tspan font-weight="700">All major PBMC lineages</tspan> — B / T / NK / monocyte / DC</text>
+<text x="998" y="770" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  <tspan font-weight="700">~5k cells / donor / timepoint</tspan> — ~125k cells total</text>
+<text x="998" y="802" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  <tspan font-weight="700">QuRIE-seq protocol family</tspan> — proprietary multi-omics assay</text>
+<text x="998" y="834" fill="#EAF6FF" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-weight="400"><tspan fill="#B47DF0" font-weight="700">›</tspan>  <tspan font-weight="700">Q3 2026 delivery target</tspan> — Phase 2 (2027) scales to 20 donors + VDJ</text>
 <line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
-<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: QurieSeq Phase 1 design (Thiago confirmation, 2026-05-12) · Architecture spec v1.1 §3.2 (4-arm decomposition) + §4 (Neural ODE temporal) · Cell count estimate from Mimitou ASAP-seq protocol scaled to 5 donors × 5 timepoints</text>
-<text x="1824" y="980" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">C1 / 12</text>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: QurieSeq Phase 1 design (Thiago confirmation, 2026-05-12) · phase1_modality_correction_2026_05_17.md (canonical) · Architecture spec v1.1 §3.2 (4-arm decomposition) + §4 (Neural ODE temporal)</text>
+<text x="1824" y="980" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">C1 / 14</text>
 </svg>

@@ -13,7 +13,7 @@
 <line x1="524" y1="229" x2="524" y2="252" stroke="#00F2FF" stroke-width="1" stroke-opacity="0.45"/>
 <text x="536" y="264" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" text-anchor="start">BTK+JAK demo</text>
 <path d="M 676 214 L 682 220 L 676 226 L 670 220 Z" fill="#B47DF0" stroke="#B47DF0" stroke-width="1.2" fill-opacity="0.4"/>
-<text x="688" y="242" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start">Phase 2 phospho on</text>
+<text x="688" y="242" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start">Phase 2 VDJ on</text>
 <path d="M 828 214 L 834 220 L 828 226 L 822 220 Z" fill="#4ADE80" stroke="#4ADE80" stroke-width="1.2" fill-opacity="0.4"/>
 <line x1="828" y1="226" x2="828" y2="252" stroke="#4ADE80" stroke-width="1" stroke-opacity="0.45"/>
 <text x="840" y="264" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start">Pipeline 1 starts</text>
@@ -59,10 +59,10 @@
 <text x="96" y="764" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Demos + peer-reviewed papers</text>
 <rect x="300" y="296" width="296" height="96" rx="8" fill="#00F2FF" fill-opacity="0.2" stroke="#00F2FF" stroke-width="1.5" stroke-opacity="0.65"/>
 <text x="310" y="348" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">Phase 1 delivery</text>
-<text x="310" y="366" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">5 donors · 3 modalities</text>
+<text x="310" y="366" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">5 donors · 4 modalities + BTK+JAK</text>
 <rect x="604" y="296" width="600" height="96" rx="8" fill="#26DDF9" fill-opacity="0.16" stroke="#26DDF9" stroke-width="1.3" stroke-opacity="0.65"/>
 <text x="614" y="348" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">Phase 2</text>
-<text x="614" y="366" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">phospho + VDJ + 20 donors</text>
+<text x="614" y="366" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">VDJ + 20-donor scale</text>
 <rect x="1212" y="296" width="600" height="96" rx="8" fill="#26DDF9" fill-opacity="0.1" stroke="#26DDF9" stroke-width="1.0" stroke-opacity="0.65"/>
 <text x="1222" y="348" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">Phase 3</text>
 <text x="1222" y="366" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">B-cell lines + disease samples</text>
@@ -76,7 +76,7 @@
 <text x="462" y="512" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Neural ODE · BTK+JAK demo</text>
 <rect x="604" y="432" width="448" height="96" rx="8" fill="#B47DF0" fill-opacity="0.16" stroke="#B47DF0" stroke-width="1.3" stroke-opacity="0.65"/>
 <text x="614" y="484" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">Stage 3c</text>
-<text x="614" y="502" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">pathway readout + phospho</text>
+<text x="614" y="502" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">causal layer + Neumann GRN</text>
 <rect x="908" y="432" width="600" height="96" rx="8" fill="#B47DF0" fill-opacity="0.16" stroke="#B47DF0" stroke-width="1.3" stroke-opacity="0.65"/>
 <text x="918" y="484" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">Stage 4</text>
 <text x="918" y="502" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">VDJ + 20-donor scale</text>
@@ -96,6 +96,6 @@
 <text x="1222" y="756" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700">Stage 4 + 5 peer-reviewed</text>
 <text x="1222" y="774" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">publication · clinical handoff</text>
 <line x1="96" y1="948" x2="1824" y2="948" stroke="#1A2235" stroke-width="1"/>
-<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Architecture spec v1.1 §5 (Stage 3 sequencing) + §6 (Stage 4/5 scope) · QurieSeq Phase 1/2 plan (Thiago confirmation, 2026-05-12) · Pipeline starts contingent on Stage 3 verdict + Phase 2 phospho data quality</text>
+<text x="96" y="980" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" font-style="italic">Source: Architecture spec v1.1 §5 (Stage 3 sequencing) + §6 (Stage 4/5 scope) · QurieSeq Phase 1/2 plan (Thiago confirmation, 2026-05-12) · Pipeline starts contingent on Stage 3 verdict + Phase 1 perturbation-response data quality</text>
 <text x="1824" y="980" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" text-anchor="end">D1 / 12</text>
 </svg>

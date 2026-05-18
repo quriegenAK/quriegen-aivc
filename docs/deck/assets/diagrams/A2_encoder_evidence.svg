@@ -3,53 +3,56 @@
 <defs><radialGradient id="glow1" cx="0.85" cy="0.15" r="0.55"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.10"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient><radialGradient id="glow2" cx="0.15" cy="0.95" r="0.5"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.10"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient><radialGradient id="hero73" cx="0.5" cy="0.5" r="0.6"><stop offset="0%" stop-color="#26DDF9" stop-opacity="0.18"/><stop offset="100%" stop-color="#26DDF9" stop-opacity="0"/></radialGradient></defs><rect width="1920" height="1080" fill="url(#glow1)"/><rect width="1920" height="1080" fill="url(#glow2)"/>
 <text x="96" y="78" fill="#26DDF9" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="4">APPENDIX A2 · ARCHITECTURE DEPTH</text>
 <line x1="476" y1="72" x2="696" y2="72" stroke="#26DDF9" stroke-opacity="0.4" stroke-width="1"/>
-<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">Multi-Omics Encoder — The Frozen Substrate</text>
-<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">Modality-extensible foundation, pretrained on RNA + ATAC + Protein today · Phospho and VDJ slot in as QurieSeq Phase 2 lands · cross-corpus validated before any downstream training</text>
+<text x="96" y="138" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.5">Multi-omics encoder — trained on public, ready for proprietary</text>
+<text x="96" y="186" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="18" font-weight="400">3 modalities pretrained on DOGMA-seq, validated cross-corpus on Calderon 2019 at 73% pseudo-bulk accuracy · Phase 1 QuRIE-seq adds phospho — the 4th modality no public dataset has</text>
 <text x="96" y="232" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">MULTI-OMICS ENCODER</text>
 <line x1="296" y1="226" x2="1010" y2="226" stroke="#1A2235" stroke-width="1"/>
-<text x="96" y="260" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">TODAY · 3 OF 5 VALIDATED</text>
-<rect x="96" y="272" width="240" height="56" rx="10" fill="#26DDF9" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1.5"/>
-<text x="114" y="302.0" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">✓</text>
-<text x="140" y="296.0" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">RNA</text>
-<text x="140" y="314.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">36,601 genes · gene expression</text>
-<rect x="96" y="340" width="240" height="56" rx="10" fill="#26DDF9" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1.5"/>
-<text x="114" y="370.0" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">✓</text>
-<text x="140" y="364.0" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">ATAC</text>
-<text x="140" y="382.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">323,500 peaks · chromatin</text>
-<rect x="96" y="408" width="240" height="56" rx="10" fill="#26DDF9" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1.5"/>
-<text x="114" y="438.0" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">✓</text>
-<text x="140" y="432.0" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">Protein</text>
-<text x="140" y="450.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">30–210 surface markers</text>
-<text x="96" y="498" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">PHASE 2 · QURIESEQ INTEGRATION</text>
-<rect x="96" y="510" width="240" height="56" rx="10" fill="#FBBF24" fill-opacity="0.08" stroke="#FBBF24" stroke-width="1.5" stroke-dasharray="6 4"/>
-<text x="114" y="540.0" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">○</text>
-<text x="140" y="534.0" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">Phospho</text>
-<text x="140" y="552.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">early signaling · 5 min</text>
-<rect x="96" y="578" width="240" height="56" rx="10" fill="#FBBF24" fill-opacity="0.08" stroke="#FBBF24" stroke-width="1.5" stroke-dasharray="6 4"/>
-<text x="114" y="608.0" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">○</text>
-<text x="140" y="602.0" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">VDJ</text>
-<text x="140" y="620.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">clonal repertoire</text>
+<text x="96" y="260" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">TODAY · PUBLIC DOGMA-SEQ</text>
+<rect x="96" y="270" width="240" height="48" rx="10" fill="#26DDF9" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1.5"/>
+<text x="114" y="296.0" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">✓</text>
+<text x="140" y="290.0" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">RNA</text>
+<text x="140" y="308.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">36,601 genes · gene expression</text>
+<rect x="96" y="326" width="240" height="48" rx="10" fill="#26DDF9" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1.5"/>
+<text x="114" y="352.0" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">✓</text>
+<text x="140" y="346.0" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">ATAC</text>
+<text x="140" y="364.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">323,500 peaks · chromatin</text>
+<rect x="96" y="382" width="240" height="48" rx="10" fill="#26DDF9" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1.5"/>
+<text x="114" y="408.0" fill="#4ADE80" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">✓</text>
+<text x="140" y="402.0" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">Protein</text>
+<text x="140" y="420.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">30–210 surface markers</text>
+<text x="96" y="450" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">PHASE 1 · QURIE-SEQ Q3 2026</text>
+<rect x="96" y="464" width="240" height="48" rx="10" fill="#8B5CF6" fill-opacity="0.22" stroke="#B47DF0" stroke-width="1.6"/>
+<text x="114" y="490.0" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">◆</text>
+<text x="140" y="484.0" fill="#EAF6FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">Phospho</text>
+<text x="140" y="502.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">kinase signaling · 5 timepoints</text>
+<text x="96" y="524" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">PHASE 2 · 2027</text>
+<rect x="96" y="538" width="240" height="48" rx="10" fill="#FBBF24" fill-opacity="0.08" stroke="#FBBF24" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="114" y="564.0" fill="#FBBF24" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" dominant-baseline="middle">○</text>
+<text x="140" y="558.0" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" dominant-baseline="middle">VDJ</text>
+<text x="140" y="576.0" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="11" font-weight="400" dominant-baseline="middle">clonal repertoire · 5th modality</text>
 <rect x="396" y="372" width="280" height="140" rx="14" fill="#0F1428" stroke="#00F2FF" stroke-width="1.6" stroke-opacity="0.7"/>
 <text x="416" y="400" fill="#00F2FF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">ENCODER</text>
 <g transform="translate(643.2,386.1) scale(1.1)"><rect x="0" y="6" width="16" height="12" rx="2" fill="#00F2FF" fill-opacity="0.18" stroke="#00F2FF" stroke-width="1.6"/><path d="M3 6 V3.5 A4.5 4.5 0 0 1 13 3.5 V6" fill="none" stroke="#00F2FF" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="12" r="1.2" fill="#00F2FF"/></g>
 <text x="416" y="438" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700">Contrastive</text>
 <text x="416" y="466" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700">multi-omics fusion</text>
 <text x="416" y="494" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-style="italic">≈130K-param adapter on top · frozen substrate</text>
-<line x1="338" y1="300" x2="390" y2="442" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>
+<line x1="338" y1="294" x2="390" y2="442" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>
 <path d="M 388 437 L 396 442 L 388 447" fill="none" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="338" y1="368" x2="390" y2="442" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>
+<line x1="338" y1="350" x2="390" y2="442" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>
 <path d="M 388 437 L 396 442 L 388 447" fill="none" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="338" y1="436" x2="390" y2="442" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>
+<line x1="338" y1="406" x2="390" y2="442" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>
 <path d="M 388 437 L 396 442 L 388 447" fill="none" stroke="#26DDF9" stroke-width="2" stroke-opacity="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="338" y1="538" x2="390" y2="492" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 4" stroke-linecap="round"/>
-<line x1="338" y1="606" x2="390" y2="492" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 4" stroke-linecap="round"/>
+<line x1="338" y1="488" x2="390" y2="472" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.65" stroke-linecap="round"/>
+<path d="M 388 467 L 396 472 L 388 477" fill="none" stroke="#B47DF0" stroke-width="2" stroke-opacity="0.8500000000000001" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="338" y1="562" x2="390" y2="492" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 4" stroke-linecap="round"/>
+<path d="M 388 487 L 396 492 L 388 497" fill="none" stroke="#FBBF24" stroke-width="2" stroke-opacity="0.75" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="726" y="380" width="264" height="124" rx="14" fill="#0F1428" stroke="#8B5CF6" stroke-width="1.5" stroke-opacity="0.65"/>
 <text x="744" y="406" fill="#B47DF0" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">LATENT SPACE</text>
 <text x="858.0" y="456" fill="#F7FAFF" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="46" font-weight="700" text-anchor="middle" letter-spacing="-1">256-D</text>
 <text x="858.0" y="486" fill="#A8B4C2" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="12" font-style="italic" text-anchor="middle">frozen after pretrain · feeds every downstream task</text>
 <line x1="678" y1="442" x2="720" y2="442.0" stroke="#00F2FF" stroke-width="2" stroke-opacity="0.7" stroke-linecap="round"/>
 <path d="M 718 437.0 L 726 442.0 L 718 447.0" fill="none" stroke="#00F2FF" stroke-width="2" stroke-opacity="0.8999999999999999" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="96" y="694" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-style="italic">Encoder is shared by every downstream task — adapter, decomposed readout, Neural ODE temporal backbone.</text>
+<text x="96" y="694" fill="#94A3B8" font-family="Arial, Inter, 'Helvetica Neue', sans-serif" font-size="13" font-style="italic">Encoder is modality-extensible by design — Phase 1 phospho + Phase 2 VDJ slot in without retraining the backbone (AIVC_GRAD_GUARD).</text>
 <text x="1056" y="232" fill="#A8B4C2" font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3">CROSS-CORPUS VALIDATION</text>
 <line x1="1296" y1="226" x2="1824" y2="226" stroke="#1A2235" stroke-width="1"/>
 <rect x="1056" y="248" width="768" height="464" rx="18" fill="#0F1428" stroke="#00F2FF" stroke-width="1.6" stroke-opacity="0.7"/>

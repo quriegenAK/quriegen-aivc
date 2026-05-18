@@ -104,9 +104,14 @@ def background(parts: list[str]):
 
 
 # ---- Modality pill (used in A2 left zone) ----
+# Three states for the three-state framing (Today / Phase 1 / Phase 2):
+#   - validated="today"   : RNA / ATAC / Protein — cyan, solid stroke, ✓ green
+#   - validated="phase1"  : Phospho — lavender, solid stroke, ◆ lavender (proprietary)
+#   - validated="phase2"  : VDJ — amber, dashed, ○ amber
+# Legacy bool API preserved for back-compat: True = "today", False = "phase2".
 def modality_pill(parts: list[str], x: int, y: int, w: int, h: int, label: str,
-                  detail: str, *, validated: bool):
-    if validated:
+                  detail: str, *, validated):
+    if validated is True or validated == "today":
         fill = CYAN
         fill_op = "0.18"
         stroke = CYAN_HI
@@ -115,7 +120,17 @@ def modality_pill(parts: list[str], x: int, y: int, w: int, h: int, label: str,
         icon = "✓"
         icon_color = OK_GREEN
         text_color = TEXT_BODY
-    else:
+    elif validated == "phase1":
+        # Phospho — the proprietary modality, lavender-emphasized
+        fill = PURPLE
+        fill_op = "0.22"
+        stroke = LAVENDER
+        stroke_w = "1.6"
+        dash = ""
+        icon = "◆"
+        icon_color = LAVENDER
+        text_color = TEXT_BODY
+    else:  # False or "phase2"
         fill = WARN_AMBER
         fill_op = "0.08"
         stroke = WARN_AMBER
@@ -155,10 +170,10 @@ def build_svg() -> str:
         parts,
         appendix_id="A2",
         section="ARCHITECTURE DEPTH",
-        title="Multi-Omics Encoder — The Frozen Substrate",
+        title="Multi-omics encoder — trained on public, ready for proprietary",
         subtitle=(
-            "Modality-extensible foundation, pretrained on RNA + ATAC + Protein today · "
-            "Phospho and VDJ slot in as QurieSeq Phase 2 lands · cross-corpus validated before any downstream training"
+            "3 modalities pretrained on DOGMA-seq, validated cross-corpus on Calderon 2019 at 73% pseudo-bulk accuracy · "
+            "Phase 1 QuRIE-seq adds phospho — the 4th modality no public dataset has"
         ),
     )
 
@@ -176,37 +191,48 @@ def build_svg() -> str:
         f'stroke="{DIVIDER}" stroke-width="1"/>'
     )
 
-    # Modality column (left side of zone)
+    # Modality column (left side of zone) — three-state framing
+    # (Today / Phase 1 / Phase 2) matches A2 content spec phospho-in-Phase-1
+    # correction. Total 5 pills across 3 groups; tighter vertical packing
+    # than the v1 two-group layout to fit the extra group label.
     MOD_X, MOD_Y = LZ_X, LZ_Y + 24
-    MOD_W, MOD_H = 240, 56
-    GAP = 12
-    # "TODAY" group label
+    MOD_W, MOD_H = 240, 48          # pill height reduced 56 → 48 to fit 3 groups
+    GAP = 8                          # inter-pill gap reduced 12 → 8
+    GROUP_GAP = 14                   # spacing between group label and first pill
+    GROUP_HDR_GAP = 12               # vertical gap between groups
+
+    # ---- TODAY group ----
     parts.append(
         f'<text x="{MOD_X}" y="{MOD_Y + 4}" fill="{OK_GREEN}" font-family="{FONT}" '
-        f'font-size="10" font-weight="700" letter-spacing="2.5">TODAY · 3 OF 5 VALIDATED</text>'
+        f'font-size="10" font-weight="700" letter-spacing="2.5">TODAY · PUBLIC DOGMA-SEQ</text>'
     )
-    # 3 validated modalities
     today_pills = [
         ("RNA",     "36,601 genes · gene expression"),
         ("ATAC",    "323,500 peaks · chromatin"),
         ("Protein", "30–210 surface markers"),
     ]
+    today_y0 = MOD_Y + GROUP_GAP
     for i, (lbl, det) in enumerate(today_pills):
-        modality_pill(parts, MOD_X, MOD_Y + 16 + i * (MOD_H + GAP), MOD_W, MOD_H,
-                      lbl, det, validated=True)
+        modality_pill(parts, MOD_X, today_y0 + i * (MOD_H + GAP), MOD_W, MOD_H,
+                      lbl, det, validated="today")
 
-    PHASE2_Y = MOD_Y + 16 + 3 * (MOD_H + GAP) + 18
+    # ---- PHASE 1 group (Phospho — proprietary, lavender-emphasized) ----
+    PHASE1_Y = today_y0 + 3 * (MOD_H + GAP) + GROUP_HDR_GAP
     parts.append(
-        f'<text x="{MOD_X}" y="{PHASE2_Y + 4}" fill="{WARN_AMBER}" font-family="{FONT}" '
-        f'font-size="10" font-weight="700" letter-spacing="2.5">PHASE 2 · QURIESEQ INTEGRATION</text>'
+        f'<text x="{MOD_X}" y="{PHASE1_Y}" fill="{LAVENDER}" font-family="{FONT}" '
+        f'font-size="10" font-weight="700" letter-spacing="2.5">PHASE 1 · QURIE-SEQ Q3 2026</text>'
     )
-    phase2_pills = [
-        ("Phospho", "early signaling · 5 min"),
-        ("VDJ",     "clonal repertoire"),
-    ]
-    for i, (lbl, det) in enumerate(phase2_pills):
-        modality_pill(parts, MOD_X, PHASE2_Y + 16 + i * (MOD_H + GAP), MOD_W, MOD_H,
-                      lbl, det, validated=False)
+    modality_pill(parts, MOD_X, PHASE1_Y + GROUP_GAP, MOD_W, MOD_H,
+                  "Phospho", "kinase signaling · 5 timepoints", validated="phase1")
+
+    # ---- PHASE 2 group (VDJ — amber) ----
+    PHASE2_Y = PHASE1_Y + GROUP_GAP + MOD_H + GROUP_HDR_GAP
+    parts.append(
+        f'<text x="{MOD_X}" y="{PHASE2_Y}" fill="{WARN_AMBER}" font-family="{FONT}" '
+        f'font-size="10" font-weight="700" letter-spacing="2.5">PHASE 2 · 2027</text>'
+    )
+    modality_pill(parts, MOD_X, PHASE2_Y + GROUP_GAP, MOD_W, MOD_H,
+                  "VDJ", "clonal repertoire · 5th modality", validated="phase2")
 
     # Arrows from modality column → encoder block
     # Encoder fusion block
@@ -247,18 +273,25 @@ def build_svg() -> str:
             f'stroke-linecap="round" stroke-linejoin="round"/>'
         )
 
-    # Centroids of TODAY pills → top of encoder block
+    # Centroids of TODAY pills → top of encoder block (cyan, solid)
     for i in range(3):
-        py = MOD_Y + 16 + i * (MOD_H + GAP) + MOD_H // 2
+        py = today_y0 + i * (MOD_H + GAP) + MOD_H // 2
         arrow(MOD_X + MOD_W + 2, py, ENC_X, ENC_Y + 70)
-    # PHASE 2 pills → encoder (dashed, amber)
-    for i in range(2):
-        py = PHASE2_Y + 16 + i * (MOD_H + GAP) + MOD_H // 2
-        parts.append(
-            f'<line x1="{MOD_X + MOD_W + 2}" y1="{py}" x2="{ENC_X - 6}" y2="{ENC_Y + 120}" '
-            f'stroke="{WARN_AMBER}" stroke-width="2" stroke-opacity="0.55" '
-            f'stroke-dasharray="6 4" stroke-linecap="round"/>'
-        )
+    # PHASE 1 Phospho pill → encoder (lavender solid — proprietary modality enters Phase 1)
+    p1_py = PHASE1_Y + GROUP_GAP + MOD_H // 2
+    arrow(MOD_X + MOD_W + 2, p1_py, ENC_X, ENC_Y + 100, color=LAVENDER, opacity=0.65)
+    # PHASE 2 VDJ pill → encoder (amber dashed — Phase 2 extension)
+    p2_py = PHASE2_Y + GROUP_GAP + MOD_H // 2
+    parts.append(
+        f'<line x1="{MOD_X + MOD_W + 2}" y1="{p2_py}" x2="{ENC_X - 6}" y2="{ENC_Y + 120}" '
+        f'stroke="{WARN_AMBER}" stroke-width="2" stroke-opacity="0.55" '
+        f'stroke-dasharray="6 4" stroke-linecap="round"/>'
+    )
+    parts.append(
+        f'<path d="M {ENC_X - 8} {ENC_Y + 115} L {ENC_X} {ENC_Y + 120} L {ENC_X - 8} {ENC_Y + 125}" '
+        f'fill="none" stroke="{WARN_AMBER}" stroke-width="2" stroke-opacity="0.75" '
+        f'stroke-linecap="round" stroke-linejoin="round"/>'
+    )
 
     # Encoder block → latent output box
     LAT_X, LAT_Y = ENC_X + ENC_W + 50, ENC_Y + 8
@@ -283,10 +316,10 @@ def build_svg() -> str:
     )
     arrow(ENC_X + ENC_W + 2, ENC_Y + 70, LAT_X, LAT_Y + LAT_H / 2, color=CYAN_HI, opacity=0.7)
 
-    # Below schematic, a thin caption line
+    # Below schematic, a thin caption line — three-state framing reinforcement
     parts.append(
         f'<text x="{LZ_X}" y="{LZ_Y + LZ_H - 18}" fill="{TEXT_DIM}" font-family="{FONT_BODY}" '
-        f'font-size="13" font-style="italic">Encoder is shared by every downstream task — adapter, decomposed readout, Neural ODE temporal backbone.</text>'
+        f'font-size="13" font-style="italic">Encoder is modality-extensible by design — Phase 1 phospho + Phase 2 VDJ slot in without retraining the backbone (AIVC_GRAD_GUARD).</text>'
     )
 
     # ====================================================================
@@ -441,7 +474,29 @@ if __name__ == "__main__":
     svg_path = here / "A2_encoder_evidence.svg"
     png_path = here / "A2_encoder_evidence_preview.png"
     svg = build_svg()
+    # Collision-guard smoke. Filter:
+    #   1. Footer pagination ("A2 / 12") vs source-text — different x-anchors.
+    #   2. Encoder caption ↔ latent caption — visually in side-by-side boxes,
+    #      heuristic over-estimates italic-string width and reports a faux
+    #      4px y-overlap. Verified clean at slide-fill scale.
+    import sys
+    sys.path.insert(0, str(here))
+    from _deck_common import check_no_text_collisions  # type: ignore
+    cols = check_no_text_collisions(svg, min_gap=2)
+    known_fp = {
+        ("≈130K-param adapter on top · frozen substrate",
+         "frozen after pretrain · feeds every downstream task"),
+    }
+    blocking = [
+        c for c in cols
+        if "A2 / 12" not in (c[0], c[1])
+        and not c[0].startswith("Source:") and not c[1].startswith("Source:")
+        and (c[0], c[1]) not in known_fp and (c[1], c[0]) not in known_fp
+    ]
+    if blocking:
+        msg = "\n".join(f"  · {a!r} ↔ {b!r} ({ox}×{oy}px)" for a, b, ox, oy in blocking)
+        raise SystemExit(f"A2 collision-guard FAIL:\n{msg}")
     svg_path.write_text(svg)
-    print(f"wrote {svg_path} ({len(svg)} bytes)")
+    print(f"wrote {svg_path} ({len(svg)} bytes, collision-guard ✓)")
     build_png(svg_path, png_path)
     print(f"wrote {png_path} ({png_path.stat().st_size} bytes)")

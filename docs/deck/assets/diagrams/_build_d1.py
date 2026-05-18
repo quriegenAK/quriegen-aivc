@@ -89,7 +89,7 @@ def build_svg() -> str:
         # label_row: 0 = upper (y_high), 1 = lower (y_low) — alternating zigzag
         (0,  "QurieSeq P1 lands",      CYAN_HI,    False, 0),
         (1,  "BTK+JAK demo",           CYAN_HI,    True,  1),  # shortened from ZERO-SHOT DEMO
-        (2,  "Phase 2 phospho on",     LAVENDER,   False, 0),
+        (2,  "Phase 2 VDJ on",         LAVENDER,   False, 0),
         (3,  "Pipeline 1 starts",      OK_GREEN,   False, 1),
         (5,  "Stage 4 wraps",          LAVENDER,   False, 0),
         (7,  "Pipeline 2 · P1 valid.", OK_GREEN,   False, 1),
@@ -153,13 +153,13 @@ def build_svg() -> str:
     # Bar spec: (lane_index, start_q, end_q, label, sublabel, color, fill_opacity, stroke_w, emphasize)
     bars = [
         # WET LAB lane
-        (0, 0, 1,  "Phase 1 delivery",                "5 donors · 3 modalities",            CYAN_HI,  0.20, 1.5, False),
-        (0, 2, 5,  "Phase 2",                         "phospho + VDJ + 20 donors",          CYAN,     0.16, 1.3, False),
+        (0, 0, 1,  "Phase 1 delivery",                "5 donors · 4 modalities + BTK+JAK",  CYAN_HI,  0.20, 1.5, False),
+        (0, 2, 5,  "Phase 2",                         "VDJ + 20-donor scale",               CYAN,     0.16, 1.3, False),
         (0, 6, 9,  "Phase 3",                         "B-cell lines + disease samples",     CYAN,     0.10, 1.0, False),
         # MODEL lane
         (1, 0, 1,  "Stage 3a",                        "adapter + decomposed readout",       LAVENDER, 0.18, 1.3, False),
         (1, 1, 2,  "Stage 3b",                        "Neural ODE · BTK+JAK demo",          CYAN_HI,  0.32, 2.4, True),  # ANCHOR
-        (1, 2, 4,  "Stage 3c",                        "pathway readout + phospho",          LAVENDER, 0.16, 1.3, False),
+        (1, 2, 4,  "Stage 3c",                        "causal layer + Neumann GRN",         LAVENDER, 0.16, 1.3, False),
         (1, 4, 7,  "Stage 4",                         "VDJ + 20-donor scale",               LAVENDER, 0.16, 1.3, False),
         (1, 7, 9,  "Stage 5",                         "causal + clinical-ready",            LAVENDER, 0.12, 1.2, False),
         # DRUG PIPELINES lane
@@ -257,7 +257,7 @@ def build_svg() -> str:
         source_text=(
             "Source: Architecture spec v1.1 §5 (Stage 3 sequencing) + §6 (Stage 4/5 scope) · "
             "QurieSeq Phase 1/2 plan (Thiago confirmation, 2026-05-12) · "
-            "Pipeline starts contingent on Stage 3 verdict + Phase 2 phospho data quality"
+            "Pipeline starts contingent on Stage 3 verdict + Phase 1 perturbation-response data quality"
         ),
         slide_handle="D1 / 12",
         handle_color=LAVENDER,
