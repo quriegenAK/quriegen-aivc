@@ -9,75 +9,95 @@
 
 ## Headline
 
-**The data architected for the model. Phase 1 lands Q3 2026.**
+**QuRIE-seq Phase 1 — 5 donors × 5 timepoints × 4 modalities × BTK+JAK combo**
+
+(Alternative: *"The data architected for the model. Phase 1 lands Q3 2026."*)
 
 (Alternative: *"Experimental design built around what the model needs to learn."*)
-
-(Alternative: *"5 donors × 5 timepoints × 4 arms × 4 modalities — by design, not accident."*)
 
 ---
 
 ## Sub-headline (one line under headline)
 
-QurieSeq Phase 1 is the first dataset designed top-down for temporal, perturbation-aware foundation modeling — irregular timepoints for early signaling, 4-arm design for compositional generalization, full PBMC lineage coverage for biological breadth.
+First proprietary perturbation-aware multi-omics dataset on primary human PBMCs. Phospho is integral to QuRIE-seq. BTK+JAK combo confirmed. Q3 2026 delivery.
 
 ---
 
 ## Body content (3 bullets max)
 
-- **5 donors, 5 timepoints, 4-arm design, all PBMC lineages**: ~5,000 cells per donor per timepoint. Timepoints 0/5/30/60/180 min — capturing early signaling, transcriptional onset, peak response, and stable phenotypes. 4-arm structure per perturbation: vehicle, stim alone, inhibitor alone, stim+inhibitor combination. All major PBMC lineages: T (CD4/CD8), B, NK, Monocyte, DC.
+- **4 modalities measured directly on the same cells**: RNA, surface protein (CITE-seq), and phospho-proteins at all 5 timepoints (0/5/30/60/180 min); ATAC at t=0 and t=180 only because chromatin accessibility varies on slower timescales than transcription. No public dataset combines these modalities on primary PBMCs with perturbation-aware design.
 
-- **Modality stack aligned with the architecture**: RNA + Protein measured per cell per timepoint via CITE-seq. ATAC integrated as static donor context (chromatin signature at t=0 — the same modality the encoder was pretrained on). Phospho and VDJ deferred to Phase 2 (Q1-Q2 2027) — the encoder is built to extend without re-architecting.
+- **Experimental design tied to model architecture**: 5 timepoints match the Neural ODE temporal backbone. 4-arm design (vehicle / stim / inhibitor singles / combinations) matches the decomposed readout. BTK + JAK combination condition is confirmed for Phase 1 — this is the proof-of-capability for compositional generalization (predict combo from singles).
 
-- **Stimuli and inhibitors chosen for clinical relevance**: Phase 1 stimuli include LPS, IFNγ/TNFα, SEB/TSST-1 + anti-CD28, SEB/TSST-1 + anti-IgM. Inhibitors include acalabrutinib (BTK), idelalisib (PI3K), IKK16 (NF-κB), rapamycin (mTOR). **BTK + JAK inhibitor combo CONFIRMED for Phase 1** — the headline demo target is in the experimental design.
+- **5 donors × ~5k cells/donor/timepoint = ~125k cells total across ~17 conditions**. Donor chromatin signature (ATAC at t=0) functions as biological donor ID since Sanquin blood provider returns blood-type-only metadata. Phase 2 (2027) scales to 20 donors and adds VDJ as 5th modality.
 
 ---
 
-## Visual spec (the experimental design grid)
+## Visual spec — THE MODALITY × TIMEPOINT MATRIX (visual hero)
 
-Two-panel layout:
+C1's new visual hero replaces the previous experimental-design grid. The
+matrix below makes the per-modality / per-timepoint coverage immediately
+legible — investors should read "4 modalities measured, phospho at all 5
+timepoints" in 3 seconds.
 
-**Top panel — the experimental design grid:**
-
-```
-                                        T I M E P O I N T S
-                              0min     5min     30min    60min    180min
-                            ┌────────┬────────┬────────┬────────┬────────┐
-Donor 1   │ Vehicle           │  RNA+P │  RNA+P │  RNA+P │  RNA+P │  RNA+P │
-          │ Stim alone        │  RNA+P │  RNA+P │  RNA+P │  RNA+P │  RNA+P │
-          │ Inhibitor alone   │  RNA+P │  RNA+P │  RNA+P │  RNA+P │  RNA+P │
-          │ Stim + Inhibitor  │  RNA+P │  RNA+P │  RNA+P │  RNA+P │  RNA+P │
-                            ├────────┴────────┴────────┴────────┴────────┤
-                            │ ATAC (chromatin signature)  ◄── t=0 only    │
-                            └─────────────────────────────────────────────┘
-                            
-Donor 2   │ ... same 4-arm × 5-timepoint × RNA+P grid                ...
-Donor 3   │ ... same                                                  ...
-Donor 4   │ ... same                                                  ...
-Donor 5   │ ... same                                                  ...
-
-Total: 5 donors × 5 timepoints × 4 arms × ~5,000 cells = ~500,000 cells
-Modalities per cell: RNA + Protein. Donor-level ATAC at t=0.
-```
-
-**Bottom panel — design choices, explained (3 cards):**
+**Top panel — modality × timepoint matrix:**
 
 ```
-┌────────────────────────┐  ┌────────────────────────┐  ┌────────────────────────┐
-│ WHY 5 TIMEPOINTS       │  │ WHY 4-ARM PER PERT     │  │ WHY 5 DONORS           │
-│                        │  │                        │  │                        │
-│ Captures phospho-level │  │ Vehicle = baseline     │  │ Enough for donor-      │
-│ signaling at 5 min     │  │ Stim = activation only │  │ specific static        │
-│ (Phase 2 phospho-      │  │ Inh = inhibition only  │  │ context (chromatin     │
-│ ready)                 │  │ Stim+Inh = synergy     │  │ signature per donor)   │
-│                        │  │                        │  │                        │
-│ Transcriptional onset  │  │ Direct match to the    │  │ Phase 2 scales to 20   │
-│ at 30 min              │  │ decomposed readout     │  │ donors for cross-      │
-│                        │  │ architecture (slide A3)│  │ donor generalization   │
-│ Stable phenotype       │  │                        │  │ validation             │
-│ at 180 min             │  │ Held-out arm = zero-   │  │                        │
-│                        │  │ shot synergy demo      │  │                        │
-└────────────────────────┘  └────────────────────────┘  └────────────────────────┘
+PHASE 1 — MODALITY × TIMEPOINT MATRIX (Q3 2026)
+
+             ┌──────┬──────┬──────┬──────┬───────┐
+             │ t=0  │ t=5  │ t=30 │ t=60 │ t=180 │
+┌────────────┼──────┼──────┼──────┼──────┼───────┤
+│ RNA        │  ✓   │  ✓   │  ✓   │  ✓   │   ✓   │
+├────────────┼──────┼──────┼──────┼──────┼───────┤
+│ Protein    │  ✓   │  ✓   │  ✓   │  ✓   │   ✓   │
+├────────────┼──────┼──────┼──────┼──────┼───────┤
+│ Phospho    │  ✓   │  ✓   │  ✓   │  ✓   │   ✓   │
+├────────────┼──────┼──────┼──────┼──────┼───────┤
+│ ATAC       │  ✓   │      │      │      │   ✓   │
+└────────────┴──────┴──────┴──────┴──────┴───────┘
+
+VDJ: deferred to Phase 2 (2027) · adds 5th modality
+ATAC sampling rationale: chromatin layer slow-varying — endpoint coverage sufficient
+```
+
+**Color coding**:
+- RNA checkmarks: cyan (`#26DDF9`)
+- Protein checkmarks: green (`#4ADE80`)
+- Phospho checkmarks: lavender (`#8B5CF6`) — **the proprietary modality, no public data exists**
+- ATAC checkmarks: muted blue
+- VDJ row: amber tinted, "Phase 2" label
+
+**Below the matrix**, a small explanatory strip:
+
+```
+4 MODALITIES MEASURED · 5 TIMEPOINTS · 5 DONORS · ~125K CELLS · BTK+JAK COMBO INCLUDED
+                  └─── No public dataset has this combination ───┘
+```
+
+**Lower zone — two side-by-side blocks:**
+
+**Left block — perturbation conditions:**
+
+```
+PERTURBATION CONDITIONS (17 total)
+· Vehicle control (baseline)
+· Stimulus (PMA/Iono or equivalent — TBD with Thiago)
+· 6 inhibitor singles: BTK, JAK, [+4 others TBD]
+· 6 inhibitor + stim combos
+· 3 inhibitor + inhibitor combos including BTK+JAK
+```
+
+**Right block — wet-lab parameters:**
+
+```
+WET-LAB PARAMETERS
+· 5 donors (Sanquin, blood-type-only metadata)
+· All major PBMC lineages (B / T / NK / monocyte / DC)
+· ~5k cells/donor/timepoint
+· ~125k cells total
+· QuRIE-seq protocol family (proprietary)
+· Q3 2026 delivery target
 ```
 
 ---
@@ -123,25 +143,33 @@ This is the **first slide where investors see we own the data flow**. Three thin
 
 ## Speaker notes
 
-**If asked: "Why these specific timepoints? Why not evenly spaced?"**
+**If asked: "What's QuRIE-seq exactly?"**
 
-> Three reasons. First, biology doesn't move on evenly spaced clocks — phospho-signaling happens within minutes, transcriptional response over tens of minutes, stable phenotypes over hours. The 0/5/30/60/180 design samples each of these biological timescales. Second, our Neural ODE temporal backbone (slide A4) is built to handle irregular timepoints natively — we don't need uniform spacing. Third, the 5-minute point specifically primes the dataset for Phase 2 phospho integration; even before phospho lands, the model learns "what's already changing very quickly" as a distinct latent state.
+> QuRIE-seq is Quriegen's proprietary single-cell multi-omics assay measuring RNA, surface protein, and phospho-proteins from the same cell in a single workflow. Phospho-proteomics is integral to the QuRIE-seq protocol — every QuRIE-seq run generates phospho data alongside RNA and protein. This is the assay's defining capability and the reason no public dataset combines our four Phase 1 modalities on primary PBMCs.
 
-**If asked: "Why 5 donors? Isn't that a small N?"**
+**If asked: "Why ATAC at only 2 timepoints?"**
 
-> 5 donors is right-sized for Phase 1, which is about validating the architecture on real time-course PBMC data. The donor-conditioned static context branch in the architecture (encoder receives donor-level chromatin signature at t=0) uses each donor as a distinct biological context, so 5 donors gives us 5 independent biological replicates of the entire 5×4 timepoint-arm structure — meaningful statistical power for the synergy demo and the donor-generalization eval. Phase 2 scales to 20 donors for cross-donor generalization validation at scale.
+> Chromatin accessibility changes on slower timescales than transcription or signaling phosphorylation. Sampling at t=0 (baseline) and t=180 (3 hours post-perturbation) captures the chromatin endpoint shift while saving experimental cost on intermediate timepoints where ATAC signal would be statistically unchanged. This is biologically-motivated experimental design, not cost cutting.
 
-**If asked: "Why isn't ATAC measured per-timepoint?"**
+**If asked: "Where's the public-data foundation? Are we starting from scratch?"**
 
-> ATAC measures chromatin accessibility — relatively stable at the 3-hour scale of Phase 1. The cell's chromatin state at t=0 is the biologically relevant signature for the entire experimental window; sampling ATAC at every timepoint would multiply cost without proportional information gain. Donor-level ATAC at t=0 functions as the static context branch in the architecture — providing the encoder's "chromatin substrate" for that donor's biology. Phase 2 will explore whether per-timepoint ATAC adds signal beyond the static donor signature.
+> Not at all. The encoder is already trained on public DOGMA-seq data (Mimitou 2021) and validated cross-corpus on Calderon 2019 at 73% pseudo-bulk accuracy. The encoder probe on Mimitou CRISPR perturbations returned 0.57 4-class accuracy at 2.27× chance — pre-registered ADAPTER_RECOMMENDED verdict. Phase 1 plugs into a validated public-data engine, not a cold start. The QuRIE-seq data trains the perturbation-prediction head + decomposed readout + temporal Neural ODE on proprietary perturbation-aware data — but the encoder substrate is already shipped.
 
-**If asked: "Why these specific inhibitors and stimuli?"**
+**If asked: "Why phospho? What does phospho tell us that RNA + protein don't?"**
 
-> The stimuli (LPS, IFNγ/TNFα, SEB/TSST-1 + costim) span the major PBMC activation axes — TLR/innate, cytokine signaling, and T/B-cell receptor + costimulation. The inhibitors (acalabrutinib for BTK, idelalisib for PI3K, IKK16 for NF-κB, rapamycin for mTOR) target the major signaling hubs downstream of those activation pathways. The BTK + JAK combination specifically connects to the clinical evidence from the Ibrutinib + Ruxolitinib CLL trial. Phase 1 is built to validate the model on combinations that are both biologically informative and clinically grounded.
+> Phospho measures kinase activation state — the immediate signaling response to a perturbation, before transcriptional changes propagate. For drug combination prediction in pathway-driven diseases like CLL, phospho is the readout that distinguishes "drug A and drug B affect the same kinase" (additive effect) from "drug A blocks JAK and drug B blocks BTK so the combination hits both arms of the BCR pathway" (synergistic effect). RNA shows downstream consequences; phospho shows the immediate mechanism. No public single-cell dataset has phospho on PBMCs under perturbation — this is structural white space we own through QuRIE-seq.
 
-**If asked: "What about cell-type representation balance?"**
+**If asked: "5 donors seems small. Won't there be high variance?"**
 
-> All major PBMC lineages are present in each sample. T cells (CD4 + CD8) make up the majority; B, NK, Monocytes, and DCs are minorities but well-represented at ~5,000 cells per donor per timepoint. The 4-arm × 5-timepoint structure means each minor cell type gets enough cells (~200-500) per perturbation arm to participate in the synergy demo. Cell-type imbalance is handled via arm-balanced batch sampling during adapter training (implemented in Stage 3a Day 2 PR).
+> Phase 1 5-donor scale is intentional. We trade donor breadth for modality depth and temporal density. The ATAC at t=0 captures donor-specific chromatin baseline (functioning as a donor signature without demographic metadata). The 4-arm decomposed readout architecture is designed for cross-donor generalization — it predicts perturbation effects relative to each donor's vehicle baseline. Phase 2 scales to 20 donors (4×) to validate that cross-donor generalization holds at higher N. Starting smaller is statistical discipline, not under-investment.
+
+**If asked: "Donor selection? Who's Sanquin? What about diversity?"**
+
+> Sanquin is the Dutch national blood bank — high quality, ethically sourced, standardized collection protocols. They return blood type only, no age/sex/ethnicity metadata for privacy reasons. This is acceptable for Phase 1 because the encoder learns chromatin-grounded donor signatures (ATAC at t=0) rather than requiring demographic features. For Phase 2 we may pursue additional donor sources to expand demographic diversity if regulatory or scientific review identifies this as needed.
+
+**If asked: "What's the BTK+JAK combo and why is it the headline?"**
+
+> BTK = Bruton tyrosine kinase (BCR pathway), inhibited by Ibrutinib (Imbruvica, approved CLL drug). JAK = Janus kinase (cytokine signaling), inhibited by Ruxolitinib (Jakafi, approved myelofibrosis drug). Both drugs are FDA-approved as monotherapies. The BTK+JAK combination has clinical evidence for synergistic effect in CLL (PMID 26819050, NCT02912754). Phase 1 includes the BTK+JAK combo condition specifically so Stage 3b can demonstrate zero-shot synergy prediction — train on singles (BTK alone, JAK alone) and predict the combo response from architecture alone. This is the compositional generalization proof-of-capability that justifies the integrated platform claim.
 
 ---
 

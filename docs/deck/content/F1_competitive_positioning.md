@@ -19,17 +19,17 @@
 
 ## Sub-headline (one line under headline)
 
-No public dataset has the combination drug combination prediction requires. The wet lab, architecture, and protocol family are co-designed — each compounds the others.
+No public dataset has the combination — multi-omics + perturbation-aware + temporal + combinatorial. Phase 1 QuRIE-seq closes the gap with phospho at Q3 2026. The platform compounds from there.
 
 ---
 
 ## Body content (3 bullets max)
 
-- **Public data was the bootstrap; QurieSeq is the platform.** No public dataset combines multi-omics, perturbation-aware, temporal, combinatorial, protocol-aligned for modality expansion. The gap is structural — drug combination prediction in primary PBMCs requires data nobody has assembled. QurieSeq exists because the data doesn't.
+- **Public data was the bootstrap; QuRIE-seq is the platform.** No public dataset combines RNA + Protein + Phospho + perturbation-aware temporal sampling on primary PBMCs. The gap is structural — phospho-proteomics on PBMCs under combinatorial perturbation does not exist publicly. QuRIE-seq Phase 1 closes this gap at Q3 2026 with phospho integral to the assay; Phase 2 adds VDJ. The data engine exists because the data doesn't.
 
-- **Five pillars co-designed as one system**: proprietary wet-lab generation, architecture co-designed with the assay (decomposed readout matches 4-arm experimental design; Neural ODE matches irregular timepoint sampling), temporal perturbation-aware data creation, compositional training strategy, unified protocol family for Phase 2 phospho + VDJ extension. Each pillar reinforces the others; the integration is the moat.
+- **Five pillars co-designed as one system**: proprietary wet-lab generation (QuRIE-seq family), architecture co-designed with the assay (decomposed readout matches 4-arm experimental design; Neural ODE matches irregular timepoint sampling 0/5/30/60/180; phospho head matches QuRIE-seq's intracellular protein channel), temporal perturbation-aware data creation, compositional training strategy, unified protocol family for Phase 2 VDJ extension. Each pillar reinforces the others; the integration is the moat.
 
-- **Competitors optimize one layer each**: TAHOE optimizes single-modality data scale (100M cells, RNA-only cell lines); Immunai optimizes modality-rich atlases (RNA + Protein + VDJ via partners); Cellarity, CytoReason, Turbine, DeepLife optimize foundation models on partner-derived data; Valo and Noetik optimize downstream therapeutics. We optimize the closed-loop system itself.
+- **Competitors optimize one layer each**: TAHOE optimizes single-modality data scale (100M cells, RNA-only cell lines, no phospho); Immunai optimizes modality-rich atlases (RNA + Protein + VDJ via partners, no phospho); Cellarity, CytoReason, Turbine, DeepLife optimize foundation models on partner-derived data without proprietary wet-lab pipelines; Valo and Noetik optimize downstream therapeutics. We optimize the closed-loop system itself, including phospho — the dimension no competitor measures.
 
 ---
 
@@ -56,10 +56,12 @@ Center of slide: a circular flywheel diagram showing the closed-loop platform wi
    │  WET-LAB             │                       │  TEMPORAL            │
    │  GENERATION          │  ←─── compounds ───→  │  MULTI-OMICS         │
    │                      │                       │                      │
-   │  QurieSeq Phase 1+2  │                       │  RNA + ATAC +        │
-   │  primary human PBMCs │                       │  Protein  (+phospho  │
-   │  5 → 20 donors       │                       │  + VDJ Phase 2)      │
-   │  4-arm perturbations │                       │  0/5/30/60/180 min   │
+   │  QurieSeq Phase 1+2  │                       │  RNA · Protein ·     │
+   │  primary human PBMCs │                       │  **Phospho** (lavender) │
+   │  5 → 20 donors       │                       │  5 timepoints        │
+   │  4-arm perturbations │                       │  (0/5/30/60/180)     │
+   │                      │                       │  ATAC × 2 timepoints │
+   │                      │                       │  VDJ — Phase 2       │
    └──────────┬───────────┘                       └──────────┬───────────┘
               │                                              │
               └──────────────────┬───────────────────────────┘
@@ -70,9 +72,9 @@ Center of slide: a circular flywheel diagram showing the closed-loop platform wi
                        │                     │
                        │  Same wet-lab       │
                        │  pipeline extends   │
-                       │  to Phase 2 phospho │
-                       │  + VDJ without      │
-                       │  re-architecting    │
+                       │  to Phase 2 VDJ +   │
+                       │  20-donor scale     │
+                       │  without re-arch    │
                        └─────────────────────┘
 
          Each loop deepens the next. Every QurieSeq phase trains the
@@ -129,11 +131,12 @@ Style notes:
 ### Bottom zone — closing line
 
 ```
-"No public dataset has the combination drug combination prediction requires.
-The wet lab, the architecture, and the protocol family are co-designed."
+"Phase 1 QuRIE-seq (Q3 2026) measures RNA + Protein + Phospho at 5
+timepoints — the combination no public dataset has. The platform
+compounds from there."
 ```
 
-Italic, muted, centered. Functions as the takeaway investors carry out of the slide.
+Italic, muted, centered. Functions as the takeaway investors carry out of the slide — shifts the framing from aspirational to imminent (Q3 2026 is the next investor diligence touchpoint).
 
 ---
 
@@ -186,11 +189,15 @@ F1 closes the appendix's competitive argument with the right strategic frame. Th
 
 **If asked: "TAHOE has 100M cells. You have 500K. Why isn't that decisive?"**
 
-> Different optimization. TAHOE optimizes for open foundation-model substrate from cell-line perturbations — a great base layer. We optimize for proprietary integrated platform on primary human PBMCs with combinatorial perturbations and temporal sampling. Both are legitimate. They produce different platforms for different downstream applications. TAHOE-x1 actually makes our platform stronger — we can consume open foundation models as substrate and add the integrated multi-omics + perturbation layer on top. We're not in the same competitive lane as TAHOE; we're in a different layer of the stack.
+> Different optimization. TAHOE optimizes for open foundation-model substrate from cell-line perturbations — 100M cells, RNA-only, no phospho, no perturbation-aware multi-omics. We optimize for proprietary integrated platform on primary human PBMCs with 4 modalities including phospho in Phase 1 (Q3 2026). The 500K Phase 1 cell count is intentionally small for modality depth + perturbation-aware design; Phase 2 scales to 20 donors. TAHOE's scale gives them open-source RNA foundation models; our depth gives us closed-loop causal drug combination prediction with the modality (phospho) no public dataset has. Different layers of the stack — they don't compete with our platform, they're potentially substrate beneath it.
 
 **If asked: "Immunai already has VDJ. You don't until 2027. Doesn't that make them ahead?"**
 
-> Immunai has VDJ in their AMICA atlas today — that's correct, and we documented it transparently in our competitive research. The strategic question is what each platform does with the modality. Immunai harmonizes partner clinical-trial-derived data across studies. We're generating proprietary perturbation-aware multi-omics with VDJ integrated into our protocol family in Phase 2. Different use cases. Their VDJ is structured for clinical biomarker discovery; ours is integrated with the same 4-arm perturbation framework as the other modalities. The modality presence is necessary but not sufficient — what matters is how it plugs into the integrated platform.
+> Immunai has VDJ in their AMICA atlas today — that's a real capability we don't have until Phase 2 (2027). But Immunai doesn't have phospho. We have phospho in Phase 1 (Q3 2026). The modality stacks are different: Immunai = RNA + Protein + VDJ (immune-receptor diversity); us = RNA + Protein + Phospho (kinase signaling state) + ATAC. Different use cases. Immunai's VDJ supports clinical biomarker discovery on patient samples; our phospho supports drug combination mechanism prediction. Phase 2 closes the VDJ gap on our side; their phospho gap is structural — they don't generate it because they don't have a proprietary wet-lab pipeline for phospho measurement. The modality presence question is necessary but not sufficient — what matters is how the modality integrates with the rest of the platform.
+
+**If asked: "Why does phospho matter? What does it give you that RNA + protein don't?"**
+
+> Phospho measures kinase activation state — the immediate signaling response to a perturbation, before transcriptional changes propagate. For drug combination prediction in pathway-driven diseases like CLL, phospho is the readout that distinguishes additive effects ("drug A and drug B affect the same kinase") from synergistic effects ("drug A blocks JAK and drug B blocks BTK so the combination hits both arms of the BCR pathway"). RNA shows downstream consequences hours later; phospho shows immediate mechanism in minutes. The 5-minute timepoint in QuRIE-seq Phase 1 captures phospho responses that no other dataset measures at single-cell resolution on primary PBMCs.
 
 **If asked: "Most of these competitors have $50M+ pharma deals. You have zero. Why?"**
 

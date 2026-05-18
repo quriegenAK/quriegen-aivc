@@ -184,7 +184,7 @@ A5 earns the appendix's "causal" claim. Three things it does that F1 and the exi
 
 **If asked: "What does 'Stage 3c spec-locked' actually mean? Is this real or aspirational?"**
 
-> Spec-locked means the architectural commitment is written down in spec v1.1 and the components have concrete mathematical definitions — Neumann propagation as `(I − W)⁻¹ dₚ`, sparse GRN with L1 regularization on edges absent from STRING, log-FC head for direct-effect decoding. What's not yet done is implementation and validation. Validation requires perturbation-aware multi-omics data with sufficient signal for GRN edge inference — that's exactly what Phase 1 wet-lab generation produces in Q3 2026. Stage 3c implementation begins post-Phase-1, validation in Q1-Q2 2027. The slide is honest about this status with the explicit "validation post Phase 1 wet-lab data" framing.
+> Spec-locked means the architectural commitment is written down in spec v1.1 (with v1.2 causal-layer extension pending) and the components have concrete mathematical definitions — Neumann propagation as `(I − W)⁻¹ dₚ`, sparse GRN with L1 regularization on edges absent from STRING, log-FC head for direct-effect decoding. What's not yet done is implementation and validation. Validation requires perturbation-aware multi-omics data with sufficient signal for GRN edge inference — Phase 1 wet-lab generation (Q3 2026) provides this with 4 modalities including phospho. Stage 3c implementation begins post-Phase-1, validation Q1-Q2 2027. The slide's status pill is honest about this status.
 
 **If asked: "Why Neumann propagation specifically? Why not GNNs or transformers for the propagation step?"**
 
@@ -208,7 +208,7 @@ A5 earns the appendix's "causal" claim. Three things it does that F1 and the exi
 
 **If asked: "When does this become operational? When can we point to Stage 3c validation results?"**
 
-> Implementation Stage 3c starts Q3 2026 after Phase 1 wet-lab data lands. Architecture stub + STRING integration: Q3-Q4 2026. GRN learning + sparsity calibration: Q4 2026 - Q1 2027. Validation on Phase 1 perturbation-response data: Q1-Q2 2027. First publishable Stage 3c results: Q2 2027 in the Stage 4 timeframe. Investor demos with operational Stage 3c: Q2-Q3 2027. This timeline is on the D1 roadmap as part of Stage 4 + 5 scope.
+> Implementation Stage 3c starts Q4 2026 after Phase 1 wet-lab data lands in Q3 2026. Phospho is available in Phase 1 (integral to QuRIE-seq), so causal architecture validation has perturbation-aware phospho signal from Q3 2026. Architecture stub + STRING integration: Q4 2026 - Q1 2027. GRN learning + sparsity calibration: Q1-Q2 2027. Validation on Phase 1 perturbation-response data: Q1-Q2 2027. First publishable Stage 3c results: Q2-Q3 2027. This timeline is on the D1 roadmap as part of Stage 4 + 5 scope. The earlier framing of "post Phase 2 data" was incorrect — Phase 1 already provides the modality signal Stage 3c needs.
 
 **If asked: "Is this the same as DeepLife's causal modeling or Cellarity's cell-state correction?"**
 

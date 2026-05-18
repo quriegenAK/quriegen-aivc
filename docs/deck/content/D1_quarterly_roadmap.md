@@ -78,14 +78,16 @@ INVESTOR DEMOS         │ + BTK+JAK demo  │            │ benchmark +     �
 **Key milestone anchors (large markers on the timeline):**
 
 ```
-◆  Q3 2026 — QurieSeq Phase 1 lands
+◆  Q3 2026 — QurieSeq Phase 1 delivery: 4 modalities + BTK+JAK combo
 ◆  Q4 2026 — BTK+JAK ZERO-SHOT DEMO  (the headline)
-◆  Q1 2027 — Phase 2 phospho onboarded, Stage 3c integration
+◆  Q1 2027 — Phase 2 VDJ on, Stage 3c integration
 ◆  Q2 2027 — Drug pipeline 1 starts
 ◆  Q4 2027 — Stage 4 wraps (VDJ + 20 donors)
 ◆  Q2 2028 — Drug pipeline 2 starts, pipeline 1 target validation
 ◆  Q4 2028 — Stage 5 wraps (causal + clinical-ready)
 ```
+
+**Rationale**: Phase 2's actual modality addition is VDJ, not phospho. Phospho is integral to QuRIE-seq and lands with Phase 1 in Q3 2026 (see C1 + A2 for the corrected three-state framing). The Q1'27 milestone is therefore VDJ on.
 
 ---
 
@@ -159,6 +161,14 @@ The slide also **shows discipline**: 11 quarters of execution with concrete mile
 **If asked: "Why don't we see Series A or financing milestones?"**
 
 > Roadmap is technical execution. Funding events happen on a separate financial track; we don't anchor product roadmaps to fundraising calendars. The technical deliverables are what determine fundability, not the other way around.
+
+**If asked: "What exactly do Phase 1 and Phase 2 mean here?"**
+
+> Phase 1 and Phase 2 refer specifically to QuRIE-seq proprietary wet-lab data generation phases — not clinical trial phases, not company funding rounds, not model training stages. Phase 1 (Q3 2026) generates 5-donor, 5-timepoint dataset with 4 modalities (RNA + Protein + Phospho at all 5 timepoints; ATAC at t=0 and t=180). Phase 2 (Q1 2027 onwards) scales to 20 donors and adds VDJ as 5th modality. Model training stages (Stage 3a current, Stage 3b BTK+JAK demo Q4 2026, Stage 3c causal architecture Q1-Q2 2027, Stage 4 scale 2027, Stage 5 causal-ready 2028) are a separate framework — shown in the model swim lane of this Gantt. The unified quarterly view is what links wet-lab phases to model stages.
+
+**If asked: "How does this 11-quarter view map to Kinga's 24-month trajectory on slide 8?"**
+
+> Slide 8 compresses the same plan into a 4-phase visual for investor narrative. D1 is the canonical per-quarter detail with explicit milestone dependencies. Same plan, different visual decomposition for different audiences.
 
 ---
 
