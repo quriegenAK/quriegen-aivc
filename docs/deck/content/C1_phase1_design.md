@@ -149,6 +149,40 @@ This is the **first slide where investors see we own the data flow**. Three thin
 
 ## Speaker notes
 
+### Three-state framing
+- **Today (public-data substrate validated)**: Encoder trained on DOGMA-seq, 73% Calderon, 0.57 Mimitou CRISPR. Public-data work is shipped. C1 is about what Phase 1 ADDS.
+- **Phase 1 (Q3 2026 — THIS SLIDE)**: 5 donors × 5 timepoints × 4 modalities (RNA + Protein + Phospho all 5 timepoints; ATAC at t=0 and t=180) + BTK+JAK combo confirmed. Phospho is integral to QuRIE-seq — first time we have phospho.
+- **Phase 2 (2027)**: 20 donors + VDJ as 5th modality. Disease-context samples. Same protocol family.
+
+### Technical glossary
+**QuRIE-seq** — Quriegen's proprietary single-cell multi-omics assay. Measures RNA + Protein + Phospho-proteins from the same cell. Phospho is integral to the protocol. Phase 1 (Q3 2026) is the first wet-lab batch.
+
+**Multi-omics integration** — Combining measurements across data types (RNA, ATAC, Protein, Phospho) on the same cell. Our platform's defining capability — most platforms measure 1-2 modalities; we measure 4 directly + ATAC integration from public data.
+
+**Phospho-proteomics (phospho)** — Measurement of phosphorylated proteins. Reveals kinase activation state — immediate signaling response. Faster than RNA changes (minutes vs hours). Integral to QuRIE-seq; first publicly available to our team in Phase 1.
+
+**Surface protein (CITE-seq)** — Surface markers measured via antibody-derived tags. Distinguished from intracellular phospho-proteins. CITE-seq panel ~30-210 markers.
+
+**Chromatin accessibility (ATAC)** — Which DNA regions are open for transcription factor binding. Slow-varying — chromatin remodels on hour timescales. Justifies sampling only at t=0 (baseline) and t=180 (endpoint) in Phase 1.
+
+**ATAC slow-varying rationale** — Biological justification for sampling ATAC at only 2 timepoints. Chromatin accessibility doesn't change meaningfully at 5/30/60 min intervals. Endpoint coverage captures the perturbation-induced chromatin shift; baseline anchors donor-level variation.
+
+**5 timepoints (0/5/30/60/180 min)** — Phase 1 sampling design. 0 = baseline, 5 = early signaling (phospho-active), 30 = transcriptional onset, 60 = stable phenotype emerging, 180 = stable response. Matches Neural ODE temporal backbone.
+
+**4-arm experimental structure** — Vehicle / stimulus / inhibitor / inhibitor+stim. Each cell measured under one of these conditions. Matches the 4-arm decomposed readout architecture exactly — wet lab and model are co-designed.
+
+**BTK + JAK combination (Stage 3b headline)** — Confirmed for Phase 1 by Thiago (May 12, 2026). Validates compositional generalization. Connects to Ibrutinib+Ruxolitinib CLL clinical evidence.
+
+**Sanquin** — Dutch national blood bank. Phase 1 blood source. Returns blood-type-only metadata per privacy. Our model uses ATAC at t=0 as chromatin-grounded donor signature.
+
+**~5k cells/donor/timepoint** — Cell yield per QuRIE-seq sample. 5 donors × 5 timepoints × 5k cells × ~17 conditions ≈ ~125k cells in the Phase 1 dataset.
+
+**Perturbation panel** — ~15-20 conditions total (vehicle, stimulus, inhibitor singles, inhibitor combinations including BTK+JAK). Exact panel size under final wet-lab spec review with Thiago.
+
+**Donor chromatin signature** — ATAC profile at t=0 functions as biological donor identifier when demographic metadata is unavailable. Replaces age/sex/ethnicity features.
+
+### Diligence Q&A
+
 **If asked: "What's QuRIE-seq exactly?"**
 
 > QuRIE-seq is Quriegen's proprietary single-cell multi-omics assay measuring RNA, surface protein, and phospho-proteins from the same cell in a single workflow. Phospho-proteomics is integral to the QuRIE-seq protocol — every QuRIE-seq run generates phospho data alongside RNA and protein. This is the assay's defining capability and the reason no public dataset combines our four Phase 1 modalities on primary PBMCs.
@@ -185,13 +219,13 @@ This is the **first slide where investors see we own the data flow**. Three thin
 
 ## Investor framing (one-paragraph elevator)
 
-> QurieSeq Phase 1 is the first dataset designed top-down for temporal, perturbation-aware foundation modeling. 5 donors × 5 timepoints × 4-arm experimental structure × ~5,000 cells = ~500,000 cells of multi-omics PBMC data, with RNA and Protein measured per cell per timepoint, donor-level ATAC chromatin context, and confirmed inclusion of the BTK + JAK inhibitor combination — our headline zero-shot synergy demo target. The experimental design is not generic; it's matched to the architecture's needs. 5-minute timepoint primes the dataset for Phase 2 phospho integration. 4-arm structure matches the decomposed readout. 5 donors give us 5 biological replicates with cross-donor generalization tests deferred to Phase 2's 20-donor expansion. This is the moat in motion.
+> QuRIE-seq Phase 1 is the first dataset designed top-down for temporal, perturbation-aware foundation modeling. 5 donors × 5 timepoints × 4-arm experimental structure × ~5,000 cells = ~125,000 cells of multi-omics PBMC data, with RNA + Protein + Phospho measured per cell per timepoint (4 modalities; ATAC at t=0 and t=180), and confirmed inclusion of the BTK + JAK inhibitor combination — our headline zero-shot synergy demo target. The experimental design is not generic; it's matched to the architecture's needs. 5-minute timepoint captures Phase 1 phospho directly (phospho is integral to QuRIE-seq — every QuRIE-seq run generates phospho, including Phase 1's Q3 2026 batch). 4-arm structure matches the decomposed readout. 5 donors give us 5 biological replicates with cross-donor generalization tests deferred to Phase 2's 20-donor expansion + VDJ. This is the moat in motion.
 
 ---
 
 ## What's NOT on this slide (intentionally)
 
-- The Phase 2 phospho panel details (~17 antibodies) — lives in E1 horizon slide
+- The Phase 1 phospho antibody panel specifics (~17 markers, integral to QuRIE-seq protocol) — finalization is wet-lab-spec detail, not architecture commitment
 - VDJ Phase 2 spec — lives in E1
 - L1/L2/L3 public-data layer integration — lives in slide D1 roadmap or speaker notes
 - Detailed clinical rationale for inhibitor choice — speaker notes only

@@ -126,6 +126,34 @@ It's the slide that says: "We've already run the experiment that proves the syne
 
 ## Speaker notes
 
+### Three-state framing
+- **Today**: 0.57 result is shipped, peer-reviewable, locked. ADAPTER_RECOMMENDED verdict drives architecture decisions. The 0.57 hero number is from real Mimitou CRISPR probe completed before this slide was drafted.
+- **Phase 1 (Q3 2026)**: Stage 3b demo runs on Phase 1 data using the adapter architecture B2's verdict approved. The same pre-registration pattern applies — BTK+JAK combo held out, synergy head predicts zero-shot.
+- **Phase 2 (2027)**: Adapter strategy validated by Phase 1 results may be revised (frozen vs full fine-tune) based on Phase 1 outcomes. Decision logic pre-registered.
+
+### Technical glossary
+**ADAPTER_RECOMMENDED verdict** — Pre-registered Stage 3 Part 1 outcome. If encoder probe accuracy on perturbed cells is in 0.50-0.80 range, the adapter strategy is approved. Above 0.80 = encoder generalizes natively without adapter. Below 0.50 = encoder needs full fine-tune. Our result: 0.57 → adapter approved.
+
+**0.57 synergy 4-class accuracy** — Mimitou CRISPR probe result. 4 classes: CD3E knockout, CD4 knockout, CD3E+CD4 double knockout, non-targeting control (NTC). Chance baseline = 0.25 for 4-class. Our 0.57 = 2.27× chance.
+
+**Frozen encoder probe** — Test of encoder generalization without modifying encoder weights. Run encoder on held-out perturbation data, score classification accuracy. Pure generalization test — no retraining.
+
+**Per-class accuracy** — Accuracy broken down by class. Our per-class: CD3E = 0.91 (high), CD3E+CD4 double = 0.68, NTC = 0.39, CD4 = 0.39. Reveals which classes are easier/harder for the encoder.
+
+**Random projection baseline (0.29)** — Replace encoder with random linear projection of input features. Score should be at or near chance (0.25 for 4-class). Our 0.29 indicates the encoder is doing more than a random feature extraction.
+
+**TF-IDF baseline (0.50)** — Bag-of-words baseline on raw input features. Encoder approaches but doesn't exceed this — indicates the encoder is capturing input-level patterns without significant added signal beyond bag-of-words. This is the architectural read: encoder representations are roughly equivalent to gene-frequency vectors for this task, suggesting adapter strategy (rather than full fine-tune) is appropriate.
+
+**Adapter strategy (~130K parameters)** — Lightweight neural network layer trained on top of frozen encoder. ~130K parameters vs encoder's millions. Trains in minutes vs hours. Approved by B2 verdict.
+
+**Pre-registered thresholds** — Verdict thresholds locked in architecture spec v1.1 before the eval was run. Spec says: ≥0.80 = FROZEN_ENCODER_OK, 0.50-0.80 = ADAPTER_RECOMMENDED, <0.50 = FINE_TUNE_REQUIRED. No post-hoc adjustment.
+
+**CD3E knockout / CD4 knockout** — CRISPR perturbations on T-cell receptor complex components. CD3E and CD4 are markers and signaling components in T cells.
+
+**NTC (Non-Targeting Control)** — Control perturbation that doesn't actually disrupt any gene. Used as baseline.
+
+### Diligence Q&A
+
 **If asked: "Why is 0.57 a good number? It sounds modest."**
 
 > Three reasons. First, chance is 0.25 for a 4-class problem — we're at 2.27× chance, which is a strong signal. Second, the random projection baseline scored 0.29, almost exactly at chance, confirming our encoder is doing actual work rather than getting lucky on input-feature variance. Third, raw TF-IDF on the input features scored 0.50 — the encoder approaches the input-feature ceiling without exceeding it, which is exactly the regime where adapter strategy is the right architectural choice. The threshold to *retrain* the encoder is 0.50; we're above that. The threshold to use the encoder *as-is* is 0.80; we're below that. 0.57 is therefore precisely the regime where the architecture is most efficient — frozen encoder + lightweight adapter.

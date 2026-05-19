@@ -116,6 +116,38 @@ This is the slide where **the deck stops being a pitch and starts being science*
 
 ## Speaker notes
 
+### Three-state framing
+- **Today (public-data substrate)**: B1 IS the public-data evidence slide. Three datasets — DOGMA-seq (Mimitou 2021), Calderon 2019, Mimitou ASAP-seq CRISPR — each with a specific role. Methodology pre-registered. This is shipped evidence; not roadmap.
+- **Phase 1 (Q3 2026)**: QuRIE-seq Phase 1 data supersedes/complements the public-data work. Encoder retrained or fine-tuned on Phase 1 data (subject to Stage 3a/3b decisions). The pre-registered eval methodology framework extends to Phase 1 — same discipline.
+- **Phase 2 (2027)**: B1's methodology pattern continues — pre-registration before evals, hold-out test sets, no cherry-picking.
+
+### Technical glossary
+**Pre-registered evaluation** — Eval methodology, metric, and thresholds committed in writing before running the eval. Documented in architecture spec v1.1. Prevents result-driven cherry-picking. Both our 73% Calderon and 0.57 Mimitou CRISPR results were pre-registered.
+
+**Three-dataset role separation** — DOGMA-seq for pretraining, Calderon 2019 for validation, Mimitou ASAP-seq CRISPR sub-study for perturbation probe. Different studies, different donors, different protocols — prevents within-dataset overfitting from inflating cross-validation metrics.
+
+**DOGMA-seq (Mimitou 2021)** — Triple-modality single-cell method (RNA + ATAC + Protein on same cell) from Mimitou et al., Nature Biotechnology 2021. Encoder pretraining source.
+
+**Calderon 2019** — Published PBMC dataset under stimulation. Independent from Mimitou — different lab, different donors, different protocol. Used as cross-corpus hold-out test.
+
+**Mimitou ASAP-seq CRISPR sub-study** — Sub-study of the Mimitou 2021 paper with ATAC + Protein + HTO-encoded CRISPR perturbations on T cells. Used for our Stage 3 Part 1 encoder probe.
+
+**HTO (HashTag Oligonucleotide)** — Short DNA barcode used to multiplex samples in single-cell experiments. In Mimitou ASAP-seq CRISPR, HTOs encode which CRISPR guide perturbed each cell.
+
+**Hold-out test set** — Data reserved from training and validation, used only for final evaluation. Prevents test-set leakage and inflated metrics.
+
+**Pseudo-bulk centroid-NN** — Aggregation-then-nearest-neighbor evaluation. Aggregate single cells by cell-type label to produce centroids; nearest-neighbor match across datasets gives accuracy.
+
+**Bootstrap confidence interval (Bootstrap CI)** — Statistical method for estimating uncertainty by resampling data many times and recomputing the metric. Used for our 73% and 0.57 result uncertainty bands.
+
+**Chance baseline** — Lower-bound accuracy from random guessing. 5-class chance = 20%; 4-class chance = 25%. Results must exceed chance to demonstrate signal.
+
+**Random projection baseline** — Sanity check. Replace encoder with random linear projection. Measures whether encoder learns anything beyond random features.
+
+**TF-IDF baseline (Term Frequency × Inverse Document Frequency)** — Bag-of-words text-style baseline. Treats each gene as a token; measures whether encoder learns more than gene-frequency patterns.
+
+### Diligence Q&A
+
 **If asked: "Have you had a metric fail?"**
 
 > Yes — and we publish those. Our Phase 6.5g.2 closure is a good example. Our original per-cell cross-corpus metric failed at 0.19, well below the 0.70 pre-registered threshold. We didn't retry quietly or adjust the metric. Instead, we diagnosed the cause — a corpus-corpus stimulation-protocol artifact in the per-cell measurement, not an encoder defect. The published methodology for controlling this is pseudo-bulk centroid-NN (averaging cell representations per cluster, then matching). We re-ran with the remediated methodology and hit 0.73. Both numbers are in our public closure report with explicit dual-conclusion framing. The underlying encoder is the same model.

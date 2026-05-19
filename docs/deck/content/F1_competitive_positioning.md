@@ -177,11 +177,45 @@ F1 closes the appendix's competitive argument with the right strategic frame. Th
 | No public dataset matches the combination required | Stage 3 Part 1 Report 1 (datasets) + L3 B-cell CRISPR exhaustive search |
 | Architecture co-designed with assay (decomposed readout = 4-arm; Neural ODE = irregular timepoints) | Architecture spec v1.1 §3.2, §4 + QurieSeq Phase 1 design (Thiago, May 12) |
 | 5 pillars: proprietary wet lab, co-designed architecture, temporal multi-omics, compositional training, protocol-family expansion | Architecture spec v1.1 + QurieSeq Phase 1/2 specs |
-| Phase 2 phospho + VDJ extend the same protocol family without re-architecting | QurieSeq Phase 2 spec (Thiago + Kinga, May 12) |
+| Phase 1 (Q3 2026): 4 modalities including phospho. Phase 2 (Q1 2027+): adds VDJ + 20-donor scale within the same protocol family without re-architecting | QurieSeq Phase 1+2 spec (Thiago + Kinga, May 12) + 2026-05-17 phospho correction |
 
 ---
 
 ## Speaker notes
+
+### Three-state framing
+- **Today (public-data substrate)**: 3-modality encoder validated on DOGMA-seq + Calderon at 73%. 0.57 Mimitou CRISPR ADAPTER_RECOMMENDED. Public-data evidence shipped.
+- **Phase 1 (Q3 2026 — flywheel activates)**: 4-modality QuRIE-seq Phase 1 (RNA + Protein + Phospho all 5 timepoints + ATAC 2 timepoints) + BTK+JAK combo. The "no public dataset has the combination" claim becomes literally true at Phase 1.
+- **Phase 2 (2027 — flywheel compounds)**: VDJ 5th modality + 20-donor scale. Same protocol family. Disease-context samples (Phase 3 onwards).
+
+### Technical glossary
+**Integrated platform** — Five pillars co-designed as one system: (1) proprietary wet-lab generation (QuRIE-seq family), (2) co-designed architecture (decomposed readout matches 4-arm; Neural ODE matches irregular timepoints), (3) temporal multi-omics including phospho from Phase 1, (4) compositional perturbation modeling, (5) unified protocol family for Phase 2 VDJ extension.
+
+**Flywheel** — Self-reinforcing cycle. Every QuRIE-seq phase trains the next architecture extension; every architecture extension informs the next wet-lab design. The integration compounds.
+
+**Closed-loop platform** — Tight coupling between wet lab and model. Data generation, architecture, training, prediction, and next-round design all reference each other. Distinguished from open-loop platforms where data and model are decoupled.
+
+**Co-designed (wet lab + architecture)** — Wet-lab experimental design (4-arm, 5 timepoints, BTK+JAK combo, phospho integral) matches model architecture (decomposed readout, Neural ODE temporal, synergy head, phospho input). Neither retrofitted to the other.
+
+**TAHOE** — Tahoe Therapeutics. 100M-cell foundation model. RNA-only, cell-line-derived. Optimizes for foundation-model substrate scale. Our 500K Phase 1 PBMC data optimizes a different axis (modality depth + perturbation-aware design).
+
+**Immunai (AMICA atlas)** — Modality-rich immune atlas. RNA + Protein + VDJ via partner data. No phospho. Different from our platform (we have phospho Phase 1; they have VDJ today; Phase 2 closes our VDJ gap).
+
+**CytoReason, Turbine AI, DeepLife** — Foundation model competitors using partner-derived data. No proprietary wet-lab pipeline. Different from our closed-loop integration.
+
+**Cellarity** — Foundation model + cell-state correction architecture. Partner data. Causal modeling but different architectural choices than ours.
+
+**Valo Health, Noetik** — Downstream therapeutics companies. Use foundation models for drug development. Different layer of the stack — potentially substrate users of platforms like ours.
+
+**Drug combination prediction (causal)** — Predicting how combinations of drugs affect cells. Requires multi-omics + perturbation-aware data + temporal coverage + combinatorial conditions. Our 5-pillar architecture is designed for this; competitors optimize one layer each.
+
+**Three archetype buckets** — Data scale (TAHOE, Immunai), foundation models (CytoReason, Turbine AI, DeepLife), downstream therapeutics (Valo, Noetik). Each is doing important work in their layer. Our platform spans all three layers via the closed-loop integration.
+
+**Phospho-as-no-public-data structural moat** — Phospho-proteomics on PBMCs under perturbation does not exist in any public single-cell dataset. We close this gap with Phase 1 QuRIE-seq (Q3 2026). Phospho is the modality our competitors structurally cannot match without building a proprietary wet-lab pipeline.
+
+**Same protocol family (Phase 1 + Phase 2)** — Phase 2 extends Phase 1's QuRIE-seq protocol with VDJ + scale, NOT by switching protocols. Same encoder backbone, same readout architecture, new input head only. Compounding rather than rebuilding.
+
+### Diligence Q&A
 
 **If asked: "How is this different from Cellarity / Recursion / Insitro?"**
 
@@ -219,7 +253,7 @@ F1 closes the appendix's competitive argument with the right strategic frame. Th
 
 ## Investor framing (one-paragraph elevator)
 
-> No public single-cell dataset combines what causal drug combination prediction requires — multi-omics, perturbation-aware, temporal, combinatorial, protocol-aligned for modality expansion. That structural gap is why QurieSeq exists: a proprietary wet-lab platform generating data co-designed with our model architecture. Five pillars run as one integrated system — wet-lab data generation, architecture co-designed with the assay (the decomposed readout matches the 4-arm experimental design; Neural ODE matches irregular timepoint sampling), temporal multi-omics, compositional perturbation modeling, and unified protocol family for Phase 2 phospho + VDJ extension. Competitors optimize one layer each: TAHOE optimizes single-modality data scale (100M cells, cell lines); Immunai optimizes modality-rich atlases via partner data; CytoReason, Turbine, DeepLife optimize foundation models on partner-derived data; Valo and Noetik optimize downstream therapeutics. We optimize the closed-loop system itself. Every QurieSeq phase trains the next architecture extension; every architecture extension informs the next wet-lab design. The integration compounds. Modality coverage, cell counts, and partner deals are downstream properties of that integrated platform — not the headline argument.
+> No public single-cell dataset combines what causal drug combination prediction requires — multi-omics, perturbation-aware, temporal, combinatorial, protocol-aligned for modality expansion. That structural gap is why QuRIE-seq exists: a proprietary wet-lab platform generating data co-designed with our model architecture. Five pillars run as one integrated system — wet-lab data generation, architecture co-designed with the assay (the decomposed readout matches the 4-arm experimental design; Neural ODE matches irregular timepoint sampling), temporal multi-omics including phospho-proteomics integral to QuRIE-seq from Phase 1 (Q3 2026), compositional perturbation modeling, and unified protocol family for Phase 2 VDJ extension. Competitors optimize one layer each: TAHOE optimizes single-modality data scale (100M cells, cell lines); Immunai optimizes modality-rich atlases via partner data; CytoReason, Turbine, DeepLife optimize foundation models on partner-derived data; Valo and Noetik optimize downstream therapeutics. We optimize the closed-loop system itself. Every QuRIE-seq phase trains the next architecture extension; every architecture extension informs the next wet-lab design. The integration compounds. Modality coverage, cell counts, and partner deals are downstream properties of that integrated platform — not the headline argument.
 
 ---
 

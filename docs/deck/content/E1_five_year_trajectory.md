@@ -25,7 +25,7 @@ The 5-year arc has three distinct phases: platform validation (2026-27), platfor
 
 ## Body content (3 bullets max)
 
-- **2026-2027 — Platform validation (Stage 3a/b/c)**: BTK+JAK headline demo (Q4 2026), phospho integration (Q1 2027), VDJ + 20-donor cross-disease transfer (Q2-Q4 2027). The model graduates from validated-on-Phase-1 to multi-modality, multi-disease production-ready. **Foundation locked.**
+- **2026-2027 — Platform validation (Stage 3a/b/c)**: BTK+JAK headline demo (Q4 2026) on Phase 1 data (4 modalities including phospho, integral to QuRIE-seq Phase 1). Stage 3c causal architecture validation (Q1-Q2 2027) leverages Phase 1 phospho signal. VDJ + 20-donor cross-disease transfer (Q2-Q4 2027) via Phase 2. The model graduates from validated-on-Phase-1 to multi-modality, multi-disease production-ready. **Foundation locked.**
 
 - **2028 — Platform extension + early pipelines (Stage 4/5)**: Causal-readiness layer for drug-target reasoning. Two internal drug pipelines actively running (Pipeline 1 from Q1-Q2 2027, Pipeline 2 from Q2 2028). Clinical translation framework — regulatory-grade provenance, computational diligence packages — built into the platform infrastructure. **Pipelines and clinical infrastructure mature in parallel.**
 
@@ -121,6 +121,30 @@ E1 closes the entire technical appendix with a **forward-looking but grounded vi
 ---
 
 ## Speaker notes
+
+### Three-state framing
+- **Today through Phase 1 (2026-2027)**: Stage 3a-3c validation completes on Phase 1 data. BTK+JAK demo Q4 2026. Stage 3c causal architecture validation Q1-Q2 2027 (Phase 1 phospho data). VDJ + 20-donor cross-disease transfer in Stage 4 Phase 2 (Q2-Q4 2027).
+- **Phase 2 + Stage 4-5 (2027-2028)**: Platform matures to production-ready. Multi-modality, multi-disease. Drug pipelines start (Pipeline 1 Q2'27, Pipeline 2 Q2'28).
+- **Beyond seed (2029-2031)**: Clinical translation framework. Causal-readiness for regulatory contexts. The 5-year horizon for the platform.
+
+### Technical glossary
+**5-year horizon** — Strategic outlook through 2031. Includes seed-funded execution (2026-2028) + post-Series-A clinical maturation (2029-2031).
+
+**Stage 3c causal architecture validation** — Validates Neumann propagation + sparse GRN + direct-effect log-FC head on Phase 1 phospho-rich data. Q1-Q2 2027. Gated on Phase 1, not Phase 2.
+
+**VDJ + cross-disease transfer (Stage 4)** — Phase 2 extension. VDJ as 5th modality (T/B-cell adaptive immune receptors). Cross-disease transfer = does the platform generalize across disease contexts (CLL, autoimmune, oncology). Q2-Q4 2027.
+
+**Drug pipelines (Pipeline 1, Pipeline 2)** — Internal target identification → validation workflows. Pipeline 1 Q2 2027 (post Stage 3 verdict). Pipeline 2 Q2 2028.
+
+**Clinical translation framework (Stage 5)** — 2028+. Explicit support for drug-target reasoning, regulatory-grade explanation, clinical decision support. Causal architecture is the foundation; Stage 5 adds clinical-readiness features.
+
+**Multi-modality production-ready** — Platform has all 5 modalities (RNA + Protein + Phospho + ATAC + VDJ) operational across multiple diseases. Phase 2 + Stage 4 milestone.
+
+**Pipeline 1 target ID → validation** — Discovery workflow. Identify candidate drug targets from platform predictions; validate via wet-lab. Pipeline 1 starts Q2 2027.
+
+**Causal-readiness** — Platform produces causal inference (mechanism, "what does X cause?") not only predictive (response, "what happens after X?"). Stage 3c is the architectural commitment; Stage 5 extends with clinical-grade features.
+
+### Diligence Q&A
 
 **If asked: "Why 5 years? Most pitches stop at 18 months."**
 

@@ -118,6 +118,54 @@ Without this decomposition + zero-arm constraint, the architecture is just a con
 
 ## Speaker notes
 
+### Three-state framing
+- **Today (architecture shipped)**: 4-arm decomposed readout is implemented and trained on Mimitou CRISPR data. CD3E + CD4 single perturbations train the synergy head; CD3E×CD4 double-knockout is the held-out test for compositional generalization.
+- **Phase 1 (Q3 2026)**: Same 4-arm readout trains on QuRIE-seq Phase 1 perturbation panel. BTK alone + JAK alone train the inhibitor arms; BTK+JAK combo is the held-out test for the Stage 3b demo. Synergy head's zero-arm constraint becomes the load-bearing claim.
+- **Phase 2 (2027)**: 4-arm readout extends to additional inhibitor combinations and donor-level cross-validation across the 20-donor scale.
+
+### Technical glossary
+**Decomposed readout (4-arm)** — Decoder architecture: predicted response = `h_base + 𝟙[s]·Δ_stim + 𝟙[i]·Δ_inh + 𝟙[s∧i]·Δ_synergy`. Four learned heads, parallel branches, summed at output.
+
+**Synergy** — When the combined effect of two perturbations exceeds the sum of their individual effects: `Δ_combo > Δ_drug1 + Δ_drug2`. The Δ_synergy arm captures this directly.
+
+**Zero-arm constraint** — A penalty (L2, λ=1.0) forcing the synergy head to output zero when stimulus or inhibitor is absent. Forces the synergy head to learn ONLY the non-additive correction.
+
+**Compositional generalization** — Model's ability to predict combinations from singletons. Train on BTK alone + JAK alone, predict BTK+JAK combo response.
+
+**Indicator function 𝟙[s] (Iverson bracket)** — `𝟙[s] = 1 if condition s is true, 0 if false`. Switches arms on/off based on experimental condition.
+
+**Δ (Delta)** — "Change" or "difference". Δ_stim = stimulus contribution, Δ_inh = inhibitor contribution, Δ_synergy = synergy correction beyond additive.
+
+**L2 regularization** — Penalty on the sum of squared weight values. Used at λ=1.0 to enforce the zero-arm constraint on the synergy head when single arms are absent.
+
+**Perturbation embedding** — Vector representation of a perturbation context (drug, concentration, duration). Combined with cell latent state to predict response.
+
+### Equations & notation
+
+**Reading the decomposed readout equation**:
+```
+ŷ(z, s, i, t) = h_base(z, t)
+              + 𝟙[s]·Δ_stim(z, s, t)
+              + 𝟙[i]·Δ_inh(z, i, t)
+              + 𝟙[s∧i]·Δ_synergy(z, s, i, t)
+```
+
+- `ŷ` (y-hat) = predicted response
+- `z` = cell latent state (from encoder)
+- `s` = stimulus identifier (vector)
+- `i` = inhibitor identifier (vector)
+- `t` = timepoint
+- `h_base(z, t)` = vehicle-control baseline at time t
+- `𝟙[s]` = 1 if stimulus s is present, 0 otherwise (Iverson bracket / indicator)
+- `Δ_stim(z, s, t)` = additional response contributed by stimulus alone
+- `Δ_inh(z, i, t)` = additional response contributed by inhibitor alone
+- `Δ_synergy(z, s, i, t)` = non-additive synergy correction when both present
+- `s ∧ i` = "both s and i present" (logical AND)
+
+Architectural commitment: synergy head outputs zero when either single arm is absent (`𝟙[s∧i] = 0`), forced by L2 penalty during training. This means the synergy head can only learn the non-additive part — making zero-shot combination prediction possible.
+
+### Diligence Q&A
+
 **If asked: "Why not just train a single conditional head?"**
 
 > Mathematically you could — a single head conditioned on (cell, stim, inh) can fit any training data. But at inference, it has no inductive bias for unseen combinations. The architecture would memorize the training combinations rather than learn the additive structure of combinatorial biology. Our decomposition forces the model to learn the non-additive part separately, which is precisely what zero-shot synergy prediction requires.

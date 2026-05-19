@@ -98,10 +98,51 @@ Below the main row, two annotation rows:
 ## Risk callouts (NOT to include on slide, but to track)
 
 - Neural ODE is not yet validated on real data (Q3 2026 with QurieSeq Phase 1)
-- Pathway-aware output dependent on phospho integration in Phase 2 (Q1 2027)
+- Pathway-aware output uses phospho signal from Phase 1 (Q3 2026 — phospho is integral to QuRIE-seq); pathway dictionary expands across Phases 1-2
 - BTK+JAK headline demo grounded but not yet executed
 
 These risks belong on Slide C2 (BTK+JAK demo plan with pre-registered eval), not here. A1 is the architecture summary; risks are covered in the eval-plan slide where they belong.
+
+---
+
+## Speaker notes
+
+### Three-state framing
+- **Today (public substrate validated)**: Encoder pretrained on DOGMA-seq (Mimitou 2021, 3 modalities: RNA + ATAC + Protein), cross-corpus validated at 73% on Calderon 2019. Adapter probed on Mimitou CRISPR perturbations at 0.57 (ADAPTER_RECOMMENDED verdict). This 5-block architecture is built and shipped.
+- **Phase 1 (Q3 2026)**: QuRIE-seq Phase 1 delivers proprietary data — RNA + Protein + Phospho at all 5 timepoints (0/5/30/60/180), ATAC at t=0 and t=180. Architecture stays unchanged; new modality (phospho) plugs in as 4th encoder input head.
+- **Phase 2 (2027)**: VDJ adds as 5th modality. Encoder grows under the same protocol family — no re-architecting required.
+
+### Technical glossary
+**Foundation model** — Large pretrained model providing general representations for many downstream tasks via fine-tuning or adapter layers. Our encoder is a foundation model for PBMC multi-omics.
+
+**Frozen encoder** — Encoder weights locked during downstream training. Only adapter and decoder heads update. Prevents encoder representations from drifting during task-specific training. Enforced by AIVC_GRAD_GUARD.
+
+**Adapter** — Small lightweight neural network layer trained on top of a frozen pretrained encoder. The encoder provides general representations; the adapter learns task-specific behavior. Approved by Stage 3 Part 1 verdict.
+
+**Trimodal encoder** — Encoder operating on 3 modalities (RNA + ATAC + Protein). "Trimodal" refers strictly to the Mimitou 2021 DOGMA-seq pretraining protocol. Today's deployed encoder is trimodal; Phase 1 expands to 4 modalities (+phospho) without retraining the backbone.
+
+**Latent space 256-D** — The 256-dimensional vector representation produced by the encoder. Each cell maps to a point in this space. Smaller than typical transformer hidden states because multi-omics input is more constrained than natural language.
+
+**Neural ODE (Neural Ordinary Differential Equation)** — Continuous-time dynamics model. Instead of discrete time steps, the latent state evolves according to a learned differential equation. Handles irregular timepoint spacing (our 0/5/30/60/180 min sampling has unequal gaps) natively.
+
+**4-arm decomposed readout** — Decoder architecture that decomposes a perturbed cell's predicted state as `h_base + Δ_stim + Δ_inh + Δ_synergy`. The synergy arm captures the non-additive part of combinations — enables zero-shot prediction of unseen combinations.
+
+**DOGMA-seq** — Triple-modality single-cell method measuring RNA + ATAC + surface protein on the same cell. From Mimitou 2021 (Nature Biotechnology). Source of our encoder pretraining data.
+
+**Calderon 2019** — Published PBMC dataset under stimulation, used as our cross-corpus hold-out test for the encoder. 73% pseudo-bulk centroid-NN accuracy demonstrates cross-corpus generalization.
+
+**Pathway-aware output** — Decoder produces outputs aligned to known biological pathways (GO + Reactome). Phase 1 phospho data + ATAC priors expand the pathway dictionary.
+
+### Diligence Q&A
+
+**If asked: "Why one model for all PBMC cell types?"**
+> The encoder is trained on cell-type-mixed multi-omics data and represents each cell in a shared 256-D latent space. Cell type emerges as structure within that space (validated by the 73% Calderon cross-corpus result on 5-class lineage classification). One unified model means downstream tasks (perturbation prediction, temporal evolution, causal inference) operate on a single coherent substrate rather than per-cell-type specialized models. Cheaper to maintain, more cross-type generalization.
+
+**If asked: "Where does the model see phospho if the encoder was pretrained on RNA + ATAC + Protein only?"**
+> Phospho enters the architecture in Phase 1 (Q3 2026) as a new input head added to the encoder. The pretrained RNA + ATAC + Protein backbone stays frozen (AIVC_GRAD_GUARD enforced) while a phospho-specific encoder layer fits to the QuRIE-seq Phase 1 data. This is the same adapter-strategy pattern that the Stage 3 Part 1 verdict approved. Phase 2 extends similarly with VDJ.
+
+**If asked: "What's pre-registered about this?"**
+> The Stage 3 evaluation methodology was committed in writing before running the evals — cross-corpus pseudo-bulk centroid-NN as the eval method, threshold bands locked, no post-hoc threshold adjustment. The 73% Calderon result and 0.57 Mimitou CRISPR result both came from pre-registered evals. Stage 3b (BTK+JAK demo) and Stage 3c (causal architecture) also have pre-registered thresholds in architecture spec v1.1.
 
 ---
 

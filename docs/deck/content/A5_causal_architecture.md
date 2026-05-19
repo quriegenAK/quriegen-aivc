@@ -182,6 +182,56 @@ A5 earns the appendix's "causal" claim. Three things it does that F1 and the exi
 
 ## Speaker notes
 
+### Three-state framing
+- **Today (spec-locked, validation pending)**: Stage 3c causal architecture is committed in architecture spec v1.1 (v1.2 §X causal-layer extension pending). Neumann propagation, sparse learned GRN with STRING prior, direct-effect log-FC head — all have concrete mathematical definitions. Not yet implemented in code.
+- **Phase 1 (Q3 2026)**: Phospho signal becomes available (integral to QuRIE-seq). Stage 3c architecture validation can begin Q4 2026 once Phase 1 data lands. STRING database (PPI prior) integrated for GRN edge initialization.
+- **Phase 2 (2027)**: Stage 3c validation reaches publishable result quality on Phase 1+2 combined data. Stage 5 (2028) extends causal architecture with clinical-readiness features.
+
+### Technical glossary
+**Causal architecture** — Layer of the platform that produces causal inference rather than only correlative prediction. Distinguishes "what does X cause?" (Stage 3c) from "what happens after X?" (Stage 3a/3b).
+
+**Neumann propagation** — Mathematical technique for computing perturbation flow through a graph. The closed-form `(I − W)⁻¹ dₚ` solves the linear system "what happens at every node given a direct effect dₚ?". Requires spectral radius `ρ(W) < 1` for the series to converge.
+
+**Sparse learned GRN (Gene Regulatory Network)** — Matrix W where W_ij represents the directed regulatory influence of gene i on gene j. "Sparse" because most entries are zero (enforced by L1 regularization + STRING structural prior). "Learned" because non-zero entries are inferred from perturbation-response data.
+
+**STRING database (v12.0)** — Protein-Protein Interaction database (Szklarczyk et al., 2023, Nucleic Acids Research). Provides edge-existence priors for our sparse GRN. STRING-supported edges face lower L1 sparsity pressure; novel edges remain learnable but face higher evidence thresholds.
+
+**Structural prior** — Information about graph topology incorporated before learning. STRING provides our structural prior on GRN edge existence. Different from learned weights — structure shapes initialization, weights update during training.
+
+**Direct-effect log-FC head** — Decoder outputting direct (immediate) perturbation effect in log fold-change units. Stage 3a/3b predicted abundance changes; Stage 3c separates the direct effect `dₚ` from the Neumann-propagated downstream effect.
+
+**Log-FC (log fold-change)** — Standard unit for expression changes. `log_2(post / pre)` where post and pre are expression levels after and before perturbation. Positive = upregulation, negative = downregulation, zero = no change.
+
+**Spectral radius ρ(W)** — Largest absolute eigenvalue of matrix W. Architectural requirement: `ρ(W) < 1` for Neumann series to converge. Enforced by L1 sparsity during GRN learning.
+
+**L1 regularization** — Penalty on sum of absolute weight values. Encourages sparsity — many weights pushed to zero. Used in sparse GRN to enforce that most gene-gene edges are zero, retaining only the strongest learned relationships.
+
+**Stage 3c** — Model training stage focused on causal architecture validation. Q1-Q2 2027. Gated on Phase 1 data (NOT Phase 2 — phospho is in Phase 1).
+
+**Spec-locked** — Architectural commitment is written down in spec v1.1 with concrete mathematical definitions. Implementation and validation still pending.
+
+**Counterfactual** — A prediction of what would happen under a different perturbation than what was observed. "If we had perturbed gene Y instead of gene X, what would the response look like?" Stage 3c architecture supports counterfactual queries; Stage 3a/3b supports only direct perturbation predictions.
+
+### Equations & notation
+
+**Reading the Neumann propagation equation**:
+```
+ŷ = (I − W)⁻¹ · dₚ
+```
+
+- `ŷ` = predicted full propagated response across all nodes in the network
+- `I` = identity matrix (1s on diagonal, 0s elsewhere — represents "self" with no propagation)
+- `W` = learned sparse GRN matrix; `W_ij` = directed influence of gene i on gene j
+- `(I − W)` = matrix difference; `(I − W)⁻¹` = its inverse
+- `dₚ` = direct perturbation effect vector (output of the log-FC head); subscript `p` means "perturbation"
+- `·` = matrix-vector multiplication
+
+**Interpretation in plain English**: A perturbation hits gene `p` directly (direct effect `dₚ`). Through the network, the effect propagates to neighbors, then their neighbors, etc. The Neumann series `(I + W + W² + W³ + ...)` adds up all these propagation paths. When `ρ(W) < 1`, this series converges to the closed-form `(I − W)⁻¹`. Mathematically equivalent to running an infinite simulation but in one matrix inverse.
+
+**Architectural requirement: `ρ(W) < 1`** — Spectral radius bounded below 1. Ensures the Neumann series converges. Enforced by L1 sparsity during training.
+
+### Diligence Q&A
+
 **If asked: "What does 'Stage 3c spec-locked' actually mean? Is this real or aspirational?"**
 
 > Spec-locked means the architectural commitment is written down in spec v1.1 (with v1.2 causal-layer extension pending) and the components have concrete mathematical definitions — Neumann propagation as `(I − W)⁻¹ dₚ`, sparse GRN with L1 regularization on edges absent from STRING, log-FC head for direct-effect decoding. What's not yet done is implementation and validation. Validation requires perturbation-aware multi-omics data with sufficient signal for GRN edge inference — Phase 1 wet-lab generation (Q3 2026) provides this with 4 modalities including phospho. Stage 3c implementation begins post-Phase-1, validation Q1-Q2 2027. The slide's status pill is honest about this status.

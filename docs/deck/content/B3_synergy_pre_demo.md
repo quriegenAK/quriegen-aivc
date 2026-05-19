@@ -134,6 +134,38 @@ With B3:
 
 ## Speaker notes
 
+### Three-state framing
+- **Today (public-data substitute)**: Mimitou CD3E + CD4 single knockouts in training; CD3E×CD4 double-KO held out for zero-shot test. Architecturally equivalent to BTK+JAK demo but on public data — dress rehearsal.
+- **Phase 1 (Q3 2026)**: Same exact architecture trains on Phase 1 BTK alone + JAK alone, predicts BTK+JAK combo zero-shot. Stage 3b demo target ≥0.70 accuracy. Pre-registered.
+- **Phase 2 (2027)**: Synergy framework extends to additional drug combinations beyond BTK+JAK. Multi-drug compositional generalization.
+
+### Technical glossary
+**Mimitou CRISPR substitute pattern** — Using CD3E×CD4 double-knockout as a public-data analog to BTK+JAK. Both are perturbation pairs where each single arm is in training and the combination is held out. Mathematically equivalent test of compositional generalization.
+
+**Zero-shot synergy prediction** — Predicting the response to a perturbation combination never seen during training, using only observations of individual perturbation arms. Enabled by the 4-arm decomposed readout + zero-arm constraint.
+
+**Dress-rehearsal protocol** — Test the architecture on public data before applying it to proprietary Phase 1 data. Validates the mechanism is sound; only the data type changes.
+
+**CD3E + CD4 double-knockout** — Mimitou CRISPR experimental condition. Both CD3E and CD4 disrupted simultaneously. Used as public-data substitute for combination perturbation.
+
+**ZAP70 / NFKB2 (other Mimitou single KOs)** — Additional Mimitou single-KO arms used in adapter training. ZAP70 = T-cell receptor signaling kinase. NFKB2 = transcription factor.
+
+**Stage 3a pre-registered threshold (≥0.70)** — Pre-registered success bar for dress-rehearsal zero-shot synergy accuracy on Mimitou data. Set in architecture spec v1.1 before running the eval.
+
+**BTK + JAK demo (Phase 1)** — The investor-grade headline result. Train on Phase 1 BTK alone + JAK alone (plus other singles), hold out BTK+JAK combo, predict combo response zero-shot. Pre-registered. Grounded in Ibrutinib+Ruxolitinib CLL clinical literature.
+
+**Ibrutinib** — FDA-approved BTK inhibitor. Standard CLL therapy. The "B" in our BTK demo target.
+
+**Ruxolitinib** — FDA-approved JAK inhibitor. Approved for myelofibrosis. The "J" in our JAK demo target.
+
+**NCT02912754** — Clinical trial identifier for Ibrutinib + Ruxolitinib combination in CLL. Our BTK+JAK demo connects to this trial's biology.
+
+**PMID 26819050** — PubMed ID for published paper on BTK+JAK combination clinical evidence in CLL.
+
+**pJAK1/BCR pathway finding** — Thiago's prior wet-lab observation: JAK1 phosphorylation responds to BCR pathway activity. Underlying biological mechanism for BTK+JAK synergy.
+
+### Diligence Q&A
+
 **If asked: "Why didn't you find a public dataset with BTK+JAK?"**
 
 > We did exhaustive search across PubMed, GEO, scperturb.org, PerturBase, PerturbSeq.db, and 8 years of literature. BTK+JAK pharmacological perturbations don't exist in any public PBMC dataset. The closest are CRISPR knockouts of upstream pathway components (e.g., BTK knockout in B-cell lines) but not the inhibitor combination. The structural reason is that pharmacological combination screening in primary PBMCs is hard and expensive — it's exactly what QurieSeq is built to produce. The absence in public data is itself evidence that our proprietary data is the moat.

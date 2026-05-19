@@ -144,7 +144,37 @@ Color coding consistent with C1: RNA cyan, Protein green, Phospho lavender (`#8B
 
 ---
 
-## Speaker notes (NOT on slide — for Ash to use when answering questions)
+## Speaker notes
+
+### Three-state framing
+- **Today (shipped evidence)**: Encoder trained on DOGMA-seq, 73% Calderon cross-corpus accuracy (pre-registered eval, pseudo-bulk centroid-NN). Three modalities: RNA + ATAC + Protein. Public data, public benchmarks. The 73% on the right side of the slide is the shipped result.
+- **Phase 1 (Q3 2026 — QuRIE-seq lands)**: Adds phospho as 4th modality (integral to QuRIE-seq). The encoder grows a phospho input head; backbone stays frozen. RNA + Protein + Phospho at 5 timepoints; ATAC at t=0 and t=180 (chromatin slow-varying).
+- **Phase 2 (2027 — scale + VDJ)**: Adds VDJ as 5th modality + scale to 20 donors. Same protocol family, same encoder backbone, new input head only.
+
+### Technical glossary
+**Multi-omics encoder** — Neural network that takes multi-modality single-cell measurements (RNA + ATAC + Protein, growing to +Phospho +VDJ) and produces a unified vector representation in a shared 256-D latent space.
+
+**Contrastive multi-omics fusion** — The encoder learns to align representations of the same cell across modalities (positive pairs) while differing across cells (negative pairs). Multi-modal contrastive learning produces the 256-D latent.
+
+**Latent space 256-D** — The 256-dimensional vector representation produced by the encoder. Dimensionality chosen to balance expressiveness (capacity to represent cell state) with computational cost (downstream inference speed, GPU memory).
+
+**Pseudo-bulk centroid-NN** — Cross-corpus evaluation method. Aggregate single cells by cell-type label within each dataset to produce one centroid vector per cell type (pseudo-bulk). Then for each held-out test centroid, find the nearest centroid in the training pool by cosine distance (centroid-NN). Accuracy = fraction where the match is the same label.
+
+**73% Calderon (cross-corpus)** — Pseudo-bulk centroid-NN accuracy on 5-class PBMC lineage classification (B / T / NK / monocyte / DC) when training on Mimitou DOGMA-seq and evaluating on independently-generated Calderon 2019. Chance baseline is 20%. The 73% = 3.65× chance.
+
+**Cross-corpus generalization** — Property of a model trained on one dataset generalizing to a different, independently-generated dataset without retraining. Tests for spurious dataset-specific features that would inflate within-dataset accuracy.
+
+**Pre-registered evaluation** — Eval methodology, metric, and thresholds committed in writing before running the eval. Prevents post-hoc cherry-picking. Our 73% result was pre-registered before we ran it.
+
+**Frozen encoder + adapter** — After encoder pretraining, encoder weights are locked. Downstream tasks (perturbation prediction, etc.) train a small adapter on top instead of fine-tuning the encoder. Cheaper, preserves general representations.
+
+**AIVC_GRAD_GUARD** — Environment variable flag (`AIVC_GRAD_GUARD=1`) that blocks gradient flow into the encoder during downstream training. Enforces frozen-encoder discipline mechanically. Set in all production training runs after Stage 3 Part 1 verdict.
+
+**DOGMA-seq** — Single-cell method measuring RNA + ATAC + surface protein on the same cell. From Mimitou 2021 (Nature Biotechnology). Our encoder pretraining dataset.
+
+**ASAP-seq** — Single-cell method measuring ATAC + surface proteins simultaneously. Variant of CITE-seq. Mimitou's CRISPR sub-study used ASAP-seq with hashtag-oligo-encoded CRISPR perturbations.
+
+### Diligence Q&A
 
 **If asked: "Why DOGMA-seq specifically?"**
 
@@ -156,7 +186,7 @@ Color coding consistent with C1: RNA cyan, Protein green, Phospho lavender (`#8B
 
 **If asked: "Why aren't phospho and VDJ in the validation?"**
 
-> Phospho doesn't exist in public PBMC data — it's QurieSeq's proprietary modality, our moat. VDJ is being deferred to QurieSeq Phase 2 per Thiago's wet-lab plan. The encoder architecture is modality-extensible by design — Phase 1 phospho and Phase 2 VDJ slot in without retraining the base encoder.
+> Phospho doesn't exist in public PBMC data — it's QuRIE-seq's proprietary modality, our moat. Phospho is **integral to QuRIE-seq** and available from Phase 1 (Q3 2026). VDJ is the modality being deferred to QurieSeq Phase 2 per Thiago's wet-lab plan. The encoder architecture is modality-extensible by design — Phase 1 phospho and Phase 2 VDJ slot in without retraining the base encoder.
 
 **If asked: "Why pseudo-bulk centroid-NN?"**
 

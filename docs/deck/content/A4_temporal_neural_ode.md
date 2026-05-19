@@ -63,7 +63,7 @@ A continuous curve in latent space (showing `z(t)` over time) with 5 sample poin
 Annotation under the trajectory:
 
 - **0 min**: baseline state (pre-perturbation)
-- **5 min**: early signaling (phospho-active, RNA latent) — captured by Phase 2 phospho
+- **5 min**: early signaling (phospho-active, RNA latent) — captured directly by Phase 1 phospho (Q3 2026, integral to QuRIE-seq)
 - **30 min**: transcriptional onset (RNA dynamics begin)
 - **60 min**: peak response window
 - **180 min**: stable phenotype (RNA + Protein equilibrium)
@@ -122,13 +122,39 @@ Neural ODE is the architecture's answer to **"how does the platform handle time?
 
 ## Speaker notes
 
+### Three-state framing
+- **Today**: Neural ODE temporal backbone implemented and trained on Mimitou CRISPR + DOGMA-seq data. Continuous-time state evolution validated architecturally — irregular timepoints handled natively.
+- **Phase 1 (Q3 2026)**: 5-timepoint Phase 1 design (0/5/30/60/180 min) gives Neural ODE 5 anchor points per donor per perturbation. 5-minute timepoint captures phospho early-signaling (phospho is integral to QuRIE-seq Phase 1) — directly populates the early-signaling window with real biology.
+- **Phase 2 (2027)**: 20-donor scale gives cross-donor temporal validation. Same Neural ODE architecture, more donors, no re-architecting.
+
+### Technical glossary
+**Neural ODE (Neural Ordinary Differential Equation)** — Continuous-time dynamics model. Instead of discrete time steps (like RNN/transformer), the latent state evolves according to a learned differential equation `dz/dt = f_θ(z, perturbation, t)`. Time is a first-class input, not a discrete index.
+
+**Latent SDE (Latent Stochastic Differential Equation)** — Probabilistic temporal model where latent state evolves with both deterministic drift and stochastic diffusion. Architecture spec v1.1 §7.1 documents this as fallback if Neural ODE proves insufficient for biological noise levels.
+
+**Continuous-time** — Time is a real-valued input variable, not a discrete step. Allows querying the model at any timepoint (e.g., predict state at t=12.5 min) without retraining.
+
+**Irregular timepoint spacing** — Sampling times that don't divide evenly. Our 0/5/30/60/180 min has gaps of 5, 25, 30, 120 minutes — radically unequal. Neural ODE handles this natively.
+
+**5-minute timepoint** — Captures early signaling biology (phospho-active, RNA still latent). In QuRIE-seq Phase 1, this gives the encoder a "what's already happening" signal with real phospho-proteomics measurement (phospho is integral to QuRIE-seq).
+
+**30-minute timepoint** — Captures transcriptional onset. RNA changes are detectable; phospho signal is decaying or saturating.
+
+**180-minute timepoint** — Captures stable response phenotype. Both transcription and chromatin remodeling visible. ATAC measurement only at t=0 and t=180 in Phase 1 because chromatin changes slowly relative to other modalities.
+
+**RSSM (Recurrent State Space Model)** — Considered as alternative temporal architecture, rejected because discrete time steps make irregular sampling clunky.
+
+**Transformer-over-timesteps** — Considered as alternative, rejected because attention over 5 timepoints is overkill and the architecture doesn't naturally handle the temporal causality direction.
+
+### Diligence Q&A
+
 **If asked: "Why not RNN or Transformer for time?"**
 
 > Transformers and RNNs are discrete — they assume fixed timesteps. If we sampled at 0 and 5 minutes, then a Transformer effectively concatenates the two as adjacent tokens. That loses the information that 5 minutes is *fast* relative to the next gap (5→30 = 25 min) and *very fast* relative to 60→180 (120 min). Neural ODE represents the actual continuous trajectory, so non-uniform spacing is handled by integration, not by architectural workarounds.
 
 **If asked: "Why is 5 minutes interesting if RNA changes slowly?"**
 
-> Five minutes is where early signaling lives — phosphorylation cascades, second messengers, kinase activation. The phospho readouts from QurieSeq Phase 2 will populate that window with real biology. Even before phospho lands, the 5-minute sample gives the encoder a "what's already perturbed" reference point that's distinguishable from the 0-minute baseline.
+> Five minutes is where early signaling lives — phosphorylation cascades, second messengers, kinase activation. The phospho readouts from QuRIE-seq Phase 1 (Q3 2026) populate that window with real biology — phospho is integral to QuRIE-seq, available from the first proprietary wet-lab batch. The 5-minute sample at the phospho level gives the encoder direct mechanistic signal in the window before transcriptional changes propagate.
 
 **If asked: "What if Neural ODE training diverges?"**
 

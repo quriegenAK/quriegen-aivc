@@ -25,7 +25,7 @@ Allocation aligned to the roadmap on slide D1. Wet lab and AI/ML team are the do
 
 ## Body content (3 bullets max)
 
-- **~40% wet lab (Phase 1 + Phase 2 prep)**: ~$4M. Funds QurieSeq Phase 1 delivery (Q3 2026) and Phase 2 readiness (Q1-Q2 2027). Equipment, reagents, donor procurement, CITE-seq antibody panels, BTK + JAK + other inhibitor procurement, ATAC integration pipeline, phospho panel preparation for Phase 2 onboarding.
+- **~40% wet lab (Phase 1 delivery + Phase 2 prep)**: ~$4M. Funds QuRIE-seq Phase 1 delivery (Q3 2026, includes integrated phospho-proteomics panel as part of QuRIE-seq protocol) and Phase 2 readiness (Q1-Q2 2027, VDJ panel + donor scale-up to 20). Equipment, reagents, donor procurement (Sanquin), CITE-seq + phospho antibody panels, BTK + JAK + additional inhibitor procurement, ATAC integration pipeline. Phase 1 phospho is not a separate prep cost — it's part of the QuRIE-seq line.
 
 - **~25% AI/ML team + compute**: ~$2.5M. Engineering scale-up (3-4 ML engineers including current team), compute infrastructure (BSC cluster access + cloud burst capacity for training peaks), GPU allocation for Stage 3a/3b/3c training, evaluation infrastructure, MLOps tooling.
 
@@ -61,8 +61,8 @@ G&A + IP + Legal                      █████░░░░░░░░░
 │                        │  │                        │  │                        │
 │ • Phase 1 delivery     │  │ • Stage 3a/3b/3c       │  │ • Pharma BD pipeline   │
 │   Q3 2026              │  │   training (3 stages)  │  │   2027 onwards         │
-│ • Phase 2 phospho      │  │ • BTK+JAK demo         │  │ • IP filings on        │
-│   + VDJ onboarding     │  │   eval Q4 2026         │  │   architecture +       │
+│ • Phase 2 VDJ panel    │  │ • BTK+JAK demo         │  │ • IP filings on        │
+│   + 20-donor scale     │  │   eval Q4 2026         │  │   architecture +       │
 │   Q1-Q2 2027           │  │ • Stage 4 + 5          │  │   QurieSeq protocol    │
 │ • Phase 3 wet lab      │  │   platform extensions  │  │ • Regulatory readiness │
 │   Q3 2027+             │  │   2027-2028            │  │   Stage 5 (2028)       │
@@ -101,7 +101,7 @@ Three things it earns:
 |---|---|
 | $10M seed round target | Kinga's deck slide 17 |
 | Phase 1 QurieSeq cost basis (~$3-4M) | Industry standard for 5-donor multi-omics × 4-arm × 5-timepoint study at this scale |
-| Phase 2 phospho panel cost (~$1M prep) | ~17 antibody panels × validation + procurement + protocol dev |
+| Phase 1 phospho panel cost (~$1M, included in Phase 1 wet-lab line) | ~17 antibody panels × validation + procurement + protocol dev. Phase 2 adds VDJ-specific reagents (separate $0.5-1M estimate, pending wet-lab spec). |
 | AI/ML team cost (~$2-2.5M) | 3-4 ML engineers × 24 months at competitive salaries + benefits |
 | Compute cost (~$0.5M) | BSC allocation + cloud burst for ~10 GPU-months/year over 24 months |
 | BD cost ratio (~10%) | Industry standard for early-stage biotech BD pipeline |
@@ -112,6 +112,34 @@ Three things it earns:
 ---
 
 ## Speaker notes
+
+### Three-state framing
+- **Today**: $10M seed allocation budgeted for Phase 1 + Phase 2 wet lab + AI/ML team + compute + BD + IP + G&A.
+- **Phase 1 (Q3 2026)**: ~$4M wet lab spend lands. Phase 1 includes proprietary phospho panel as part of QuRIE-seq integral protocol — NOT a separate Phase 2 line. ATAC integration pipeline + BTK/JAK inhibitor procurement + Sanquin donors.
+- **Phase 2 (Q1 2027 onwards)**: Phase 2 onboarding (VDJ panel + 20-donor scale) within the wet-lab line. Pipeline 1 starts Q2'27 from drug pipeline budget.
+
+### Technical glossary
+**$10M seed allocation** — Total funding round size. Allocations are estimates pending Kinga's final confirmation.
+
+**Wet lab (~40% / $4M)** — Phase 1 delivery + Phase 2 prep. Includes integrated phospho panel as part of QuRIE-seq protocol (Phase 1 cost, NOT Phase 2 separate cost). Equipment, reagents, donor procurement, antibody panels, inhibitor procurement, ATAC integration pipeline.
+
+**AI/ML team + compute (~25% / $2.5M)** — 3-4 ML engineers + BSC cluster compute + cloud burst capacity + MLOps tooling.
+
+**Wet-lab team scientists (~15% / $1.5M)** — Wet-lab biologists, technicians, lab management.
+
+**Business development (~10% / $1M)** — Pharma partnerships, customer development.
+
+**G&A + IP + legal (~10% / $1M)** — General + administrative + IP filings + legal.
+
+**BSC cluster** — Barcelona Supercomputing Center compute allocation. Primary training infrastructure.
+
+**MLOps** — Machine Learning Operations. Tooling for managing model training, deployment, monitoring.
+
+**~17 antibody panel** — Phase 1 phospho antibody panel size. Cost ~$1M (panels + validation + procurement + protocol development). Included in Phase 1 wet-lab line because phospho is integral to QuRIE-seq Phase 1, NOT a Phase 2 readiness expense as the spec previously implied.
+
+**IP filings** — Intellectual property protections on QuRIE-seq protocol family, architecture (decomposed readout, Neural ODE temporal), and platform integration.
+
+### Diligence Q&A
 
 **If asked: "Why so much to wet lab vs AI?"**
 
@@ -141,7 +169,7 @@ Three things it earns:
 
 ## Investor framing (one-paragraph elevator)
 
-> The $10M seed allocates 55% to the data + model engines that compound competitive advantage. Wet lab (~40%, $4M) funds QurieSeq Phase 1 delivery in Q3 2026 and Phase 2 onboarding (phospho + VDJ + 20 donors) in Q1-Q2 2027 — the proprietary data that makes the platform defensible. AI/ML team + compute (~25%, $2.5M) funds the 3-4 engineer team executing Stage 3a through Stage 5, including BSC compute allocation and cloud burst capacity. The remaining 35% covers wet lab team scientists (~15%), business development for pharma partnerships (~10%), and G&A + IP + legal (~10%). Every dollar maps to a roadmap milestone on slide D1. These allocations are model-grounded estimates pending final confirmation from Kinga.
+> The $10M seed allocates 55% to the data + model engines that compound competitive advantage. Wet lab (~40%, $4M) funds QuRIE-seq Phase 1 delivery in Q3 2026 (4 modalities including integrated phospho-proteomics) and Phase 2 onboarding (VDJ + 20-donor scale) in Q1-Q2 2027 — the proprietary data that makes the platform defensible. AI/ML team + compute (~25%, $2.5M) funds the 3-4 engineer team executing Stage 3a through Stage 5, including BSC compute allocation and cloud burst capacity. The remaining 35% covers wet lab team scientists (~15%), business development for pharma partnerships (~10%), and G&A + IP + legal (~10%). Every dollar maps to a roadmap milestone on slide D1. These allocations are model-grounded estimates pending final confirmation from Kinga.
 
 ---
 
@@ -184,7 +212,7 @@ Output 1920×1080 viewBox. Use Kinga's deck color palette."
 - All numbers ESTIMATED. Kinga has the actual breakdown — slide must be updated with her real figures before any investor circulation.
 - Phase 1 wet lab cost basis assumed at industry-standard rates; Quriegen actual contracts (BSC, donor providers like Sanquin, antibody vendors) may yield different numbers.
 - AI/ML team scale of 3-4 ML engineers includes current team; final headcount + comp depends on hiring market and timing.
-- Phase 2 phospho prep ($1M) is a Phase 2 readiness cost partly captured in the wet lab Phase 1+2 prep bucket — overlap is acceptable for high-level allocation but final budget should disambiguate.
+- Phase 1 phospho panel cost (~$1M, included in QuRIE-seq Phase 1 wet-lab line) shifts the Phase 1 budget weight earlier than the spec previously implied. Phase 1 spend now includes phospho antibodies + validation; Phase 2 adds VDJ-specific reagents. Final budget disambiguation pending Kinga's confirmation.
 - The "$5.5M data engine" framing combines two budget categories — strategically useful for narrative but requires the line items to remain visible.
 
 ---

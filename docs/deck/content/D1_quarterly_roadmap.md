@@ -25,7 +25,7 @@ Stage 3 ships against QurieSeq Phase 1. Stage 4 and 5 build the platform out as 
 
 ## Body content (3 bullets max)
 
-- **Stage 3 (Q3 2026 – Q1 2027) — validation completes**: Stage 3a wraps in Q3 2026 (adapter trained on Mimitou, dress-rehearsal synergy demo). Stage 3b runs immediately as QurieSeq Phase 1 lands (Q3-Q4 2026) — the BTK+JAK headline demo. Stage 3c integrates phospho readouts in Q1 2027 as Phase 2 phospho panels arrive.
+- **Stage 3 (Q3 2026 – Q1 2027) — validation completes**: Stage 3a wraps in Q3 2026 (adapter trained on Mimitou, dress-rehearsal synergy demo). Stage 3b runs immediately as QuRIE-seq Phase 1 lands (Q3-Q4 2026) — the BTK+JAK headline demo. Stage 3c (causal architecture validation: Neumann propagation + sparse learned GRN + direct-effect log-FC head) begins Q1 2027 leveraging Phase 1 phospho + perturbation data already on disk from Q3 2026. Phase 1 data gates Stage 3c, not Phase 2.
 
 - **Stage 4 (Q2 2027 – Q4 2027) — platform extends**: VDJ encoder integration (T/B-cell repertoire), donor scale to 20 (Phase 2 wet-lab), cross-disease transfer evaluation. The platform graduates from "validated on Phase 1" to "production-ready across the immune system."
 
@@ -44,7 +44,7 @@ TIMELINE                Q3'26   Q4'26   Q1'27   Q2'27   Q3'27   Q4'27   Q1'28   
 
 SWIMLANE 1             │█████████│
 WET LAB                │ Phase 1   │█████████████████│
-                       │ delivery  │ Phase 2 (phospho│█████████████████████████│
+                       │ delivery  │ Phase 2 (VDJ +  │█████████████████████████│
                        │           │  + VDJ + 20     │  Phase 3 (B-cell line +  │
                        │           │  donors)        │  disease samples)        │
                        │           │                 │                           │
@@ -95,7 +95,7 @@ INVESTOR DEMOS         │ + BTK+JAK demo  │            │ benchmark +     �
 
 - **The Gantt timeline is the slide.** Make swimlanes visually distinct (Wet Lab = warm tone, Model = cool tone, Pipelines = accent, Publications = neutral).
 - **Q4 2026 BTK+JAK DEMO must be the visual anchor**. Make it stand out — bold, accent color, the only milestone with explicit "HEADLINE" callout. Everything else is supporting.
-- **Dependencies should be visible** with subtle dotted arrows: Phase 1 → 3b; Phase 2 phospho → 3c; Phase 2 VDJ → Stage 4; Stage 5 causal layer connects to drug pipelines.
+- **Dependencies should be visible** with subtle dotted arrows: Phase 1 → 3b; Phase 1 (phospho + perturbation data) → 3c; Phase 2 VDJ → Stage 4; Stage 5 causal layer connects to drug pipelines.
 - **Use ◆ diamond markers** for milestone anchors at the top of the timeline — easy scan path.
 - **Color the BTK+JAK demo bar in the model swimlane**. Make Q4 2026 unmistakable.
 
@@ -124,10 +124,10 @@ The slide also **shows discipline**: 11 quarters of execution with concrete mile
 | Claim | Source |
 |---|---|
 | QurieSeq Phase 1 Q3 2026 delivery | Thiago confirmation, May 12 |
-| QurieSeq Phase 2 Q1-Q2 2027 (phospho + VDJ + 20 donors) | QurieSeq roadmap (Phase 2 spec) |
+| QuRIE-seq Phase 2 Q1-Q2 2027 (VDJ + 20-donor scale) | QurieSeq roadmap (Phase 2 spec, Thiago + Kinga 2026-05-12) |
 | Stage 3a wraps Q3 2026 | Architecture spec v1.1, §6 |
 | Stage 3b BTK+JAK demo Q4 2026 | Architecture spec v1.1, §5.1 |
-| Stage 3c phospho integration Q1 2027 | Architecture spec v1.1, §6 |
+| Stage 3c causal architecture validation Q1-Q2 2027 (post Phase 1) | Architecture spec v1.1 §6 (v1.2 causal-layer extension pending) |
 | Stage 4 VDJ + 20 donors + cross-disease (Q2-Q4 2027) | Internal roadmap |
 | Stage 5 causal-readiness + clinical framework (2028) | Internal roadmap — confirmed Ash strategic answers May 12 |
 | Drug pipeline 1 starts Q1-Q2 2027 | Internal roadmap — confirmed Ash strategic answers May 12 |
@@ -138,9 +138,41 @@ The slide also **shows discipline**: 11 quarters of execution with concrete mile
 
 ## Speaker notes
 
+### Three-state framing
+- **Today (current Stage 3a work)**: Public-data engine build in flight. Adapter trained on Mimitou. Encoder cross-corpus validated. Architecture spec v1.1 shipped. This is everything to the left of Q3 2026 on the Gantt.
+- **Phase 1 (Q3 2026 — KEY GATE)**: QuRIE-seq Phase 1 wet-lab delivery is the gate that unlocks Stage 3b (BTK+JAK demo, Q4 2026) AND Stage 3c (causal architecture validation, Q1-Q2 2027). Phase 1 data carries both downstream stages.
+- **Phase 2 (Q1 2027 onwards)**: VDJ + 20-donor scale arrives. Unlocks Stage 4 (VDJ encoder integration + cross-donor generalization). Stage 5 (causal-readiness, 2028) follows.
+
+### Technical glossary
+**Quarter notation (Q3'26 = Q3 2026)** — Calendar quarters. Q3 = July-September. Q4 = October-December. Used as roadmap milestones.
+
+**11-quarter window** — Q3 2026 through Q4 2028 inclusive. The deck's strategic horizon.
+
+**Wet-lab swimlane** — Phase 1 (Q3'26) → Phase 2 (Q1'27+) → Phase 3 (B-cell lines + disease, 2027+). Wet-lab data generation chain.
+
+**Model swimlane** — Stage 3a (current, public data) → Stage 3b (BTK+JAK demo Q4'26) → Stage 3c (causal architecture Q1-Q2'27) → Stage 4 (VDJ + 20-donor scale, 2027) → Stage 5 (causal-ready, 2028).
+
+**Drug pipelines swimlane** — Pipeline 1 (target ID → validation) starts Q2'27 post Stage 3b verdict. Pipeline 2 follows after Pipeline 1 target validation (Q2'28).
+
+**Publications/demos swimlane** — Stage 3 verdict + BTK+JAK demo investor publication (2027). Stage 4 + 5 peer-reviewed publications (2028+).
+
+**Stage gating dependencies** — Each model stage gated by wet-lab data: Stage 3b needs Phase 1; Stage 3c needs Phase 1 (phospho); Stage 4 needs Phase 2 (VDJ); Stage 5 needs Stage 4 + drug pipelines. Slippage cascades.
+
+**BTK+JAK headline demo (Q4 2026)** — Stage 3b milestone. Zero-shot prediction of BTK+JAK combination response from training on singles. The platform's first investor-grade publication target.
+
+**Phase 1 / Phase 2 / Phase 3 (wet-lab phases)** — See master glossary. Phase 1 = first QuRIE-seq batch, 5 donors, 4 modalities, Q3 2026. Phase 2 = 20-donor scale + VDJ, 2027. Phase 3 = B-cell lines + disease samples, 2027+.
+
+**Stage 3a / 3b / 3c / 4 / 5** — Model training stages. Distinct from wet-lab Phases. Stage 3a = current public-data work. Stage 3b = BTK+JAK demo (Q4 2026). Stage 3c = causal architecture validation (Q1-Q2 2027, gated on Phase 1 phospho data). Stage 4 = VDJ + 20-donor scale (gated on Phase 2). Stage 5 = causal-readiness + clinical handoff (2028).
+
+**Target ID → validation (drug pipeline)** — Discovery workflow. Identify candidate drug targets from the platform's predictions; validate via wet-lab experiments. Pipeline 1 starts Q2 2027.
+
+**B-cell line CRISPR (Phase 3 wet-lab)** — Internal CRISPR perturbation experiments on B-cell lines (different from Mimitou's primary T cells). Closes the L3 disease-context gap in our public-data strategy.
+
+### Diligence Q&A
+
 **If asked: "What's the dependency chain?"**
 
-> Three chains. First, QurieSeq Phase 1 (Q3 2026) unlocks Stage 3b (Q4 2026, BTK+JAK demo). Without Phase 1 data, the demo slides to whenever data arrives. Second, QurieSeq Phase 2 (Q1-Q2 2027) unlocks Stage 3c phospho integration and Stage 4 VDJ. The Phase 2 data is what extends the platform from 3 to 5 modalities. Third, Stage 4 + the early drug pipeline work unlocks Stage 5's causal-readiness layer (Q1 2028+). Each major stage has one upstream dependency clearly identified.
+> Three chains. First, QuRIE-seq Phase 1 (Q3 2026, 4 modalities including phospho) unlocks Stage 3b (Q4 2026, BTK+JAK demo) AND Stage 3c (Q1-Q2 2027, causal architecture validation on Phase 1 phospho signal). Without Phase 1 data, both 3b and 3c slip. Second, QuRIE-seq Phase 2 (Q1 2027 onwards, adds VDJ + 20-donor scale) unlocks Stage 4 (VDJ encoder integration + cross-donor generalization). Third, Stage 4 + early drug pipeline work unlocks Stage 5's causal-readiness layer (2028). Phase 1 is the load-bearing dependency for both Stage 3b and 3c — meaning Phase 1 delivery slippage cascades to both demo and causal milestones.
 
 **If asked: "What happens if Phase 1 slips?"**
 
@@ -174,7 +206,7 @@ The slide also **shows discipline**: 11 quarters of execution with concrete mile
 
 ## Investor framing (one-paragraph elevator)
 
-> The roadmap is 11 quarters from Q3 2026 through Q4 2028, organized across 4 swimlanes: wet lab, model architecture, drug pipelines, and publications/demos. The visual anchor is Q4 2026 — the BTK+JAK zero-shot demo, the platform's first investor-grade publication. Phase 1 QurieSeq data delivers in Q3 2026 (Thiago confirmed); Phase 2 adds phospho and VDJ in Q1-Q2 2027. Drug pipelines establish from Q1-Q2 2027 onward as the model graduates from validated-on-Phase-1 to production-ready. Stage 5 in 2028 layers causal-readiness on top — explicit support for drug-target reasoning and clinical translation framework. Dependencies are explicit: every model stage has a wet-lab dependency cleanly identified. Slippage in any one swimlane has clear contingency paths.
+> The roadmap is 11 quarters from Q3 2026 through Q4 2028, organized across 4 swimlanes: wet lab, model architecture, drug pipelines, and publications/demos. The visual anchor is Q4 2026 — the BTK+JAK zero-shot demo, the platform's first investor-grade publication. Phase 1 QuRIE-seq data delivers in Q3 2026 (Thiago confirmed) with 4 modalities including phospho (integral to QuRIE-seq); Phase 2 adds VDJ + 20-donor scale in Q1-Q2 2027. Drug pipelines establish from Q1-Q2 2027 onward as the model graduates from validated-on-Phase-1 to production-ready. Stage 5 in 2028 layers causal-readiness on top — explicit support for drug-target reasoning and clinical translation framework. Dependencies are explicit: every model stage has a wet-lab dependency cleanly identified. Slippage in any one swimlane has clear contingency paths.
 
 ---
 
@@ -203,7 +235,7 @@ Lane 2 (MODEL ARCHITECTURE) — Stage 3a Q3 2026, Stage 3b Q3-Q4 2026 (highlight
 Lane 3 (DRUG PIPELINES) — Pipeline 1 starts Q1-Q2 2027 → Q4 2028, Pipeline 2 starts Q2 2028 → ongoing
 Lane 4 (PUBLICATIONS & INVESTOR DEMOS) — Stage 3 verdict + BTK+JAK demo deck-grade Q4 2026, Stage 4+5 peer-reviewed publication Q3-Q4 2027
 
-Dotted dependency arrows: Phase 1 → 3b; Phase 2 phospho → 3c; Phase 2 VDJ → Stage 4; Stage 4 + pipelines → Stage 5 causal layer.
+Dotted dependency arrows: Phase 1 → 3b; Phase 1 phospho + perturbation data → 3c; Phase 2 VDJ → Stage 4; Stage 4 + pipelines → Stage 5 causal layer.
 
 7 ◆ diamond milestone markers at the top labeled with quarter + brief title.
 

@@ -39,12 +39,15 @@ from lxml import etree
 REPO = Path(__file__).resolve().parents[3]
 CONTENT_DIR = REPO / "docs" / "deck" / "content"
 DIAGRAMS_DIR = REPO / "docs" / "deck" / "assets" / "diagrams"
-# v4: phospho-in-Phase-1 correction — refreshed SVGs for A2, C1, D1, F1
-# (A5 SVG unchanged from v3; speaker notes for A5 updated via content spec).
-# Slide count + section structure identical to v3 (21 slides total).
-# v1 (18 slides) + v2 (20 slides) + v3 (21 slides) preserved as historical
-# artifacts.
-OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v4.pptx"
+# v5: Step 5 unified reconciliation — comprehensive speaker notes glossary
+# embedding across all 14 content specs (three-state framing + technical
+# glossary + equations + diligence Q&A) + surgical stale-reference cleanup
+# (phospho-Phase-2 framing → phospho-Phase-1 across A1/A2/A4/C1/C2/D1/D2/E1/F1).
+# Visual content (PNGs) unchanged from v4. Slide count + structure identical
+# to v4 (21 slides total).
+# v1 (18 slides) + v2 (20 slides) + v3 (21 slides) + v4 (21 slides) preserved
+# as historical artifacts.
+OUTPUT = REPO / "docs" / "deck" / "exports" / "aivc_appendix_v5.pptx"
 
 # 16:9 widescreen matching SVG viewBox 1920×1080 (13.333" × 7.5" at 144 dpi)
 SLIDE_WIDTH = Inches(13.333)

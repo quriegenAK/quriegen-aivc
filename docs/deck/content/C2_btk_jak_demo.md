@@ -154,6 +154,34 @@ Three things it earns:
 
 ## Speaker notes
 
+### Three-state framing
+- **Today (architecture ready, demo pre-registered)**: Decomposed readout + adapter trained on Mimitou. Stage 3b methodology pre-registered. Awaits Phase 1 data.
+- **Phase 1 (Q4 2026 — DEMO RUNS)**: Train adapter + readout on Phase 1 single-arm data (BTK alone, JAK alone, other singles, 4-arm controls). Hold out BTK+JAK combo. Predict zero-shot. Verdict mechanical.
+- **Phase 2 (2027)**: Drug combination prediction extends to additional therapeutic targets. Synergy framework validated; new combinations slot in without re-architecting.
+
+### Technical glossary
+**Zero-shot synergy prediction** — Predicting combination response without seeing the combination during training. Trained on singles, predicting combos. Our headline capability.
+
+**Held-out combination arm** — During training, BTK+JAK combo data is removed entirely. At test time, the model predicts the held-out combo response. Pure compositional generalization test.
+
+**BTK inhibitor + JAK inhibitor (Ibrutinib + Ruxolitinib)** — FDA-approved drug pair. Combination has CLL clinical evidence (NCT02912754, PMID 26819050). Our Phase 1 demo target.
+
+**Pre-registered eval (Stage 3b)** — Eval methodology + threshold (≥0.70 synergy accuracy) locked in architecture spec v1.1 §5.1 before Phase 1 data arrives. Mechanical verdict on demo success.
+
+**Stage 3b demo** — Q4 2026 milestone. The first investor-grade demonstration of the platform's compositional capability. Headline result for fundraising narrative.
+
+**pJAK1/BCR pathway** — Thiago's wet-lab observation: JAK1 phosphorylation responds to BCR pathway activity. Mechanistic basis for expecting BTK + JAK synergy.
+
+**CLL Phase Ib/II trial** — Clinical trial design for Ibrutinib + Ruxolitinib combination. Our predictive framework references this clinical biology.
+
+**Latent SDE fallback** — Architecture spec v1.1 §7.1 documents Latent Stochastic Differential Equation as fallback if Neural ODE proves insufficient for Phase 1 phospho dynamics. Spec'd before Phase 1 data arrives.
+
+**Compositional eval** — Holding out a combination, training on singles, scoring the combination prediction. Mathematical proof of compositional generalization.
+
+**4-arm controls** — Vehicle / stim / single-inhibitor / combination. Each cell labeled with its arm. The arm structure matches the decomposed readout's arm structure.
+
+### Diligence Q&A
+
 **If asked: "Why pre-register before having the data?"**
 
 > Two reasons. First, it eliminates post-hoc threshold drift — the moment you see a 0.62 result, the temptation to argue "well, 0.60 is actually impressive given the difficulty" becomes overwhelming. Pre-registration cuts that off. Second, the threshold table includes graduated responses (GREEN/AMBER/RED) with specific remediations per level. We're not betting the company on a single number; we have documented remediation paths for each outcome. This is what scientific rigor looks like in deep tech.
@@ -190,7 +218,7 @@ Three things it earns:
 
 - Specific Stage 3a results (will appear before deck v2 if Mimitou training completes in time)
 - Detailed BSC compute usage and training cost — D2 budget slide territory
-- Phase 2 phospho extensions of the BTK+JAK demo — E1 horizon slide
+- Phase 1 phospho-channel readouts of the BTK+JAK demo (5-minute kinase activation signature) — narrative beat saved for the live walkthrough rather than the C2 slide itself
 - The "what if we miss?" deep-dive — speaker notes handle this
 - Comparison to other AI bio companies' demos — E1 territory if at all
 
